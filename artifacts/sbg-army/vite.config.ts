@@ -50,7 +50,7 @@ export default defineConfig(async () => {
     },
     root: path.resolve(import.meta.dirname),
     build: {
-      outDir: path.resolve(import.meta.dirname, "dist/public"),
+      outDir: path.resolve(import.meta.dirname, "dist"),
       emptyOutDir: true,
       cssCodeSplit: true,
       chunkSizeWarningLimit: 1200,

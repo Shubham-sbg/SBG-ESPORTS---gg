@@ -1,9 +1,9 @@
 {
   "version": 2,
   "framework": null,
-  "installCommand": "corepack enable && pnpm install --frozen-lockfile",
-  "buildCommand": "cd ../.. && pnpm run typecheck:libs && pnpm --filter @workspace/sbg-army run build",
-  "outputDirectory": "dist/public",
+  "installCommand": "bun install",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "headers": [
     {

@@ -6,29 +6,26 @@
 # ── Stage 1: Build ──────────────────────────────────────────────────────────
 FROM node:20-alpine AS builder
 WORKDIR /app
-RUN npm install -g pnpm@10
 
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json .npmrc* ./
+COPY package.json package-lock.json* bun.lock* .npmrc* ./
 COPY tsconfig.base.json tsconfig.json ./
 COPY lib/ lib/
 COPY artifacts/api-server/ artifacts/api-server/
 
-RUN pnpm install --frozen-lockfile
-RUN pnpm run typecheck:libs
-RUN pnpm --filter @workspace/api-server run build
+RUN npm install
+RUN npm run build --workspace=@workspace/api-server
 
 # ── Stage 2: Production ──────────────────────────────────────────────────────
 FROM node:20-alpine AS production
 WORKDIR /app
-RUN npm install -g pnpm@10
 
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
+COPY package.json package-lock.json* bun.lock* ./
 COPY tsconfig.base.json ./
 COPY --from=builder /app/lib/ lib/
 COPY --from=builder /app/artifacts/api-server/package.json artifacts/api-server/package.json
 COPY --from=builder /app/artifacts/api-server/dist/ artifacts/api-server/dist/
 
-RUN pnpm install --frozen-lockfile --prod
+RUN npm install --omit=dev
 
 # JSON-file CMS data + uploaded images live here — mount a volume at this
 # path in production or they will be lost when the container is recreated.
