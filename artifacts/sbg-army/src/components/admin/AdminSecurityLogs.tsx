@@ -32,8 +32,8 @@ export default function AdminSecurityLogs() {
       const token = '' || '' || '';
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       const [attemptsRes, auditRes] = await Promise.all([
-        fetch('/api/security/login-attempts', { credentials: "include", headers }).catch(() => null),
-        fetch('/api/security/audit-logs', { credentials: "include", headers }).catch(() => null),
+        fetch((import.meta.env.VITE_API_URL || "") + '/api/security/login-attempts', { credentials: "include", headers }).catch(() => null),
+        fetch((import.meta.env.VITE_API_URL || "") + '/api/security/audit-logs', { credentials: "include", headers }).catch(() => null),
       ]);
       if (attemptsRes?.ok) setLoginAttempts(await attemptsRes.json());
       if (auditRes?.ok) setAuditLogs(await auditRes.json());

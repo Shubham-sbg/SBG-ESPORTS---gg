@@ -17,7 +17,7 @@ export default function RecruitmentPopup() {
     }
 
     // Fetch active featured openings
-    fetch('/api/recruitment/openings')
+    fetch((import.meta.env.VITE_API_URL || "") + '/api/recruitment/openings')
       .then(res => res.json())
       .then(data => {
         if (data.ok && Array.isArray(data.openings) && data.openings.length > 0) {

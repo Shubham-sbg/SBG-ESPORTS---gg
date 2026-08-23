@@ -18,7 +18,7 @@ export default function StaffLoginPage() {
 
     try {
       // Always authenticate via the server — the client DB has passwords scrubbed for security.
-      const res = await fetch('/api/admin/login', {
+      const res = await fetch((import.meta.env.VITE_API_URL || "") + '/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

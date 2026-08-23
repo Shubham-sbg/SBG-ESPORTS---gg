@@ -59,8 +59,8 @@ export default function AdminRecruitment() {
     setLoading(true);
     try {
       const [resApps, resOpenings] = await Promise.all([
-        fetch('/api/db/recruitment', { credentials: "include", headers: { Authorization: `Bearer ${getToken()}` } }),
-        fetch('/api/db/recruitmentOpenings', { credentials: "include", headers: { Authorization: `Bearer ${getToken()}` } })
+        fetch((import.meta.env.VITE_API_URL || "") + '/api/db/recruitment', { credentials: "include", headers: { Authorization: `Bearer ${getToken()}` } }),
+        fetch((import.meta.env.VITE_API_URL || "") + '/api/db/recruitmentOpenings', { credentials: "include", headers: { Authorization: `Bearer ${getToken()}` } })
       ]);
 
       if (resApps.ok) {
@@ -83,7 +83,7 @@ export default function AdminRecruitment() {
   const persistApps = async (updated: RecruitmentApplication[]) => {
     setApps(updated);
     try {
-      await fetch('/api/db/recruitment', { credentials: "include",
+      await fetch((import.meta.env.VITE_API_URL || "") + '/api/db/recruitment', { credentials: "include",
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
         body: JSON.stringify(updated),
@@ -97,7 +97,7 @@ export default function AdminRecruitment() {
   const persistOpenings = async (updated: RecruitmentOpening[]) => {
     setOpenings(updated);
     try {
-      await fetch('/api/db/recruitmentOpenings', { credentials: "include",
+      await fetch((import.meta.env.VITE_API_URL || "") + '/api/db/recruitmentOpenings', { credentials: "include",
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
         body: JSON.stringify(updated),

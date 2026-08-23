@@ -9,7 +9,7 @@ export default function StaffGuard({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch('/api/admin/verify', { credentials: 'include' });
+        const res = await fetch((import.meta.env.VITE_API_URL || "") + '/api/admin/verify', { credentials: 'include' });
         if (!res.ok) {
           setIsAuthenticated(false);
           return;

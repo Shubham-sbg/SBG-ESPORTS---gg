@@ -39,7 +39,7 @@ export function getOwnerModules(): AdminModule[] {
 
 export function createStaffSession(email: string, role: 'admin' | 'staff', modules: AdminModule[], name: string): void {}
 export function destroyStaffSession(): void {
-  fetch('/api/admin/logout', { credentials: 'include' }).catch(() => {});
+  fetch((import.meta.env.VITE_API_URL || "") + '/api/admin/logout', { credentials: 'include' }).catch(() => {});
 }
 
 export function isStaffAuthenticated(): boolean {

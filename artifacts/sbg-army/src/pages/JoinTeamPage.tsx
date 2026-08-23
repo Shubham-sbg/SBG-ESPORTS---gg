@@ -99,7 +99,7 @@ export default function JoinTeamPage() {
 
   // Load active openings & check URL query params
   useEffect(() => {
-    fetch('/api/recruitment/openings')
+    fetch((import.meta.env.VITE_API_URL || "") + '/api/recruitment/openings')
       .then(res => res.json())
       .then(data => {
         if (data.ok && Array.isArray(data.openings)) {
@@ -156,7 +156,7 @@ export default function JoinTeamPage() {
       const reader = new FileReader();
       reader.onload = async (e) => {
         const base64 = e.target?.result as string;
-        const res = await fetch('/api/recruitment/upload', { credentials: "include",
+        const res = await fetch((import.meta.env.VITE_API_URL || "") + '/api/recruitment/upload', { credentials: "include",
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -229,7 +229,7 @@ export default function JoinTeamPage() {
         availability: form.availability,
       };
 
-      const res = await fetch('/api/recruitment/apply', { credentials: "include",
+      const res = await fetch((import.meta.env.VITE_API_URL || "") + '/api/recruitment/apply', { credentials: "include",
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

@@ -30,7 +30,7 @@ export default function PlatformsSection() {
   const [config, setConfig] = useState<PlatformsConfig | null>(null);
 
   useEffect(() => {
-    fetch('/api/db/platforms', { credentials: "include", cache: 'no-store' })
+    fetch((import.meta.env.VITE_API_URL || "") + '/api/db/platforms', { credentials: "include", cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
         if (data && typeof data === 'object' && !Array.isArray(data) && 'platforms' in data) {
