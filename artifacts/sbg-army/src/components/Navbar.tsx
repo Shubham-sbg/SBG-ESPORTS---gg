@@ -206,16 +206,9 @@ export default function Navbar({ settings, navigation }: Props) {
 
             {/* Logo */}
             <a href="/" className="flex items-center gap-3 group flex-shrink-0">
-              {settings.logo ? (
-                <img src={settings.logo} alt={settings.organizationName}
-                  width="40" height="40" decoding="async"
-                  className="h-10 w-auto group-hover:drop-shadow-[0_0_12px_rgba(212,175,55,0.6)] transition-all duration-300" />
-              ) : (
-                <div className="h-10 w-10 rounded-xl flex items-center justify-center font-black text-white text-sm flex-shrink-0 transition-all duration-300 group-hover:shadow-[0_0_20px_rgba(212,175,55,0.5)]"
-                  style={{ background: 'linear-gradient(135deg, #d4af37, #b8960c)', boxShadow: '0 0 15px rgba(212,175,55,0.3)' }}>
-                  SBG
-                </div>
-              )}
+              <img src={settings.logo || '/transparent_eagle_logo.png'} alt={settings.organizationName || 'SBG ESPORTS'}
+                width="40" height="40" decoding="async"
+                className="h-10 w-auto group-hover:drop-shadow-[0_0_12px_rgba(212,175,55,0.6)] transition-all duration-300 object-contain" />
               <div className="hidden sm:block">
                 <div className="font-black text-sm tracking-[0.25em] text-white leading-none group-hover:text-gold transition-colors duration-300"
                   style={{ textShadow: scrolled ? 'none' : '0 0 20px rgba(212,175,55,0.3)' }}>

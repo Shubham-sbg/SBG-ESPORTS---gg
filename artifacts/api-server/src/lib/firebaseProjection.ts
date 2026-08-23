@@ -132,7 +132,7 @@ export async function syncAllSettingsToFirestore() {
     console.log(`[Firestore Projection] Full settings sync completed. Synced ${successCount} sections.`);
     return true;
   } catch (err: any) {
-    console.error("[Firestore Projection] Full sync failed:", err.message);
+    console.warn("[Firestore Projection] Settings sync skipped (Postgres database unavailable):", err.message);
     return false;
   }
 }

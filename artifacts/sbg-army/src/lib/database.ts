@@ -807,7 +807,7 @@ export interface Database {
 
 const DEFAULT_DB: Database = {
   settings: {
-    logo: '', organizationName: 'SBG ESPORTS',
+    logo: '/transparent_eagle_logo.png', organizationName: 'SBG ESPORTS',
     tagline: 'BORN TO WIN. BUILT TO DOMINATE.',
     primaryColor: '#ff6b00', secondaryColor: '#1a1a2e', accentColor: '#e94560',
     maintenanceMode: false, maintenanceMessage: 'We are upgrading our systems. Back soon!',
@@ -1204,7 +1204,12 @@ let resyncInFlight: Promise<void> | null = null;
 export async function saveDB(db: Database): Promise<void>;
 export async function saveDB(db: Database, collection: string): Promise<void>;
 export async function saveDB(db: Database, collection?: string): Promise<void> {
-  if (resyncInFlight) await resyncInFlight;
+  if (resyncInFlight) {
+    await Promise.race([
+      resyncInFlight,
+      new Promise((resolve) => setTimeout(resolve, 2000)),
+    ]).catch(() => {});
+  }
 
   // Always update local cache and IndexedDB immediately so changes are preserved
   dbCache = db;

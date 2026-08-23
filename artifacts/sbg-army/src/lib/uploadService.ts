@@ -118,7 +118,10 @@ export function dataUrlToFile(dataUrl: string, filename = 'upload.png'): File {
  */
 export function getAdminAuthToken(): string {
   try {
-    return '' || '' || '';
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('sbg_admin_token') || localStorage.getItem('sbg_admin_token') || '';
+    }
+    return '';
   } catch {
     return '';
   }
@@ -176,12 +179,18 @@ export async function uploadFileToServer(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
   try {
-    const res = await fetch(endpoint, { credentials: "include",
+    const res = await fetch(endpoint, {
+      credentials: "include",
       method: 'POST',
       headers,
       body: formData,
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
 
     if (!res.ok) {
       const errData = await res.json().catch(() => ({}));

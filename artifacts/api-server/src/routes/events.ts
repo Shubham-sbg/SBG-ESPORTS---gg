@@ -2,20 +2,31 @@ import { Router } from "express";
 import { db, eventsTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
 import { requireAdmin } from "../middleware/requireAdmin.js";
+import { readCol } from "../lib/store.js";
 
 const router = Router();
 
 router.get("/events", async (req, res) => {
   try {
     const { status, type, game } = req.query as Record<string, string>;
-    let rows = await db.select().from(eventsTable).orderBy(desc(eventsTable.createdAt));
-    if (status) rows = rows.filter(r => r.status === status);
-    if (type) rows = rows.filter(r => r.type === type);
-    if (game) rows = rows.filter(r => r.game === game);
-    res.json(rows.map(r => ({ ...r, createdAt: r.createdAt.toISOString(), updatedAt: r.updatedAt.toISOString() })));
+    let rows: any[] = [];
+    try {
+      rows = await db.select().from(eventsTable).orderBy(desc(eventsTable.createdAt));
+      if (status) rows = rows.filter(r => r.status === status);
+      if (type) rows = rows.filter(r => r.type === type);
+      if (game) rows = rows.filter(r => r.game === game);
+      return res.json(rows.map(r => ({ ...r, createdAt: r.createdAt ? new Date(r.createdAt).toISOString() : new Date().toISOString(), updatedAt: r.updatedAt ? new Date(r.updatedAt).toISOString() : new Date().toISOString() })));
+    } catch {
+      const fallback = ((await readCol("events")) as any[]) || [];
+      rows = Array.isArray(fallback) ? fallback : [];
+      if (status) rows = rows.filter(r => r.status === status);
+      if (type) rows = rows.filter(r => r.type === type);
+      if (game) rows = rows.filter(r => r.game === game);
+      return res.json(rows);
+    }
   } catch (e) {
     req.log?.error?.(e);
-    res.status(500).json({ error: "Failed to load events" });
+    res.json([]);
   }
 });
 
@@ -23,12 +34,19 @@ router.get("/events/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
     if (!id || isNaN(id)) return res.status(400).json({ error: "Invalid event ID" });
-    const [row] = await db.select().from(eventsTable).where(eq(eventsTable.id, id));
-    if (!row) return res.status(404).json({ error: "Not found" });
-    return res.json({ ...row, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() });
+    try {
+      const [row] = await db.select().from(eventsTable).where(eq(eventsTable.id, id));
+      if (!row) return res.status(404).json({ error: "Not found" });
+      return res.json({ ...row, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() });
+    } catch {
+      const fallback = ((await readCol("events")) as any[]) || [];
+      const found = Array.isArray(fallback) ? fallback.find(e => String(e.id) === String(id)) : null;
+      if (!found) return res.status(404).json({ error: "Not found" });
+      return res.json(found);
+    }
   } catch (e) {
     req.log?.error?.(e);
-    return res.status(500).json({ error: "Failed to load event" });
+    return res.status(404).json({ error: "Not found" });
   }
 });
 

@@ -2,21 +2,33 @@ import { Router } from "express";
 import { db, matchesTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
 import { requireAdmin } from "../middleware/requireAdmin.js";
+import { readCol } from "../lib/store.js";
 
 const router = Router();
 
 router.get("/matches-pg", async (req, res) => {
   try {
     const { status, game, tournamentId, featured } = req.query as Record<string, string>;
-    let rows = await db.select().from(matchesTable).orderBy(desc(matchesTable.createdAt));
-    if (status) rows = rows.filter(r => r.status === status);
-    if (game) rows = rows.filter(r => r.game === game);
-    if (tournamentId) rows = rows.filter(r => r.tournamentId === Number(tournamentId));
-    if (featured === "true") rows = rows.filter(r => r.isFeatured);
-    res.json(rows.map(r => ({ ...r, createdAt: r.createdAt.toISOString(), updatedAt: r.updatedAt.toISOString() })));
+    let rows: any[] = [];
+    try {
+      rows = await db.select().from(matchesTable).orderBy(desc(matchesTable.createdAt));
+      if (status) rows = rows.filter(r => r.status === status);
+      if (game) rows = rows.filter(r => r.game === game);
+      if (tournamentId) rows = rows.filter(r => r.tournamentId === Number(tournamentId));
+      if (featured === "true") rows = rows.filter(r => r.isFeatured);
+      return res.json(rows.map(r => ({ ...r, createdAt: r.createdAt ? new Date(r.createdAt).toISOString() : new Date().toISOString(), updatedAt: r.updatedAt ? new Date(r.updatedAt).toISOString() : new Date().toISOString() })));
+    } catch {
+      const fallback = ((await readCol("matches")) as any[]) || [];
+      rows = Array.isArray(fallback) ? fallback : [];
+      if (status) rows = rows.filter(r => r.status === status);
+      if (game) rows = rows.filter(r => r.game === game);
+      if (tournamentId) rows = rows.filter(r => r.tournamentId === Number(tournamentId));
+      if (featured === "true") rows = rows.filter(r => r.isFeatured);
+      return res.json(rows);
+    }
   } catch (e) {
     req.log?.error?.(e);
-    res.status(500).json({ error: "Failed to load matches" });
+    res.json([]);
   }
 });
 

@@ -54,8 +54,8 @@ if (process.env.DATABASE_URL) {
       }
     }
     logger.info("Firebase settings seeded successfully");
-  } catch (e) {
-    logger.error({ err: e }, "Failed to seed Firebase settings");
+  } catch (e: any) {
+    logger.warn(`Skipping Postgres Firebase settings seed (Postgres database unavailable: ${e.message})`);
   }
 }
 

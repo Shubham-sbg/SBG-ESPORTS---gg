@@ -53,66 +53,67 @@ export default function AdminSettings({ settings, onRefresh }: Props) {
     setSaveState('saving');
     setSaveError('');
     try {
-      const updatedForm = { ...form };
-      const ensureUploaded = async (val?: string, filename = 'asset.png'): Promise<string> => {
-        if (!val || !val.startsWith('data:')) return val || '';
-        try {
-          const res = await uploadFileToServer(val, { filename });
-          return res.url;
-        } catch (uploadErr) {
-          console.warn(`Server upload for ${filename} failed, preserving local DataURL:`, uploadErr);
-          return val;
-        }
-      };
-
-      if (updatedForm.logo?.startsWith('data:')) {
-        updatedForm.logo = await ensureUploaded(updatedForm.logo, 'logo.png');
-      }
-      if (updatedForm.favicon?.startsWith('data:')) {
-        updatedForm.favicon = await ensureUploaded(updatedForm.favicon, 'favicon.png');
-      }
-      if (updatedForm.appleTouchIcon?.startsWith('data:')) {
-        updatedForm.appleTouchIcon = await ensureUploaded(updatedForm.appleTouchIcon, 'apple-touch-icon.png');
-      }
-      if (updatedForm.upiQr?.startsWith('data:')) {
-        updatedForm.upiQr = await ensureUploaded(updatedForm.upiQr, 'upi-qr.png');
-      }
-      if ((updatedForm as any).loadingLogo?.startsWith('data:')) {
-        (updatedForm as any).loadingLogo = await ensureUploaded((updatedForm as any).loadingLogo, 'loading-logo.png');
-      }
-
-      setForm(updatedForm);
-
-      const db = getDB();
-      db.settings = updatedForm;
-      if (updatedForm.activeTheme) {
-        db.themeSettings = {
-          ...db.themeSettings,
-          activeTheme: updatedForm.activeTheme,
-          updatedAt: Date.now(),
+      const savePromise = (async () => {
+        const updatedForm = { ...form };
+        const ensureUploaded = async (val?: string, filename = 'asset.png'): Promise<string> => {
+          if (!val || !val.startsWith('data:')) return val || '';
+          try {
+            const timeoutPromise = new Promise<never>((_, reject) =>
+              setTimeout(() => reject(new Error('Upload timeout')), 6000)
+            );
+            const res = await Promise.race([uploadFileToServer(val, { filename }), timeoutPromise]);
+            return res.url;
+          } catch (uploadErr) {
+            console.warn(`Server upload for ${filename} failed, preserving DataURL/local asset:`, uploadErr);
+            return val;
+          }
         };
-      }
-      
-      try {
+
+        if (updatedForm.logo?.startsWith('data:')) {
+          updatedForm.logo = await ensureUploaded(updatedForm.logo, 'logo.png');
+        }
+        if (updatedForm.favicon?.startsWith('data:')) {
+          updatedForm.favicon = await ensureUploaded(updatedForm.favicon, 'favicon.png');
+        }
+        if (updatedForm.appleTouchIcon?.startsWith('data:')) {
+          updatedForm.appleTouchIcon = await ensureUploaded(updatedForm.appleTouchIcon, 'apple-touch-icon.png');
+        }
+        if (updatedForm.upiQr?.startsWith('data:')) {
+          updatedForm.upiQr = await ensureUploaded(updatedForm.upiQr, 'upi-qr.png');
+        }
+        if ((updatedForm as any).loadingLogo?.startsWith('data:')) {
+          (updatedForm as any).loadingLogo = await ensureUploaded((updatedForm as any).loadingLogo, 'loading-logo.png');
+        }
+
+        setForm(updatedForm);
+
+        const db = getDB();
+        db.settings = updatedForm;
+        if (updatedForm.activeTheme) {
+          db.themeSettings = {
+            ...db.themeSettings,
+            activeTheme: updatedForm.activeTheme,
+            updatedAt: Date.now(),
+          };
+        }
+
         await saveDB(db, 'settings');
         if (updatedForm.activeTheme) {
           await saveDB(db, 'themeSettings').catch(() => {});
         }
         onRefresh();
-        setSaveState('saved');
-        setTimeout(() => setSaveState('idle'), 2500);
-      } catch (saveErr: any) {
-        const msg = saveErr?.message ?? '';
-        if (msg.includes('Local changes saved') || msg.includes('Server connection error')) {
-          onRefresh();
-          setSaveState('saved');
-          setTimeout(() => setSaveState('idle'), 2500);
-        } else {
-          setSaveError(msg || 'Save failed — check your login session.');
-          setSaveState('error');
-        }
-      }
+      })();
+
+      const overallTimeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Site Settings save request timed out (12s)')), 12000)
+      );
+
+      await Promise.race([savePromise, overallTimeout]);
+
+      setSaveState('saved');
+      setTimeout(() => setSaveState('idle'), 2500);
     } catch (e: any) {
+      console.error('Settings save failed:', e);
       setSaveError(e?.message ?? 'Save failed — check your login session.');
       setSaveState('error');
     }

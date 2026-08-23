@@ -1,18 +1,62 @@
 # See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
-# compiled output
+# Environment variables — never commit real secrets
+.env
+.env.*
+!.env.example
+*.env
+artifacts/*/.env
+deploy/.env
+
+# Firebase & Cloud Service Account Keys / Private Keys
+*service-account*.json
+*service_account*.json
+firebase-key*.json
+*.pem
+*.key
+*.p12
+id_rsa*
+
+# Dependencies
+node_modules
+/.pnpm-store
+
+# Compiled / Build Output
 dist
+build
 tmp
 out-tsc
 *.tsbuildinfo
-.expo
-.expo-shared
+artifacts/*/dist
+artifacts/*/build
 
-# dependencies
-node_modules
+# Local file-based databases & runtime uploads
+artifacts/api-server/database/uploads/
+artifacts/database/
+*.db
+*.sqlite
+*.sqlite3
 
-# IDEs and editors
+# Logs & Temporary Files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+testem.log
+libpeerconnection.log
+/connect.lock
+/coverage
+.cache/
+.local/
+temp/
+
+# IDEs and Editors
 /.idea
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 .project
 .classpath
 .c9/
@@ -20,53 +64,7 @@ node_modules
 .settings/
 *.sublime-workspace
 
-# IDE - VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
-# misc
-/.sass-cache
-/connect.lock
-/coverage
-/libpeerconnection.log
-npm-debug.log
-yarn-error.log
-testem.log
-/typings
-
 # System Files
 .DS_Store
 Thumbs.db
-
-.cursor/rules/nx-rules.mdc
-.github/instructions/nx.instructions.md
-
-# Replit
-.cache/
-.local/
-
-# Environment variables — never commit real secrets. Only .env.example files
-# (and deploy/.env.example) are tracked.
-.env
-.env.local
-.env.*.local
-artifacts/*/.env
-deploy/.env
-
-# Local file-based CMS data, databases & uploads — runtime/environment data
-artifacts/api-server/database/uploads/
-artifacts/database/
-*.db
-*.sqlite
-*.sqlite3
-
-# Firebase & Cloud Service Account Keys
-*service-account*.json
-*service_account*.json
-firebase-key*.json
-*.pem
-*.key
 

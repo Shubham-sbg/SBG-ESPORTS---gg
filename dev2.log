@@ -1,5 +1,0 @@
-
-> workspace@0.0.0 dev
-> concurrently "PORT=8081 npm run dev --workspace=@workspace/api-server" "npm run dev --workspace=@workspace/sbg-army"
-
-sh: 1: concurrently: not found

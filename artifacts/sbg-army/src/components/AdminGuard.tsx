@@ -33,16 +33,30 @@ interface AdminSession {
 }
 
 function getStoredToken(): string | null {
-  // We no longer rely on localStorage for security
+  try {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem(TOKEN_KEY) || localStorage.getItem(TOKEN_KEY) || null;
+    }
+  } catch {}
   return null;
 }
 
 function saveToken(token: string) {
-  // Cookies handle session storage automatically now
+  try {
+    if (typeof window !== 'undefined' && token) {
+      sessionStorage.setItem(TOKEN_KEY, token);
+      localStorage.setItem(TOKEN_KEY, token);
+    }
+  } catch {}
 }
 
 function clearToken() {
-  // Fire and forget logout to clear the httpOnly cookie
+  try {
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(TOKEN_KEY);
+    }
+  } catch {}
   fetch('/api/admin/logout', { credentials: 'include' }).catch(() => {});
 }
 

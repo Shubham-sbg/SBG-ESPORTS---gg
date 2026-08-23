@@ -46,15 +46,32 @@ export function getApiBase(): string {
 }
 
 export async function apiGet(collection: string): Promise<unknown> {
-  const res = await fetch(`${API_BASE}/db/${collection}`, { cache: 'no-store', credentials: 'include' });
-  if (!res.ok) throw new Error(`API GET failed: ${collection}`);
-  return res.json();
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), 10000);
+  try {
+    const res = await fetch(`${API_BASE}/db/${collection}`, {
+      cache: 'no-store',
+      credentials: 'include',
+      headers: adminAuthHeaders(),
+      signal: controller.signal,
+    });
+    clearTimeout(id);
+    if (!res.ok) throw new Error(`API GET failed: ${collection}`);
+    return res.json();
+  } catch (err: any) {
+    clearTimeout(id);
+    if (err.name === 'AbortError') throw new Error('Request timed out (10s)');
+    throw err;
+  }
 }
 
 function adminAuthHeaders(): Record<string, string> {
   const token = (() => {
     try {
-      return '' || '' || '';
+      if (typeof window !== 'undefined') {
+        return sessionStorage.getItem('sbg_admin_token') || localStorage.getItem('sbg_admin_token') || '';
+      }
+      return '';
     } catch {
       return '';
     }
@@ -64,11 +81,11 @@ function adminAuthHeaders(): Record<string, string> {
 
 export async function apiPost(collection: string, data: unknown): Promise<void> {
   const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), 30000);
+  const id = setTimeout(() => controller.abort(), 15000);
   try {
     const res = await fetch(`${API_BASE}/db/${collection}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: adminAuthHeaders(),
       credentials: 'include',
       body: JSON.stringify(data),
       signal: controller.signal,
@@ -80,7 +97,7 @@ export async function apiPost(collection: string, data: unknown): Promise<void> 
     }
   } catch (err: any) {
     clearTimeout(id);
-    if (err.name === 'AbortError') throw new Error('Request timed out (30s)');
+    if (err.name === 'AbortError') throw new Error('Request timed out (15s)');
     if (err.message === 'Failed to fetch' || err.name === 'TypeError') {
       throw new Error('Server connection error. Local changes saved.');
     }
@@ -90,11 +107,11 @@ export async function apiPost(collection: string, data: unknown): Promise<void> 
 
 export async function apiPostBulk(updates: Record<string, unknown>): Promise<void> {
   const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), 30000);
+  const id = setTimeout(() => controller.abort(), 15000);
   try {
     const res = await fetch(`${API_BASE}/db`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: adminAuthHeaders(),
       credentials: 'include',
       body: JSON.stringify(updates),
       signal: controller.signal,
@@ -106,7 +123,7 @@ export async function apiPostBulk(updates: Record<string, unknown>): Promise<voi
     }
   } catch (err: any) {
     clearTimeout(id);
-    if (err.name === 'AbortError') throw new Error('Request timed out (30s)');
+    if (err.name === 'AbortError') throw new Error('Request timed out (15s)');
     if (err.message === 'Failed to fetch' || err.name === 'TypeError') {
       throw new Error('Server connection error. Local changes saved.');
     }
@@ -115,16 +132,23 @@ export async function apiPostBulk(updates: Record<string, unknown>): Promise<voi
 }
 
 export async function apiGetAll(): Promise<Record<string, unknown>> {
-  const headers: HeadersInit = {};
-  if (typeof window !== "undefined") {
-    try {
-      const token = "" || "";
-      if (token) headers["Authorization"] = `Bearer ${token}`;
-    } catch {}
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), 10000);
+  try {
+    const res = await fetch(`${API_BASE}/db`, {
+      cache: 'no-store',
+      credentials: 'include',
+      headers: adminAuthHeaders(),
+      signal: controller.signal,
+    });
+    clearTimeout(id);
+    if (!res.ok) throw new Error('API GET all failed');
+    return res.json();
+  } catch (err: any) {
+    clearTimeout(id);
+    if (err.name === 'AbortError') throw new Error('Request timed out (10s)');
+    throw err;
   }
-  const res = await fetch(`${API_BASE}/db`, { cache: "no-store", credentials: 'include' });
-  if (!res.ok) throw new Error('API GET all failed');
-  return res.json();
 }
 
 export function connectWs(): void {

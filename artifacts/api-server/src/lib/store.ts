@@ -188,13 +188,23 @@ async function initFirestore(): Promise<any> {
       }
     }
 
-    firestoreClient = getFirestore(admin.apps[0]!, databaseId);
+    const client = getFirestore(admin.apps[0]!, databaseId);
+    
+    // Test access permissions
+    await client.collection('health_check').doc('ping').get();
+
+    firestoreClient = client;
     firestoreInitialized = true;
-    console.log(`[Store] Firestore connected to database ${databaseId} on project ${projectId}.`);
+    console.log(`[Store] Firestore connected and verified on database ${databaseId} (project ${projectId}).`);
     return firestoreClient;
   } catch (err: any) {
-    console.warn('[Store] Firestore initialization skipped/failed:', err.message);
-    firestoreInitialized = true; // prevent infinite retries
+    if (err.message?.includes('PERMISSION_DENIED') || err.code === 7) {
+      console.warn(`[Store] Firestore connection deferred (requires FIREBASE_SERVICE_ACCOUNT_JSON in environment). Operating in local SQLite mode.`);
+    } else {
+      console.warn('[Store] Firestore initialization skipped/failed:', err.message);
+    }
+    firestoreClient = null;
+    firestoreInitialized = true; // prevent repeated failing pings
     return null;
   }
 }
@@ -529,8 +539,8 @@ export async function initStore(): Promise<void> {
 export async function readCol(col: string): Promise<unknown> {
   if (cache[col] !== undefined) return cache[col];
 
-  // Try PostgreSQL if DATABASE_URL is configured
-  if (process.env.DATABASE_URL) {
+  // Try PostgreSQL if DATABASE_URL is configured and connected
+  if (process.env.DATABASE_URL && isPgConnected) {
     try {
       const pgPool = await ensurePgPool();
       if (pgPool) {
@@ -538,13 +548,12 @@ export async function readCol(col: string): Promise<unknown> {
         if (res.rows.length > 0) {
           const val = JSON.parse(res.rows[0].data);
           cache[col] = val;
-          isPgConnected = true;
           return val;
         }
       }
     } catch (err: any) {
+      isPgConnected = false;
       console.warn(`[Store] PG read error for ${col}:`, err.message);
-      
     }
   }
 
@@ -587,8 +596,8 @@ export async function writeCol(col: string, data: unknown): Promise<void> {
   // Write to local SQLite storage
   writeSqlite(col, data);
 
-  // Write to PostgreSQL if DATABASE_URL is configured
-  if (process.env.DATABASE_URL) {
+  // Write to PostgreSQL if DATABASE_URL is configured and connected
+  if (process.env.DATABASE_URL && isPgConnected) {
     try {
       const pgPool = await ensurePgPool();
       if (pgPool) {
@@ -596,11 +605,10 @@ export async function writeCol(col: string, data: unknown): Promise<void> {
           'INSERT INTO store_data (collection, data) VALUES ($1, $2) ON CONFLICT (collection) DO UPDATE SET data = EXCLUDED.data',
           [col, jsonStr]
         );
-        isPgConnected = true;
       }
     } catch (err: any) {
+      isPgConnected = false;
       console.warn(`[Store] PG write error for ${col}:`, err.message);
-      
     }
   }
 
@@ -608,10 +616,14 @@ export async function writeCol(col: string, data: unknown): Promise<void> {
   try {
     const fs = await initFirestore();
     if (fs) {
-      await fs.collection('store_data').doc(col).set({
+      const fsPromise = fs.collection('store_data').doc(col).set({
         data,
         updatedAt: new Date().toISOString()
       });
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Firestore write timeout (5s)')), 5000)
+      );
+      await Promise.race([fsPromise, timeoutPromise]);
     }
   } catch (err: any) {
     console.warn(`[Store] Firestore write error for ${col}:`, err.message);
@@ -650,8 +662,8 @@ export async function saveUploadedFile(filename: string, mimeType: string, buffe
     console.error('[Store] SQLite saveUploadedFile error:', err.message);
   }
 
-  // Save to Postgres if DATABASE_URL is configured
-  if (process.env.DATABASE_URL) {
+  // Save to Postgres if DATABASE_URL is configured and connected
+  if (process.env.DATABASE_URL && isPgConnected) {
     try {
       const pgPool = await ensurePgPool();
       if (pgPool) {
@@ -659,11 +671,10 @@ export async function saveUploadedFile(filename: string, mimeType: string, buffe
           'INSERT INTO uploaded_files (filename, mime_type, data) VALUES ($1, $2, $3) ON CONFLICT (filename) DO UPDATE SET mime_type = EXCLUDED.mime_type, data = EXCLUDED.data',
           [filename, mimeType, buffer]
         );
-        isPgConnected = true;
       }
     } catch (err: any) {
+      isPgConnected = false;
       console.warn('[Store] PG saveUploadedFile error:', err.message);
-      
     }
   }
 
@@ -685,20 +696,19 @@ export async function saveUploadedFile(filename: string, mimeType: string, buffe
 }
 
 export async function getUploadedFile(filename: string): Promise<{ mime_type: string; data: Buffer } | null> {
-  // Try Postgres if DATABASE_URL is configured
-  if (process.env.DATABASE_URL) {
+  // Try Postgres if DATABASE_URL is configured and connected
+  if (process.env.DATABASE_URL && isPgConnected) {
     try {
       const pgPool = await ensurePgPool();
       if (pgPool) {
         const res = await pgPool.query('SELECT mime_type, data FROM uploaded_files WHERE filename = $1', [filename]);
         if (res.rows.length > 0) {
-          isPgConnected = true;
           return { mime_type: res.rows[0].mime_type, data: res.rows[0].data };
         }
       }
     } catch (err: any) {
+      isPgConnected = false;
       console.warn('[Store] PG getUploadedFile error:', err.message);
-      
     }
   }
 
@@ -761,15 +771,14 @@ export async function deleteUploadedFile(filename: string): Promise<void> {
     }
   } catch {}
 
-  if (process.env.DATABASE_URL) {
+  if (process.env.DATABASE_URL && isPgConnected) {
     try {
       const pgPool = await ensurePgPool();
       if (pgPool) {
         await pgPool.query('DELETE FROM uploaded_files WHERE filename = $1', [filename]);
-        isPgConnected = true;
       }
     } catch (err: any) {
-      
+      isPgConnected = false;
     }
   }
 
@@ -811,7 +820,7 @@ export async function saveMediaRecord(record: MediaRecord): Promise<void> {
     console.error('[Store] SQLite saveMediaRecord error:', err.message);
   }
 
-  if (process.env.DATABASE_URL) {
+  if (process.env.DATABASE_URL && isPgConnected) {
     try {
       const pgPool = await ensurePgPool();
       if (pgPool) {
@@ -832,11 +841,10 @@ export async function saveMediaRecord(record: MediaRecord): Promise<void> {
             record.createdAt, record.updatedAt
           ]
         );
-        isPgConnected = true;
       }
     } catch (err: any) {
+      isPgConnected = false;
       console.warn('[Store] PG saveMediaRecord error:', err.message);
-      
     }
   }
 
@@ -870,12 +878,11 @@ export async function saveMediaRecord(record: MediaRecord): Promise<void> {
 }
 
 export async function getAllMediaRecords(): Promise<MediaRecord[]> {
-  if (process.env.DATABASE_URL) {
+  if (process.env.DATABASE_URL && isPgConnected) {
     try {
       const pgPool = await ensurePgPool();
       if (pgPool) {
         const res = await pgPool.query('SELECT * FROM image_metadata ORDER BY position ASC, created_at DESC');
-        isPgConnected = true;
         return res.rows.map(r => ({
           id: r.id, url: r.url, storageKey: r.storage_key, filename: r.filename, mimeType: r.mime_type,
           size: Number(r.size), width: r.width ?? undefined, height: r.height ?? undefined, ratio: r.ratio ?? 'Original',
@@ -884,8 +891,8 @@ export async function getAllMediaRecords(): Promise<MediaRecord[]> {
         }));
       }
     } catch (err: any) {
+      isPgConnected = false;
       console.warn('[Store] PG getAllMediaRecords error:', err.message);
-      
     }
   }
 
@@ -910,14 +917,13 @@ export async function getAllMediaRecords(): Promise<MediaRecord[]> {
 }
 
 export async function getMediaRecordById(id: string): Promise<MediaRecord | null> {
-  if (process.env.DATABASE_URL) {
+  if (process.env.DATABASE_URL && isPgConnected) {
     try {
       const pgPool = await ensurePgPool();
       if (pgPool) {
         const res = await pgPool.query('SELECT * FROM image_metadata WHERE id = $1', [id]);
         if (res.rows.length > 0) {
           const r = res.rows[0];
-          isPgConnected = true;
           return {
             id: r.id, url: r.url, storageKey: r.storage_key, filename: r.filename, mimeType: r.mime_type,
             size: Number(r.size), width: r.width ?? undefined, height: r.height ?? undefined, ratio: r.ratio ?? 'Original',
@@ -927,8 +933,8 @@ export async function getMediaRecordById(id: string): Promise<MediaRecord | null
         }
       }
     } catch (err: any) {
+      isPgConnected = false;
       console.warn('[Store] PG getMediaRecordById error:', err.message);
-      
     }
   }
 
@@ -963,15 +969,14 @@ export async function deleteMediaRecord(id: string): Promise<void> {
     }
   } catch {}
 
-  if (process.env.DATABASE_URL) {
+  if (process.env.DATABASE_URL && isPgConnected) {
     try {
       const pgPool = await ensurePgPool();
       if (pgPool) {
         await pgPool.query('DELETE FROM image_metadata WHERE id = $1', [id]);
-        isPgConnected = true;
       }
     } catch (err: any) {
-      
+      isPgConnected = false;
     }
   }
 
@@ -997,17 +1002,16 @@ export function getDbConnectionStatus(): { isPgConnected: boolean; type: 'postgr
 
 export async function testDatabaseQuery(): Promise<{ success: boolean; latency: number; error?: string; engine: 'postgres' | 'sqlite' }> {
   const t0 = Date.now();
-  if (process.env.DATABASE_URL) {
+  if (process.env.DATABASE_URL && isPgConnected) {
     try {
       const pgPool = await ensurePgPool();
       if (pgPool) {
         await pgPool.query('SELECT 1');
-        isPgConnected = true;
         return { success: true, latency: Date.now() - t0, engine: 'postgres' };
       }
     } catch (err: any) {
       isPgConnected = false;
-      return { success: false, latency: Date.now() - t0, error: err.message, engine: 'postgres' };
+      // Fall through to test SQLite
     }
   }
 

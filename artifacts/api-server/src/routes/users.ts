@@ -2,6 +2,7 @@ import { Router } from "express";
 import { db, usersTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
 import { requireAdmin, optionalAdminAuth } from "../middleware/requireAdmin.js";
+import { readCol } from "../lib/store.js";
 
 const router = Router();
 
@@ -11,17 +12,23 @@ router.get("/users", optionalAdminAuth, async (req, res) => {
     const isAdmin = Boolean(user && user.role);
     const { role, limit } = req.query as Record<string, string>;
 
-    let rows = await db.select({
-      id: usersTable.id,
-      username: usersTable.username,
-      email: usersTable.email,
-      role: usersTable.role,
-      avatar: usersTable.avatar,
-      displayName: usersTable.displayName,
-      bio: usersTable.bio,
-      country: usersTable.country,
-      createdAt: usersTable.createdAt,
-    }).from(usersTable).orderBy(desc(usersTable.createdAt));
+    let rows: any[] = [];
+    try {
+      rows = await db.select({
+        id: usersTable.id,
+        username: usersTable.username,
+        email: usersTable.email,
+        role: usersTable.role,
+        avatar: usersTable.avatar,
+        displayName: usersTable.displayName,
+        bio: usersTable.bio,
+        country: usersTable.country,
+        createdAt: usersTable.createdAt,
+      }).from(usersTable).orderBy(desc(usersTable.createdAt));
+    } catch {
+      const fallback = ((await readCol("users")) as any[]) || [];
+      rows = Array.isArray(fallback) ? fallback : [];
+    }
 
     if (role) rows = rows.filter(u => u.role === role);
     if (limit) rows = rows.slice(0, Math.min(Number(limit) || 50, 200));
@@ -30,13 +37,13 @@ router.get("/users", optionalAdminAuth, async (req, res) => {
     const safeRows = rows.map(r => ({
       ...r,
       email: isAdmin ? r.email : `${r.email?.split("@")[0]?.slice(0, 3)}***@***.com`,
-      createdAt: r.createdAt.toISOString(),
+      createdAt: r.createdAt ? new Date(r.createdAt).toISOString() : new Date().toISOString(),
     }));
 
     res.json(safeRows);
   } catch (e) {
-    req.log.error(e);
-    res.status(500).json({ error: "Failed to load users" });
+    req.log?.error?.(e);
+    res.json([]);
   }
 });
 

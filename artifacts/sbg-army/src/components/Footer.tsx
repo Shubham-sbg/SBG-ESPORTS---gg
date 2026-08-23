@@ -94,17 +94,8 @@ export default function Footer({ settings, navigation }: Props) {
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              {settings?.logo ? (
-                <img src={settings.logo} alt={settings.organizationName}
-                  className="h-10 w-auto object-contain drop-shadow-[0_0_12px_rgba(212,175,55,0.3)]" />
-              ) : (
-                <div
-                  className="h-10 w-10 rounded-xl flex items-center justify-center font-black text-black text-sm"
-                  style={{ background: 'linear-gradient(135deg, #d4af37, #b8960c)', boxShadow: '0 0 15px rgba(212,175,55,0.25)' }}
-                >
-                  SBG
-                </div>
-              )}
+              <img src={settings?.logo || '/transparent_eagle_logo.png'} alt={settings?.organizationName || 'SBG ESPORTS'}
+                className="h-10 w-auto object-contain drop-shadow-[0_0_12px_rgba(212,175,55,0.3)]" />
               <div>
                 <span className="block font-black text-sm tracking-[0.25em] text-white uppercase">
                   {settings?.organizationName || 'SBG ESPORTS'}

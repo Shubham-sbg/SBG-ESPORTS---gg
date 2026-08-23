@@ -2,51 +2,67 @@ import { Router } from "express";
 import { db, rankingsTable, playersTable } from "@workspace/db";
 import { eq, desc, asc } from "drizzle-orm";
 import { requireAdmin } from "../middleware/requireAdmin.js";
+import { readCol } from "../lib/store.js";
 
 const router = Router();
 
 router.get("/rankings", async (req, res) => {
   try {
     const { game, category, season, limit } = req.query as Record<string, string>;
-    let rows = await db.select({
-      id: rankingsTable.id,
-      playerId: rankingsTable.playerId,
-      teamId: rankingsTable.teamId,
-      game: rankingsTable.game,
-      category: rankingsTable.category,
-      rank: rankingsTable.rank,
-      points: rankingsTable.points,
-      kills: rankingsTable.kills,
-      wins: rankingsTable.wins,
-      matches: rankingsTable.matches,
-      kd: rankingsTable.kd,
-      winRate: rankingsTable.winRate,
-      mvpCount: rankingsTable.mvpCount,
-      season: rankingsTable.season,
-      updatedAt: rankingsTable.updatedAt,
-    })
-      .from(rankingsTable)
-      .orderBy(asc(rankingsTable.rank));
+    let rows: any[] = [];
+    try {
+      rows = await db.select({
+        id: rankingsTable.id,
+        playerId: rankingsTable.playerId,
+        teamId: rankingsTable.teamId,
+        game: rankingsTable.game,
+        category: rankingsTable.category,
+        rank: rankingsTable.rank,
+        points: rankingsTable.points,
+        kills: rankingsTable.kills,
+        wins: rankingsTable.wins,
+        matches: rankingsTable.matches,
+        kd: rankingsTable.kd,
+        winRate: rankingsTable.winRate,
+        mvpCount: rankingsTable.mvpCount,
+        season: rankingsTable.season,
+        updatedAt: rankingsTable.updatedAt,
+      })
+        .from(rankingsTable)
+        .orderBy(asc(rankingsTable.rank));
 
-    if (game) rows = rows.filter(r => r.game === game);
-    if (category) rows = rows.filter(r => r.category === category);
-    if (season) rows = rows.filter(r => r.season === season);
-    if (limit) rows = rows.slice(0, Math.min(Number(limit) || 50, 100));
+      if (game) rows = rows.filter(r => r.game === game);
+      if (category) rows = rows.filter(r => r.category === category);
+      if (season) rows = rows.filter(r => r.season === season);
+      if (limit) rows = rows.slice(0, Math.min(Number(limit) || 50, 100));
 
-    const enriched = await Promise.all(rows.map(async (r) => {
-      if (!r.playerId) return r;
-      const [player] = await db.select({
-        playerName: playersTable.playerName,
-        image: playersTable.image,
-        country: playersTable.country,
-      }).from(playersTable).where(eq(playersTable.id, r.playerId));
-      return { ...r, player: player ?? null, updatedAt: r.updatedAt.toISOString() };
-    }));
+      const enriched = await Promise.all(rows.map(async (r) => {
+        if (!r.playerId) return r;
+        try {
+          const [player] = await db.select({
+            playerName: playersTable.playerName,
+            image: playersTable.image,
+            country: playersTable.country,
+          }).from(playersTable).where(eq(playersTable.id, r.playerId));
+          return { ...r, player: player ?? null, updatedAt: r.updatedAt ? new Date(r.updatedAt).toISOString() : new Date().toISOString() };
+        } catch {
+          return { ...r, player: null, updatedAt: r.updatedAt ? new Date(r.updatedAt).toISOString() : new Date().toISOString() };
+        }
+      }));
 
-    res.json(enriched);
+      return res.json(enriched);
+    } catch {
+      const fallback = ((await readCol("rankings")) as any[]) || [];
+      rows = Array.isArray(fallback) ? fallback : [];
+      if (game) rows = rows.filter(r => r.game === game);
+      if (category) rows = rows.filter(r => r.category === category);
+      if (season) rows = rows.filter(r => r.season === season);
+      if (limit) rows = rows.slice(0, Math.min(Number(limit) || 50, 100));
+      return res.json(rows);
+    }
   } catch (e) {
     req.log?.error?.(e);
-    res.status(500).json({ error: "Failed to load rankings" });
+    res.json([]);
   }
 });
 

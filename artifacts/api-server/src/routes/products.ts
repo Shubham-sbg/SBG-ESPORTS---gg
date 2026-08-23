@@ -2,6 +2,7 @@ import { Router } from "express";
 import { db, productsTable, ordersTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
 import { requireAdmin } from "../middleware/requireAdmin.js";
+import { readCol } from "../lib/store.js";
 import rateLimit from "express-rate-limit";
 
 const router = Router();
@@ -20,13 +21,22 @@ const orderLimiter = rateLimit({
 router.get("/products", async (req, res) => {
   try {
     const { category, inStock } = req.query as Record<string, string>;
-    let rows = await db.select().from(productsTable).orderBy(desc(productsTable.createdAt));
-    if (category) rows = rows.filter(p => p.category === category);
-    if (inStock === 'true') rows = rows.filter(p => p.inStock);
-    res.json(rows.map(r => ({ ...r, createdAt: r.createdAt.toISOString() })));
+    let rows: any[] = [];
+    try {
+      rows = await db.select().from(productsTable).orderBy(desc(productsTable.createdAt));
+      if (category) rows = rows.filter(p => p.category === category);
+      if (inStock === 'true') rows = rows.filter(p => p.inStock);
+      return res.json(rows.map(r => ({ ...r, createdAt: r.createdAt ? new Date(r.createdAt).toISOString() : new Date().toISOString() })));
+    } catch {
+      const fallback = ((await readCol("products")) as any[]) || [];
+      rows = Array.isArray(fallback) ? fallback : [];
+      if (category) rows = rows.filter(p => p.category === category);
+      if (inStock === 'true') rows = rows.filter(p => p.inStock);
+      return res.json(rows);
+    }
   } catch (e) {
     req.log.error(e);
-    res.status(500).json({ error: "Failed to load products" });
+    res.json([]);
   }
 });
 
