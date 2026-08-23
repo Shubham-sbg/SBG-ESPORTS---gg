@@ -241,7 +241,7 @@ export function ThreeBackground({ settings }: { settings?: Settings }) {
     const particleTexture = createGlowSpriteTexture();
 
     // ── 1. Celestial Deep Cloud Particles ──────────────────────────────────────
-    const PARTICLE_COUNT = isMobile ? 1000 : 3000;
+    const PARTICLE_COUNT = isMobile ? 80 : 150;
     const positions = new Float32Array(PARTICLE_COUNT * 3);
     const originalPositions = new Float32Array(PARTICLE_COUNT * 3);
     const colors = new Float32Array(PARTICLE_COUNT * 3);
@@ -299,7 +299,7 @@ export function ThreeBackground({ settings }: { settings?: Settings }) {
     particleGeo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
     const particleMat = new THREE.PointsMaterial({
-      size: isMobile ? 0.35 : 0.45,
+      size: isMobile ? 0.15 : 0.20,
       map: particleTexture,
       vertexColors: true,
       transparent: true,
@@ -312,114 +312,8 @@ export function ThreeBackground({ settings }: { settings?: Settings }) {
     const particles = new THREE.Points(particleGeo, particleMat);
     scene.add(particles);
 
-    // ── 2. 3D "SBG" Constellation Particle Formation ───────────────────────────
-    const createSBGParticleData = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 480;
-      canvas.height = 180;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return null;
-
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '900 115px "Montserrat", "Arial Black", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('SBG', canvas.width / 2, canvas.height / 2 - 4);
-
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const points: { x: number; y: number; z: number; normX: number }[] = [];
-
-      const step = isMobile ? 3 : 2;
-      const scale = isMobile ? 0.052 : 0.065;
-
-      for (let y = 0; y < canvas.height; y += step) {
-        for (let x = 0; x < canvas.width; x += step) {
-          const idx = (y * canvas.width + x) * 4;
-          const alpha = imgData.data[idx];
-          if (alpha > 120) {
-            const px = (x - canvas.width / 2) * scale;
-            const py = -(y - canvas.height / 2) * scale + 1.2;
-            const pz = (Math.random() - 0.5) * 1.8;
-            points.push({ x: px, y: py, z: pz, normX: x / canvas.width });
-          }
-        }
-      }
-
-      const count = points.length;
-      const pos = new Float32Array(count * 3);
-      const basePos = new Float32Array(count * 3);
-      const col = new Float32Array(count * 3);
-      const sz = new Float32Array(count);
-
-      const sbgGold = new THREE.Color('#d4af37');
-      const sbgBrightGold = new THREE.Color('#ffd700');
-      const sbgFlame = new THREE.Color('#ff6b00');
-      const sbgWhite = new THREE.Color('#ffffff');
-      const sbgCyan = new THREE.Color('#38bdf8');
-
-      for (let i = 0; i < count; i++) {
-        const pt = points[i];
-        pos[i * 3] = pt.x;
-        pos[i * 3 + 1] = pt.y;
-        pos[i * 3 + 2] = pt.z;
-
-        basePos[i * 3] = pt.x;
-        basePos[i * 3 + 1] = pt.y;
-        basePos[i * 3 + 2] = pt.z;
-
-        const rnd = Math.random();
-        let c: THREE.Color;
-        if (rnd > 0.90) {
-          c = sbgWhite;
-        } else if (pt.normX < 0.38) {
-          c = rnd > 0.4 ? sbgBrightGold : sbgGold;
-        } else if (pt.normX < 0.65) {
-          c = rnd > 0.35 ? sbgBrightGold : sbgFlame;
-        } else {
-          c = rnd > 0.85 ? sbgCyan : (rnd > 0.4 ? sbgFlame : sbgBrightGold);
-        }
-
-        col[i * 3] = c.r;
-        col[i * 3 + 1] = c.g;
-        col[i * 3 + 2] = c.b;
-
-        sz[i] = 0.16 + Math.random() * 0.3;
-      }
-
-      const geo = new THREE.BufferGeometry();
-      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-      geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-      geo.setAttribute('size', new THREE.BufferAttribute(sz, 1));
-
-      return { geo, basePos, count };
-    };
-
-    const sbgData = createSBGParticleData();
-    let sbgPoints: THREE.Points | null = null;
-    const sbgGroup = new THREE.Group();
-
-    if (sbgData) {
-      const sbgMat = new THREE.PointsMaterial({
-        size: isMobile ? 0.48 : 0.62,
-        map: particleTexture,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.95,
-        blending: THREE.AdditiveBlending,
-        sizeAttenuation: true,
-        depthWrite: false,
-      });
-      sbgPoints = new THREE.Points(sbgData.geo, sbgMat);
-      sbgGroup.add(sbgPoints);
-      sbgGroup.position.set(0, 1.2, 0);
-      scene.add(sbgGroup);
-    }
-
-    // ── 3. Cyber Orbital Energy Vortex Rings ──────────────────────────────────
-    const RING_COUNT = isMobile ? 350 : 800;
+    // ── 2. Cyber Orbital Energy Vortex Rings ──────────────────────────────────
+    const RING_COUNT = isMobile ? 30 : 60;
     const ringPositions = new Float32Array(RING_COUNT * 3);
     const ringColors = new Float32Array(RING_COUNT * 3);
 
@@ -444,7 +338,7 @@ export function ThreeBackground({ settings }: { settings?: Settings }) {
     ringGeo.setAttribute('color', new THREE.BufferAttribute(ringColors, 3));
 
     const ringMat = new THREE.PointsMaterial({
-      size: isMobile ? 0.4 : 0.55,
+      size: isMobile ? 0.2 : 0.25,
       map: particleTexture,
       vertexColors: true,
       transparent: true,
@@ -591,59 +485,6 @@ export function ThreeBackground({ settings }: { settings?: Settings }) {
       }
       posAttr.needsUpdate = true;
 
-      // SBG 3D constellation animation with LERP
-      if (sbgData && sbgPoints) {
-        const sbgPosAttr = sbgData.geo.attributes.position as THREE.BufferAttribute;
-        const sbgPosArr = sbgPosAttr.array as Float32Array;
-        const bp = sbgData.basePos;
-
-        // Floating orientation with mouse tilt
-        sbgGroup.rotation.y = Math.sin(t * 0.6) * 0.12 + targetX * 0.18;
-        sbgGroup.rotation.x = Math.cos(t * 0.5) * 0.08 + targetY * 0.12;
-        sbgGroup.position.y = 1.2 + Math.sin(t * 0.8) * 0.4;
-
-        // Interactive mouse dispersion & harmonic breathing wave
-        const mouse3DX = targetX * 12;
-        const mouse3DY = targetY * 7 + 1.2;
-
-        const sbgStep = isMobile ? 3 : 1;
-        for (let i = 0; i < sbgData.count; i += sbgStep) {
-          const idx = i * 3;
-          const bx = bp[idx];
-          const by = bp[idx + 1];
-          const bz = bp[idx + 2];
-
-          // Harmonic wave through SBG letterforms
-          const wave = Math.sin(t * 2.8 + bx * 0.5) * 0.15;
-          const depthWave = Math.cos(t * 2.2 + by * 0.6) * 0.22;
-
-          // Mouse proximity repulsion
-          const dx = bx - mouse3DX;
-          const dy = by - mouse3DY;
-          const distSq = dx * dx + dy * dy;
-          let pushX = 0;
-          let pushY = 0;
-          let pushZ = 0;
-
-          if (distSq < 14) {
-            const force = (1 - Math.sqrt(distSq) / 3.74) * 1.4;
-            pushX = (dx / (Math.sqrt(distSq) + 0.1)) * force;
-            pushY = (dy / (Math.sqrt(distSq) + 0.1)) * force;
-            pushZ = force * 2.2;
-          }
-
-          const targetPosX = bx + pushX;
-          const targetPosY = by + wave + pushY;
-          const targetPosZ = bz + depthWave + pushZ;
-
-          // Smoothly interpolate current particle position towards target
-          sbgPosArr[idx] += (targetPosX - sbgPosArr[idx]) * sbgLerpAlpha;
-          sbgPosArr[idx + 1] += (targetPosY - sbgPosArr[idx + 1]) * sbgLerpAlpha;
-          sbgPosArr[idx + 2] += (targetPosZ - sbgPosArr[idx + 2]) * sbgLerpAlpha;
-        }
-        sbgPosAttr.needsUpdate = true;
-      }
-
       // Sacred Geometry rotations and floating orbits
       icosa.rotation.y = t * 0.45;
       icosa.rotation.x = t * 0.25;
@@ -731,12 +572,6 @@ export function ThreeBackground({ settings }: { settings?: Settings }) {
       particleMat.dispose();
       ringGeo.dispose();
       ringMat.dispose();
-      if (sbgData) {
-        sbgData.geo.dispose();
-      }
-      if (sbgPoints && sbgPoints.material instanceof THREE.Material) {
-        sbgPoints.material.dispose();
-      }
       // Dispose all cloned wireframe materials and geometries to prevent GPU leaks
       icosa.material instanceof THREE.Material && icosa.material.dispose();
       octo.material instanceof THREE.Material && octo.material.dispose();

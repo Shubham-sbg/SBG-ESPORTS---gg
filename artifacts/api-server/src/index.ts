@@ -8,14 +8,15 @@ import { db, siteSettingsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { syncAllSettingsToFirestore } from "./lib/firebaseProjection.js";
 
-// In production (Cloud Run / Docker), API server serves both API and static files on PORT (defaults to 3000)
+// In production (Cloud Run / Docker / Render), API server runs on PORT
 // In development, Vite runs on port 3000 and proxies /api to port 8081
-const port = process.env.NODE_ENV === "production"
-  ? (process.env.PORT ? Number(process.env.PORT) : 3000)
-  : Number(process.env.API_PORT || "8081");
+const isProduction = process.env.NODE_ENV === "production" || process.env.RENDER;
+const port = isProduction
+  ? Number(process.env.PORT || 3000)
+  : Number(process.env.API_PORT || 8081);
 
 // In dev mode only, attempt to clear stuck port if needed
-if (process.env.NODE_ENV !== "production" && port !== 3000 && port !== 8080) {
+if (!isProduction) {
   try {
     execSync(`fuser -k ${port}/tcp 2>/dev/null || true`, { stdio: 'ignore' });
   } catch {

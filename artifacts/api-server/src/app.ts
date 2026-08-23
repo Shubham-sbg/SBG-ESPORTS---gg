@@ -224,9 +224,9 @@ app.use("/api", async (err: any, req: Request, res: Response, _next: any) => {
 });
 
 // Root health check endpoints for Cloud Run / load balancers
-app.get(["/healthz", "/health", "/api/healthz", "/api/health"], (_req: Request, res: Response) => {
+app.get(["/", "/healthz", "/health", "/api/healthz", "/api/health"], (_req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/json");
-  res.status(200).json({ status: "ok", uptime: process.uptime(), timestamp: Date.now() });
+  res.status(200).json({ status: "ok", service: "sbg-esports-api", uptime: process.uptime(), timestamp: Date.now() });
 });
 
 // Explicit JSON 404 handler for unmatched /api routes so HTML index is never returned for API requests
@@ -300,6 +300,17 @@ if (existsSync(staticDir)) {
   // If static directory not yet created, render a clean fallback
   app.use((_req: Request, res: Response) => {
     res.send("<!DOCTYPE html><html><head><title>SBG Esports</title></head><body><div id='root'></div><script>console.log('App loading...');</script></body></html>");
+  });
+}
+
+// Ensure the Express server explicitly listens on process.env.PORT and binds to '0.0.0.0'
+// when app.ts is executed directly (e.g., on Render).
+import { fileURLToPath } from 'node:url';
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const isProd = process.env.NODE_ENV === "production" || process.env.RENDER;
+  const port = isProd ? Number(process.env.PORT || 3000) : Number(process.env.API_PORT || 8081);
+  app.listen(port, "0.0.0.0", () => {
+    logger.info({ port, host: "0.0.0.0" }, "Express server explicitly listening on 0.0.0.0 (app.ts fallback)");
   });
 }
 

@@ -73,7 +73,7 @@ export default function Global3DParticles() {
     const glowTexture = createSmallGlowTexture();
 
     // ── 1. Global Ambient 3D Micro-Particles ─────────────────────────────────
-    const COUNT = isMobile ? 70 : 180;
+    const COUNT = isMobile ? 30 : 60;
     const positions = new Float32Array(COUNT * 3);
     const colors = new Float32Array(COUNT * 3);
     const speeds = new Float32Array(COUNT);
@@ -95,7 +95,7 @@ export default function Global3DParticles() {
       positions[i * 3 + 2] = z;
 
       speeds[i] = 0.004 + Math.random() * 0.009;
-      sizes[i] = 0.2 + Math.random() * 0.4;
+      sizes[i] = 0.1 + Math.random() * 0.2;
 
       const rnd = Math.random();
       let c: THREE.Color;
@@ -116,7 +116,7 @@ export default function Global3DParticles() {
     geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
     const mat = new THREE.PointsMaterial({
-      size: isMobile ? 0.35 : 0.48,
+      size: isMobile ? 0.15 : 0.2,
       map: glowTexture,
       vertexColors: true,
       transparent: true,
@@ -130,7 +130,7 @@ export default function Global3DParticles() {
     scene.add(particleSystem);
 
     // ── 2. Interactive 3D Click Sparks & Cursor Trails (Zero GC Object Pool) ──
-    const SPARK_POOL_SIZE = isMobile ? 120 : 260;
+    const SPARK_POOL_SIZE = isMobile ? 60 : 120;
     const sparkPositions = new Float32Array(SPARK_POOL_SIZE * 3);
     const sparkVelocities = new Float32Array(SPARK_POOL_SIZE * 3);
     const sparkColors = new Float32Array(SPARK_POOL_SIZE * 3);
@@ -149,7 +149,7 @@ export default function Global3DParticles() {
     sparkGeo.setAttribute('color', new THREE.BufferAttribute(sparkColors, 3));
 
     const sparkMat = new THREE.PointsMaterial({
-      size: isMobile ? 0.55 : 0.75,
+      size: isMobile ? 0.25 : 0.35,
       map: glowTexture,
       vertexColors: true,
       transparent: true,
