@@ -1,0 +1,393 @@
+Use minimal tokens. Make the smallest possible code changes.
+
+This is a LIVE PRODUCTION project.
+
+DO NOT redesign, rewrite, or remove any feature.
+Keep the current UI, routes, APIs, authentication and functionality.
+
+PRIMARY GOAL
+
+Make the project fully production-ready, secure, scalable, optimized and stable without breaking existing features.
+
+=================================================
+DATA PROTECTION (HIGHEST PRIORITY)
+=================================================
+
+1. Production database is the ONLY source of truth.
+
+2. NEVER read demo JSON in production.
+
+3. NEVER overwrite production data.
+
+4. NEVER replace production data with demo/sample/seed data.
+
+5. Demo seed must execute ONLY once when the production database is completely empty.
+
+6. If production data exists, ALWAYS use it.
+
+7. If crash, restart, redeploy or deployment failure occurs:
+   - NEVER restore demo data.
+   - ALWAYS restore the latest successfully saved production data.
+   - NEVER reset production database.
+
+8. If recovery is impossible:
+   - Stop startup.
+   - Show proper error.
+   - Never load demo data.
+
+9. Never show "Saved Successfully" unless database transaction commits successfully.
+
+10. Every Admin CRUD operation must use the same production database.
+
+11. Every public page must read from the same production database.
+
+12. Remove every production fallback to demo JSON.
+
+13. Remove every automatic reseed/reset logic.
+
+14. Add transactions for all writes.
+
+15. Add proper error handling and logging.
+
+16. Validate all required environment variables before startup.
+
+17. If database connection fails:
+   - stop startup
+   - never switch to demo JSON.
+
+18. Prevent future data reset permanently.
+
+=================================================
+ROLE SYSTEM
+=================================================
+
+Role hierarchy
+
+SUPER_ADMIN
+>
+ADMIN
+>
+STAFF
+
+Only SUPER_ADMIN can:
+
+- Create Super Admin
+- Delete Super Admin
+- Promote Admin
+- Demote Admin
+- Create Admin
+- Delete Admin
+- Disable Admin
+- Enable Admin
+- Assign permissions
+- Manage Staff
+
+ADMIN
+
+- Cannot edit Super Admin.
+- Cannot delete Super Admin.
+- Cannot disable Super Admin.
+- Has every Admin feature except Super Admin management.
+
+STAFF
+
+- Access only assigned modules.
+- Cannot manage Admins.
+- Cannot manage Super Admin.
+
+=================================================
+USER CREATION
+=================================================
+
+When Super Admin creates Staff:
+
+Allow selecting modules using checkboxes.
+
+Example:
+
+Dashboard
+
+Gallery
+
+Players
+
+Feedback
+
+Analytics
+
+Blog
+
+News
+
+Events
+
+Tournament
+
+Live Stream
+
+Achievements
+
+Sponsors
+
+Advertisement
+
+Settings
+
+Media
+
+Notification
+
+Users
+
+Any future module
+
+Staff receives ONLY selected permissions.
+
+Admin receives all Admin permissions.
+
+Super Admin receives complete access.
+
+Permission system must automatically support future modules.
+
+=================================================
+ADMIN PANEL
+=================================================
+
+Everything available on the website must have Admin control.
+
+Currently missing modules:
+
+Records
+
+Stats
+
+Trophy Room
+
+Team History
+
+Blog
+
+Events
+
+Live Stream
+
+Every missing module must:
+
+Appear inside Admin Panel.
+
+Support:
+
+Create
+
+Edit
+
+Delete
+
+Visibility
+
+Sorting
+
+Position
+
+Featured
+
+Publish
+
+Draft
+
+Scheduling
+
+Status
+
+=================================================
+ADVERTISEMENT SYSTEM
+=================================================
+
+Build one centralized Advertisement Manager.
+
+Support:
+
+Google AdSense
+
+HilltopAds
+
+Banner Ads
+
+Native Ads
+
+Popup Ads
+
+Custom HTML
+
+Image Ads
+
+Script Ads
+
+Future ad providers
+
+Admin can:
+
+Add
+
+Edit
+
+Delete
+
+Enable
+
+Disable
+
+Schedule
+
+Choose page
+
+Choose position
+
+Desktop/Mobile visibility
+
+Priority
+
+Category
+
+Analytics
+
+CTR
+
+Impressions
+
+Clicks
+
+Revenue (if available)
+
+=================================================
+DATA CONSISTENCY
+=================================================
+
+Fix:
+
+Admin saves but website shows old data.
+
+Different users see different data.
+
+Feedback not updating.
+
+Ads inconsistent.
+
+Settings inconsistent.
+
+Changes disappear after refresh.
+
+Website showing stale cache.
+
+Every device must always display identical latest production data.
+
+=================================================
+DATABASE
+=================================================
+
+Audit the complete data flow.
+
+Detect actual frontend folder.
+
+Detect actual backend folder.
+
+Detect actual database layer.
+
+Current project structure uses custom folder names.
+
+Automatically identify:
+
+Frontend
+
+Backend
+
+Database
+
+API
+
+Services
+
+Repositories
+
+Storage
+
+Without assumptions.
+
+=================================================
+PERFORMANCE
+=================================================
+
+Optimize:
+
+Database queries
+
+Caching
+
+API
+
+Rendering
+
+Images
+
+Animations
+
+3D Models
+
+Mobile responsiveness
+
+Lazy loading
+
+Bundle size
+
+Memory usage
+
+Reduce anything slowing the website without removing functionality.
+
+=================================================
+SECURITY
+=================================================
+
+Validate permissions in backend.
+
+Prevent privilege escalation.
+
+Protect every Admin API.
+
+Protect Staff permissions.
+
+=================================================
+STARTUP
+=================================================
+
+Improve startup.
+
+Retry API automatically.
+
+Never expose Internal Server Error.
+
+Gracefully recover after temporary backend failures.
+
+=================================================
+CODE QUALITY
+=================================================
+
+Keep changes minimal.
+
+Modify minimum files.
+
+Do NOT rewrite project.
+
+Do NOT remove features.
+
+Keep backward compatibility.
+
+=================================================
+OUTPUT ONLY
+
+Root Cause
+
+Modified Files
+
+Fix Summary
+
+Production Readiness Checklist

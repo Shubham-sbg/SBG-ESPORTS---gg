@@ -1,0 +1,407 @@
+{
+  "_comment": "SBG ARMY Esports Platform — JSON Database Schema. Storage: artifacts/api-server/database/*.json",
+  "collections": {
+    "settings": {
+      "_description": "Global site settings and branding",
+      "fields": {
+        "logo": "string (base64 or URL)",
+        "organizationName": "string",
+        "tagline": "string",
+        "primaryColor": "string (hex color)",
+        "secondaryColor": "string (hex color)",
+        "accentColor": "string (hex color)",
+        "maintenanceMode": "boolean",
+        "maintenanceMessage": "string",
+        "socialDiscord": "string (URL)",
+        "socialYoutube": "string (URL)",
+        "socialInstagram": "string (URL)",
+        "socialTwitter": "string (URL)",
+        "upiId": "string",
+        "upiQr": "string (base64 or URL)",
+        "announcementText": "string",
+        "supportWhatsApp": "string",
+        "supportEmail": "string"
+      }
+    },
+    "players": {
+      "_description": "Esports roster players",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "name": "string",
+        "ign": "string (in-game name)",
+        "role": "TEXT (IGL, Fragger, Sniper, Support, or custom)",
+        "game": "TEXT (BGMI, Free Fire, Valorant, or custom)",
+        "image": "string (base64 or URL)",
+        "visible": "boolean",
+        "order": "integer",
+        "status": "TEXT (active, benched, trial, inactive, or custom)",
+        "social": "string (URL, optional)"
+      }
+    },
+    "games": {
+      "_description": "Supported games list",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "name": "TEXT",
+        "logo": "string (base64 or URL)",
+        "enabled": "boolean",
+        "order": "integer"
+      }
+    },
+    "matches": {
+      "_description": "Match results and upcoming matches",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "title": "string",
+        "opponent": "TEXT",
+        "game": "TEXT (BGMI, Free Fire, or custom)",
+        "mode": "TEXT (BR, TDM, TOURNAMENT, or custom)",
+        "round": "TEXT (Qualifier, Final, or custom)",
+        "date": "string (YYYY-MM-DD)",
+        "time": "string (HH:MM)",
+        "status": "TEXT (upcoming, live, completed, or custom)",
+        "score": "string (optional, e.g. 13-7)"
+      }
+    },
+    "schedule": {
+      "_description": "Team practice and event schedule",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "eventType": "TEXT (practice, scrim, tournament, or custom)",
+        "teamName": "string",
+        "opponentName": "TEXT (or custom)",
+        "game": "TEXT",
+        "date": "string (YYYY-MM-DD)",
+        "time": "string (HH:MM)",
+        "status": "TEXT (upcoming, ongoing, completed, or custom)",
+        "notes": "string"
+      }
+    },
+    "tournaments": {
+      "_description": "Public tournaments hosted by the org",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "title": "string",
+        "logo": "string (base64 or URL)",
+        "game": "TEXT (or custom)",
+        "type": "TEXT (Solo, Duo, Squad, Custom Lobby, or custom)",
+        "slots": "integer",
+        "prizePool": "string",
+        "entryFee": "number",
+        "entryType": "string (free | paid)",
+        "upiId": "string (optional)",
+        "upiQr": "string (base64, optional)",
+        "registrationDeadline": "string (YYYY-MM-DD)",
+        "matchDate": "string (YYYY-MM-DD)",
+        "matchTime": "string (HH:MM)",
+        "registrationStatus": "TEXT (open, paused, closed, or custom)",
+        "roomId": "string (optional)",
+        "roomPassword": "string (optional)",
+        "roomIdReleased": "boolean",
+        "roomIdScheduled": "string (optional)",
+        "rules": "string (optional)",
+        "description": "string (optional)",
+        "visible": "boolean",
+        "createdAt": "integer (Unix timestamp ms)"
+      }
+    },
+    "registrations": {
+      "_description": "Tournament team registrations",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "tournamentId": "string (ref: tournaments.id)",
+        "tournamentTitle": "string",
+        "teamName": "string",
+        "leaderName": "string",
+        "leaderUid": "string",
+        "leaderWhatsApp": "string",
+        "leaderAge": "string",
+        "player2Uid": "string (optional)",
+        "player3Uid": "string (optional)",
+        "player4Uid": "string (optional)",
+        "substituteUid": "string (optional)",
+        "paymentScreenshot": "string (base64, optional)",
+        "paymentStatus": "string (pending | verified | rejected)",
+        "status": "string (pending | approved | rejected | correction_required)",
+        "adminNote": "string (optional)",
+        "createdAt": "integer (Unix timestamp ms)"
+      }
+    },
+    "orders": {
+      "_description": "Shop product orders",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "orderNumber": "string",
+        "userId": "string",
+        "playerName": "string",
+        "productId": "string (ref: shop.id)",
+        "productTitle": "string",
+        "size": "string (optional)",
+        "quantity": "integer",
+        "price": "number",
+        "amount": "number",
+        "paymentScreenshot": "string (base64, optional)",
+        "notes": "string (optional)",
+        "status": "string (waiting | approved | rejected)",
+        "adminNote": "string (optional)",
+        "createdAt": "integer (Unix timestamp ms)"
+      }
+    },
+    "shop": {
+      "_description": "Shop products / merchandise",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "title": "string",
+        "image": "string (base64 or URL)",
+        "price": "number",
+        "discountPrice": "number (0 = no discount)",
+        "description": "string",
+        "stockStatus": "TEXT (in_stock, out_of_stock, coming_soon, or custom)",
+        "sizes": "array of strings (optional)",
+        "colors": "array of strings (optional)",
+        "upiId": "string (optional)",
+        "upiQr": "string (base64, optional)",
+        "visible": "boolean",
+        "order": "integer"
+      }
+    },
+    "giveaways": {
+      "_description": "Giveaway campaigns",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "title": "string",
+        "rules": "string",
+        "reward": "string",
+        "deadline": "string (YYYY-MM-DD)",
+        "status": "string (active | ended | draft | winner_announced)",
+        "winners": "array of strings (optional)",
+        "visible": "boolean",
+        "createdAt": "integer (Unix timestamp ms)"
+      }
+    },
+    "collab_requests": {
+      "_description": "Collaboration/sponsorship requests",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "name": "string",
+        "organization": "string",
+        "purpose": "string",
+        "budget": "string (optional)",
+        "email": "string",
+        "phone": "string (optional)",
+        "message": "string (optional)",
+        "read": "boolean",
+        "status": "string (new | reviewing | accepted | rejected)",
+        "createdAt": "integer (Unix timestamp ms)"
+      }
+    },
+    "fan_messages": {
+      "_description": "Fan contact and feedback messages",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "type": "string (feedback | newsletter | discord | whatsapp | other)",
+        "name": "string",
+        "email": "string (optional)",
+        "message": "string (optional)",
+        "whatsapp": "string (optional)",
+        "read": "boolean",
+        "createdAt": "integer (Unix timestamp ms)"
+      }
+    },
+    "videos": {
+      "_description": "Video highlights and announcements",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "title": "string",
+        "url": "string (YouTube URL or embed)",
+        "thumbnail": "string (base64 or URL, optional)",
+        "category": "string (highlight | match | announcement | other)",
+        "visible": "boolean",
+        "order": "integer",
+        "createdAt": "integer (Unix timestamp ms)"
+      }
+    },
+    "posts": {
+      "_description": "News and blog posts",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "title": "string",
+        "description": "string",
+        "thumbnail": "string (base64 or URL)",
+        "category": "string",
+        "date": "string (YYYY-MM-DD)",
+        "visible": "boolean"
+      }
+    },
+    "ads": {
+      "_description": "Advertisement placements",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "title": "string (optional)",
+        "adType": "string",
+        "placement": "string (hero | header | sidebar | footer | popup | etc)",
+        "imageUrl": "string",
+        "link": "string",
+        "enabled": "boolean",
+        "script": "string (optional HTML/JS)",
+        "iframeSrc": "string (optional)",
+        "videoUrl": "string (optional)",
+        "startDate": "string (optional)",
+        "endDate": "string (optional)",
+        "deviceTarget": "string (all | mobile | desktop | tablet)",
+        "popupDelay": "integer (seconds)",
+        "popupFrequency": "string (always | once_per_session | once_per_day)",
+        "targetPages": "array of strings"
+      }
+    },
+    "sponsors": {
+      "_description": "Sponsor logos and links",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "name": "string",
+        "logo": "string (base64 or URL)",
+        "link": "string (URL)",
+        "visible": "boolean",
+        "order": "integer",
+        "width": "integer (optional px)",
+        "height": "integer (optional px)"
+      }
+    },
+    "analytics": {
+      "_description": "Visitor analytics data",
+      "_type": "object",
+      "fields": {
+        "totalVisits": "integer",
+        "todayVisits": "integer",
+        "weeklyVisits": "integer",
+        "lastVisitDate": "string",
+        "visitHistory": "array of { date: string, count: integer }",
+        "visitRecords": "array of { id, timestamp, date, page, deviceType }",
+        "manualTodayVisits": "integer | null",
+        "manualWeeklyVisits": "integer | null",
+        "manualTotalVisits": "integer | null"
+      }
+    },
+    "facility": {
+      "_description": "Facility/equipment sections displayed on website",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "title": "string",
+        "description": "string",
+        "image": "string (base64 or URL)",
+        "icon": "string (emoji, optional)",
+        "visible": "boolean",
+        "order": "integer"
+      }
+    },
+    "facilityStats": {
+      "_description": "Facility stats counters (Pro Players, Win Rate, etc.)",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "label": "string",
+        "value": "string",
+        "color": "string (hex color)"
+      }
+    },
+    "creators": {
+      "_description": "Content creators / streamers",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "name": "string",
+        "ign": "string",
+        "role": "TEXT",
+        "photo": "string (base64 or URL)",
+        "contentTypes": "array of strings",
+        "visible": "boolean",
+        "order": "integer",
+        "social": "string (URL, optional)"
+      }
+    },
+    "founders": {
+      "_description": "Founders and management team",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "name": "string",
+        "designation": "string",
+        "photo": "string (base64 or URL)",
+        "description": "string",
+        "type": "string (founder | management)",
+        "socialInstagram": "string",
+        "socialTwitter": "string",
+        "socialYoutube": "string",
+        "visible": "boolean",
+        "order": "integer"
+      }
+    },
+    "navigation": {
+      "_description": "Website navigation menu items",
+      "_type": "object",
+      "fields": {
+        "items": "array of { id, label, href, visible }"
+      }
+    },
+    "staffAccounts": {
+      "_description": "Admin and staff login accounts",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "name": "string",
+        "email": "string",
+        "password": "string (hashed)",
+        "role": "string (admin | staff)",
+        "allowedModules": "array of strings",
+        "active": "boolean",
+        "createdAt": "integer (Unix timestamp ms)"
+      }
+    },
+    "playerUsers": {
+      "_description": "Registered player user accounts",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "username": "string",
+        "passwordHash": "string",
+        "name": "string",
+        "uid": "string (in-game UID)",
+        "preferredGame": "string",
+        "whatsapp": "string",
+        "country": "string",
+        "email": "string (optional)",
+        "createdAt": "integer (Unix timestamp ms)"
+      }
+    },
+    "contact_messages": {
+      "_description": "Contact form submissions",
+      "_type": "array",
+      "fields": {
+        "id": "string (unique)",
+        "firstName": "string",
+        "lastName": "string",
+        "email": "string",
+        "projectTitle": "string",
+        "message": "string",
+        "read": "boolean",
+        "createdAt": "integer (Unix timestamp ms)"
+      }
+    }
+  }
+}

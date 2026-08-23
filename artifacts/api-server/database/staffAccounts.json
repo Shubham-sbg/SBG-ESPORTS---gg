@@ -1,0 +1,14 @@
+[
+  {
+    "id": "admin_sbgarmy_001",
+    "name": "SBG ARMY Admin",
+    "email": "official7sbgarmy7@gamil.com",
+    "password": "$2b$10$b6gzRm9SZu40/TVABhYKUu6hQ8ZeFjqhtd96y/XxAxw60pWPXnY7e",
+    "role": "super_admin",
+    "allowedModules": [
+      "*"
+    ],
+    "active": true,
+    "createdAt": 1783051630265
+  }
+]

@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Block admin control center — internal access only
+Disallow: /admin
+Disallow: /admin/
+Disallow: /staff-dashboard
+Disallow: /staff-dashboard/
+Disallow: /player-dashboard
+Disallow: /player-dashboard/
+
+# Block internal API paths if exposed
+Disallow: /api/
+
+Sitemap: https://sbgarmy.com/sitemap.xml

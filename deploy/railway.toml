@@ -1,0 +1,28 @@
+# SBG ARMY GG23 — Railway Deployment Configuration
+# Deploy the backend API server on Railway.
+# Frontend is best deployed on Vercel (see artifacts/sbg-army/vercel.json).
+
+[build]
+builder = "nixpacks"
+buildCommand = "pnpm install --frozen-lockfile && pnpm --filter @workspace/api-server run build"
+
+[deploy]
+startCommand = "node --enable-source-maps artifacts/api-server/dist/index.mjs"
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+# Environment variables to set in Railway dashboard:
+# DATABASE_URL    — from Railway Postgres plugin (set automatically if you add it)
+# SESSION_SECRET  — openssl rand -base64 32
+# NODE_ENV        — production
+# CORS_ORIGIN     — your frontend URL (e.g. https://sbgarmy.in)
+#
+# Optional:
+# CLERK_SECRET_KEY
+# CLERK_PUBLISHABLE_KEY
+# GOOGLE_API_KEY
+
+# NOTE: Railway's filesystem is ephemeral — CMS JSON data and uploads will be
+# lost on redeploy unless you use a Railway Volume or an external storage service.
+# Recommended: use Render for the backend (render.yaml already configures a
+# persistent disk), or mount a Railway Volume at /app/artifacts/api-server/database

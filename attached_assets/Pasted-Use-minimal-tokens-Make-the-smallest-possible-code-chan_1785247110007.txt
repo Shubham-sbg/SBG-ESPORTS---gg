@@ -1,0 +1,100 @@
+Use minimal tokens. Make the smallest possible code changes.
+
+This is a LIVE PRODUCTION website. Do NOT rewrite the project. Preserve all existing features, UI, APIs, routes, authentication, and database schema.
+
+========================
+CRITICAL DATA PROTECTION
+========================
+
+1. Production data is the ONLY source of truth.
+2. NEVER overwrite production data.
+3. NEVER replace production data with demo/sample/seed/JSON data.
+4. NEVER load demo JSON in production for any reason.
+5. Demo/seed data must run ONLY once on the very first initialization of a completely empty database.
+6. If production data exists, always use it.
+7. If the server crashes, restarts, redeploys, or deployment fails, restore the MOST RECENT production data that existed immediately before the crash.
+8. NEVER restore the original demo data after any crash.
+9. NEVER reset, reseed, recreate, or overwrite production data automatically.
+10. If production data cannot be loaded, stop startup and report an error instead of loading demo data.
+11. If database connection fails, fail startup. Do NOT fall back to JSON or demo data.
+12. Add checkpoint/backup support if supported by the current database.
+13. Recover from the latest saved production state whenever possible.
+14. Every successful Admin change must be permanently stored before showing success.
+15. Never show "Saved Successfully" unless the database transaction commits successfully.
+16. Use database transactions for every create, update, delete, settings change, analytics change, gallery change, advertisement change, feedback change, news change, and all admin operations.
+17. Add proper logging for every database write.
+18. Prevent data loss after crash, restart, redeploy, deployment failure, or server reboot.
+
+========================
+PRODUCTION ARCHITECTURE
+========================
+
+19. Every Admin CRUD operation must use ONE production database.
+20. Every public page must read from the SAME production database.
+21. Remove every production fallback that reads demo JSON.
+22. Remove every hidden reseed logic.
+23. Separate Development and Production completely.
+24. Demo files must never affect Production.
+25. Validate all required environment variables before startup.
+
+========================
+ROLE SYSTEM
+========================
+
+26. Role hierarchy:
+
+SUPER_ADMIN
+>
+ADMIN
+>
+STAFF
+
+27. Only SUPER_ADMIN can:
+- Create Super Admin
+- Delete Admin
+- Disable Admin
+- Promote Admin
+- Change Admin Roles
+- Manage Staff permissions
+
+28. ADMIN:
+- Cannot modify SUPER_ADMIN.
+- Has full admin features except Super Admin management.
+
+29. STAFF:
+- Cannot manage Admins or Super Admins.
+- Can only access assigned modules.
+
+30. While creating Staff, allow selecting which dashboard features Staff can access.
+
+========================
+PERFORMANCE
+========================
+
+31. Improve mobile responsiveness.
+32. Improve startup performance.
+33. Improve loading performance.
+34. Optimize 3D model loading.
+35. Reduce unnecessary database queries.
+36. Preserve all existing functionality.
+
+========================
+FAILSAFE
+========================
+
+37. If any unexpected error occurs:
+- NEVER switch to demo data.
+- NEVER erase production data.
+- NEVER recreate demo content.
+- ALWAYS keep the last successfully saved production data.
+- Recover the latest saved production state before the crash.
+- If recovery is impossible, stop with a clear error instead of showing demo data.
+
+========================
+OUTPUT
+========================
+
+Output only:
+- Root Cause
+- Modified Files
+- Fix Summary

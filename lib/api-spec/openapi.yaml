@@ -1,0 +1,1359 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 1.0.0
+  description: SBG ARMY Enterprise Platform API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+  - name: platform
+  - name: users
+  - name: players
+  - name: teams
+  - name: tournaments
+  - name: posts
+  - name: sponsors
+  - name: products
+  - name: applications
+  - name: contact
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /platform/stats:
+    get:
+      operationId: getPlatformStats
+      tags: [platform]
+      summary: Platform-wide dashboard stats
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformStats"
+
+  /platform/activity:
+    get:
+      operationId: getPlatformActivity
+      tags: [platform]
+      summary: Recent activity feed
+      responses:
+        "200":
+          description: Activity list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
+  /users:
+    get:
+      operationId: listUsers
+      tags: [users]
+      summary: List all users
+      parameters:
+        - name: role
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Users list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+  /users/me:
+    get:
+      operationId: getMe
+      tags: [users]
+      summary: Get current user profile
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+
+  /users/{id}:
+    get:
+      operationId: getUser
+      tags: [users]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    patch:
+      operationId: updateUser
+      tags: [users]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /players:
+    get:
+      operationId: listPlayers
+      tags: [players]
+      summary: List all players
+      parameters:
+        - name: game
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Players list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Player"
+    post:
+      operationId: createPlayer
+      tags: [players]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlayerInput"
+      responses:
+        "201":
+          description: Created player
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+
+  /players/{id}:
+    get:
+      operationId: getPlayer
+      tags: [players]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Player
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+    patch:
+      operationId: updatePlayer
+      tags: [players]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlayerUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+    delete:
+      operationId: deletePlayer
+      tags: [players]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /teams:
+    get:
+      operationId: listTeams
+      tags: [teams]
+      responses:
+        "200":
+          description: Teams list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Team"
+    post:
+      operationId: createTeam
+      tags: [teams]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamInput"
+      responses:
+        "201":
+          description: Created team
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+
+  /teams/{id}:
+    get:
+      operationId: getTeam
+      tags: [teams]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Team
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+
+  /tournaments:
+    get:
+      operationId: listTournaments
+      tags: [tournaments]
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: game
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Tournaments list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Tournament"
+    post:
+      operationId: createTournament
+      tags: [tournaments]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TournamentInput"
+      responses:
+        "201":
+          description: Created tournament
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tournament"
+
+  /tournaments/{id}:
+    get:
+      operationId: getTournament
+      tags: [tournaments]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Tournament
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tournament"
+    patch:
+      operationId: updateTournament
+      tags: [tournaments]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TournamentUpdate"
+      responses:
+        "200":
+          description: Updated tournament
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tournament"
+
+  /posts:
+    get:
+      operationId: listPosts
+      tags: [posts]
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: featured
+          in: query
+          schema:
+            type: boolean
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Posts list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+    post:
+      operationId: createPost
+      tags: [posts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostInput"
+      responses:
+        "201":
+          description: Created post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+
+  /posts/{id}:
+    get:
+      operationId: getPost
+      tags: [posts]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+    patch:
+      operationId: updatePost
+      tags: [posts]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostUpdate"
+      responses:
+        "200":
+          description: Updated post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+    delete:
+      operationId: deletePost
+      tags: [posts]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /sponsors:
+    get:
+      operationId: listSponsors
+      tags: [sponsors]
+      responses:
+        "200":
+          description: Sponsors list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Sponsor"
+    post:
+      operationId: createSponsor
+      tags: [sponsors]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SponsorInput"
+      responses:
+        "201":
+          description: Created sponsor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Sponsor"
+
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: inStock
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Products list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      operationId: createProduct
+      tags: [products]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: Created product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [products]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /orders:
+    post:
+      operationId: createOrder
+      tags: [products]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Order placed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+    get:
+      operationId: listOrders
+      tags: [products]
+      responses:
+        "200":
+          description: Orders list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+
+  /applications:
+    get:
+      operationId: listApplications
+      tags: [applications]
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Applications list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Application"
+    post:
+      operationId: createApplication
+      tags: [applications]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicationInput"
+      responses:
+        "201":
+          description: Application submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+
+  /applications/{id}:
+    patch:
+      operationId: updateApplication
+      tags: [applications]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApplicationUpdate"
+      responses:
+        "200":
+          description: Updated application
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Application"
+
+  /contact:
+    post:
+      operationId: createContact
+      tags: [contact]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactInput"
+      responses:
+        "201":
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactMessage"
+    get:
+      operationId: listContactMessages
+      tags: [contact]
+      responses:
+        "200":
+          description: Messages list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ContactMessage"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+        database:
+          type: string
+        uptime:
+          type: number
+
+    PlatformStats:
+      type: object
+      required: [totalUsers, totalPlayers, totalTournaments, totalPosts, activeTournaments, totalOrders, monthlyVisitors]
+      properties:
+        totalUsers:
+          type: integer
+        totalPlayers:
+          type: integer
+        totalTournaments:
+          type: integer
+        totalPosts:
+          type: integer
+        activeTournaments:
+          type: integer
+        totalOrders:
+          type: integer
+        monthlyVisitors:
+          type: integer
+        totalSponsors:
+          type: integer
+        pendingApplications:
+          type: integer
+
+    ActivityItem:
+      type: object
+      required: [id, type, title, timestamp]
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        timestamp:
+          type: string
+
+    User:
+      type: object
+      required: [id, username, email, role, createdAt]
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        avatar:
+          type: ["string", "null"]
+        displayName:
+          type: ["string", "null"]
+        bio:
+          type: ["string", "null"]
+        country:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    UserUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+        displayName:
+          type: string
+        bio:
+          type: string
+        avatar:
+          type: string
+        country:
+          type: string
+        role:
+          type: string
+
+    Player:
+      type: object
+      required: [id, playerName, game, role, status, createdAt]
+      properties:
+        id:
+          type: integer
+        playerName:
+          type: string
+        realName:
+          type: ["string", "null"]
+        game:
+          type: string
+        role:
+          type: string
+        uid:
+          type: ["string", "null"]
+        rank:
+          type: ["string", "null"]
+        image:
+          type: ["string", "null"]
+        country:
+          type: ["string", "null"]
+        status:
+          type: string
+        kills:
+          type: ["integer", "null"]
+        wins:
+          type: ["integer", "null"]
+        matches:
+          type: ["integer", "null"]
+        kd:
+          type: ["number", "null"]
+        winRate:
+          type: ["number", "null"]
+        bio:
+          type: ["string", "null"]
+        instagram:
+          type: ["string", "null"]
+        youtube:
+          type: ["string", "null"]
+        teamId:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+
+    PlayerInput:
+      type: object
+      required: [playerName, game, role]
+      properties:
+        playerName:
+          type: string
+        realName:
+          type: string
+        game:
+          type: string
+        role:
+          type: string
+        uid:
+          type: string
+        rank:
+          type: string
+        image:
+          type: string
+        country:
+          type: string
+        status:
+          type: string
+        kills:
+          type: integer
+        wins:
+          type: integer
+        matches:
+          type: integer
+        kd:
+          type: number
+        winRate:
+          type: number
+        bio:
+          type: string
+        instagram:
+          type: string
+        youtube:
+          type: string
+        teamId:
+          type: integer
+
+    PlayerUpdate:
+      type: object
+      properties:
+        playerName:
+          type: string
+        realName:
+          type: string
+        game:
+          type: string
+        role:
+          type: string
+        uid:
+          type: string
+        rank:
+          type: string
+        image:
+          type: string
+        country:
+          type: string
+        status:
+          type: string
+        kills:
+          type: integer
+        wins:
+          type: integer
+        matches:
+          type: integer
+        kd:
+          type: number
+        winRate:
+          type: number
+        bio:
+          type: string
+        instagram:
+          type: string
+        youtube:
+          type: string
+
+    Team:
+      type: object
+      required: [id, teamName, game, createdAt]
+      properties:
+        id:
+          type: integer
+        teamName:
+          type: string
+        game:
+          type: string
+        logo:
+          type: ["string", "null"]
+        banner:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        founded:
+          type: ["string", "null"]
+        region:
+          type: ["string", "null"]
+        wins:
+          type: integer
+        losses:
+          type: integer
+        createdAt:
+          type: string
+
+    TeamInput:
+      type: object
+      required: [teamName, game]
+      properties:
+        teamName:
+          type: string
+        game:
+          type: string
+        logo:
+          type: string
+        banner:
+          type: string
+        description:
+          type: string
+        founded:
+          type: string
+        region:
+          type: string
+
+    Tournament:
+      type: object
+      required: [id, title, game, status, startDate, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        game:
+          type: string
+        status:
+          type: string
+        prizePool:
+          type: ["string", "null"]
+        maxTeams:
+          type: ["integer", "null"]
+        registeredTeams:
+          type: integer
+        startDate:
+          type: string
+        endDate:
+          type: ["string", "null"]
+        banner:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        format:
+          type: ["string", "null"]
+        rules:
+          type: ["string", "null"]
+        streamUrl:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    TournamentInput:
+      type: object
+      required: [title, game, startDate]
+      properties:
+        title:
+          type: string
+        game:
+          type: string
+        status:
+          type: string
+        prizePool:
+          type: string
+        maxTeams:
+          type: integer
+        startDate:
+          type: string
+        endDate:
+          type: string
+        banner:
+          type: string
+        description:
+          type: string
+        format:
+          type: string
+        rules:
+          type: string
+        streamUrl:
+          type: string
+
+    TournamentUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        status:
+          type: string
+        prizePool:
+          type: string
+        registeredTeams:
+          type: integer
+        endDate:
+          type: string
+        streamUrl:
+          type: string
+        description:
+          type: string
+
+    Post:
+      type: object
+      required: [id, title, category, published, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        slug:
+          type: ["string", "null"]
+        category:
+          type: string
+        content:
+          type: ["string", "null"]
+        excerpt:
+          type: ["string", "null"]
+        image:
+          type: ["string", "null"]
+        published:
+          type: boolean
+        featured:
+          type: boolean
+        views:
+          type: integer
+        authorName:
+          type: ["string", "null"]
+        tags:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+
+    PostInput:
+      type: object
+      required: [title, category]
+      properties:
+        title:
+          type: string
+        category:
+          type: string
+        content:
+          type: string
+        excerpt:
+          type: string
+        image:
+          type: string
+        published:
+          type: boolean
+        featured:
+          type: boolean
+        authorName:
+          type: string
+        tags:
+          type: string
+
+    PostUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        category:
+          type: string
+        content:
+          type: string
+        excerpt:
+          type: string
+        image:
+          type: string
+        published:
+          type: boolean
+        featured:
+          type: boolean
+        tags:
+          type: string
+
+    Sponsor:
+      type: object
+      required: [id, name, tier, active, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        logo:
+          type: ["string", "null"]
+        website:
+          type: ["string", "null"]
+        tier:
+          type: string
+        description:
+          type: ["string", "null"]
+        active:
+          type: boolean
+        createdAt:
+          type: string
+
+    SponsorInput:
+      type: object
+      required: [name, tier]
+      properties:
+        name:
+          type: string
+        logo:
+          type: string
+        website:
+          type: string
+        tier:
+          type: string
+        description:
+          type: string
+
+    Product:
+      type: object
+      required: [id, name, price, category, inStock, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: ["string", "null"]
+        price:
+          type: number
+        originalPrice:
+          type: ["number", "null"]
+        category:
+          type: string
+        image:
+          type: ["string", "null"]
+        images:
+          type: ["string", "null"]
+        inStock:
+          type: boolean
+        stockCount:
+          type: ["integer", "null"]
+        sizes:
+          type: ["string", "null"]
+        colors:
+          type: ["string", "null"]
+        featured:
+          type: boolean
+        badge:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    ProductInput:
+      type: object
+      required: [name, price, category]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        originalPrice:
+          type: number
+        category:
+          type: string
+        image:
+          type: string
+        inStock:
+          type: boolean
+        stockCount:
+          type: integer
+        sizes:
+          type: string
+        colors:
+          type: string
+        featured:
+          type: boolean
+        badge:
+          type: string
+
+    OrderInput:
+      type: object
+      required: [productId, quantity, customerName, customerEmail, deliveryAddress, paymentMethod]
+      properties:
+        productId:
+          type: integer
+        quantity:
+          type: integer
+        size:
+          type: string
+        color:
+          type: string
+        customName:
+          type: string
+        customNumber:
+          type: string
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: string
+        deliveryAddress:
+          type: string
+        paymentMethod:
+          type: string
+        paymentRef:
+          type: string
+
+    Order:
+      type: object
+      required: [id, productId, quantity, status, totalAmount, customerName, customerEmail, createdAt]
+      properties:
+        id:
+          type: integer
+        productId:
+          type: integer
+        productName:
+          type: ["string", "null"]
+        quantity:
+          type: integer
+        size:
+          type: ["string", "null"]
+        color:
+          type: ["string", "null"]
+        customName:
+          type: ["string", "null"]
+        customNumber:
+          type: ["string", "null"]
+        status:
+          type: string
+        totalAmount:
+          type: number
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: ["string", "null"]
+        deliveryAddress:
+          type: string
+        paymentMethod:
+          type: string
+        paymentRef:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    Application:
+      type: object
+      required: [id, fullName, email, game, role, status, createdAt]
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        email:
+          type: string
+        whatsapp:
+          type: ["string", "null"]
+        game:
+          type: string
+        role:
+          type: string
+        gameUid:
+          type: ["string", "null"]
+        rank:
+          type: ["string", "null"]
+        experience:
+          type: ["string", "null"]
+        achievements:
+          type: ["string", "null"]
+        about:
+          type: ["string", "null"]
+        youtube:
+          type: ["string", "null"]
+        instagram:
+          type: ["string", "null"]
+        availability:
+          type: ["string", "null"]
+        status:
+          type: string
+        adminNote:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    ApplicationInput:
+      type: object
+      required: [fullName, email, game, role]
+      properties:
+        fullName:
+          type: string
+        email:
+          type: string
+        whatsapp:
+          type: string
+        game:
+          type: string
+        role:
+          type: string
+        gameUid:
+          type: string
+        rank:
+          type: string
+        experience:
+          type: string
+        achievements:
+          type: string
+        about:
+          type: string
+        youtube:
+          type: string
+        instagram:
+          type: string
+        availability:
+          type: string
+
+    ApplicationUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+        adminNote:
+          type: string
+
+    ContactInput:
+      type: object
+      required: [name, email, category, message]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        category:
+          type: string
+        message:
+          type: string
+
+    ContactMessage:
+      type: object
+      required: [id, name, email, category, message, status, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        category:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+        adminNote:
+          type: ["string", "null"]
+        createdAt:
+          type: string

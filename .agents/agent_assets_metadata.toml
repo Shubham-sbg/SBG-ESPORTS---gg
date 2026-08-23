@@ -1,0 +1,62 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "vLKteuKeXuIAUEe3UmaD4"
+uri = "file://sbg-army-export.tar.gz"
+type = "unspecified"
+title = "SBG ARMY — Full Source Export (169KB)"
+
+[[outputs]]
+id = "3Y69u2tYRY16_dCFGI--o"
+uri = "file://SBG_ARMY_EXPORT.tar.gz"
+type = "unspecified"
+title = "SBG ARMY — Complete Export Package (.tar.gz)"
+
+[[outputs]]
+id = "WLPlWbXYhm2b8u0KB7Lye"
+uri = "file://SBG_ARMY_EXPORT/SOURCE_CODE_EXPORT.txt"
+type = "text"
+title = "SBG ARMY — All Source Code in One File (.txt)"
+
+[[outputs]]
+id = "2IwprnkZUqMnBlo-uek5L"
+uri = "file://SUPABASE_EXPORT.tar.gz"
+type = "unspecified"
+title = "SBG ARMY — Supabase Production Package (.tar.gz)"
+
+[[outputs]]
+id = "lqXwdlT3xGrZ9KvjKcCbC"
+uri = "file://SUPABASE_EXPORT/SUPABASE_SETUP.md"
+type = "text"
+title = "Supabase Setup & Hostinger Deployment Guide"
+
+[[outputs]]
+id = "-O6GeG9-V8T2Nqt0SPtt-"
+uri = "file://FIREBASE_EXPORT.tar.gz"
+type = "unspecified"
+title = "SBG ARMY — Firebase Hosting + Backend Package (.tar.gz)"
+
+[[outputs]]
+id = "gZqC35-DgZV-Jw55bCyeI"
+uri = "file://FIREBASE_EXPORT/FIREBASE_DEPLOY_GUIDE.md"
+type = "text"
+title = "Firebase Deployment Guide (Step-by-Step)"
+
+[[outputs]]
+id = "Hs1OjvIab2CnbIbwXfTp_"
+uri = "file://sbg-army-production.tar.gz"
+type = "unspecified"
+title = "SBG ARMY — Production Files (Updated)"
+
+[[outputs]]
+id = "S9Y1JDo5UaywHXF0_fIAI"
+uri = "file://sbg-army-deploy-ready.tar.gz"
+type = "unspecified"
+title = "SBG ARMY — Deploy-Ready Package"
+
+[[outputs]]
+id = "He4aCed6CJjff237uOyYS"
+uri = "file://SBG_ARMY_PRD.md"
+type = "text"
+title = "SBG ARMY V6.5 — Full Product Requirements Document"

@@ -1,0 +1,6 @@
+# Cloudflare Pages — SPA routing fallback
+# Place this file in the build output directory (artifacts/sbg-army/dist/public)
+# or reference it from wrangler.toml
+
+# SPA routing: all paths → index.html
+/*    /index.html   200

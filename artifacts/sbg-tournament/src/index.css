@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+:root {
+  --gold: #d4af37;
+  --red:  #e8192c;
+  --bg:   #030303;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: #fff;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+/* Bracket connector lines */
+.bracket-connector { position: relative; }
+.bracket-connector::after {
+  content: '';
+  position: absolute;
+  right: -16px;
+  top: 50%;
+  width: 16px;
+  height: 1px;
+  background: rgba(212,175,55,0.3);
+}
+.bracket-connector::before {
+  content: '';
+  position: absolute;
+  right: -16px;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: rgba(212,175,55,0.2);
+}
+
+/* Animations */
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212,175,55,0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(212,175,55,0); }
+}
+.pulse-gold { animation: pulse-gold 2s ease-in-out infinite; }
+
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeIn 0.4s ease forwards; }
+
+/* Gold gradient text */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #d4af37, #f5e27e, #b8960c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.text-red-gradient {
+  background: linear-gradient(135deg, #e8192c, #ff4d5e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card glass */
+.glass {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  backdrop-filter: blur(12px);
+}
+.glass-gold {
+  background: rgba(212,175,55,0.04);
+  border: 1px solid rgba(212,175,55,0.18);
+}
+.glass-red {
+  background: rgba(232,25,44,0.06);
+  border: 1px solid rgba(232,25,44,0.2);
+}

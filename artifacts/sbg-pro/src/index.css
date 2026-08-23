@@ -1,0 +1,222 @@
+@layer theme, base, clerk, components, utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
+
+  --color-background: #060611;
+  --color-foreground: #f1f5f9;
+  --color-card: rgba(255,255,255,0.03);
+  --color-card-foreground: #f1f5f9;
+  --color-popover: #0d0d1f;
+  --color-popover-foreground: #f1f5f9;
+  --color-primary: #ff6b00;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: rgba(255,255,255,0.06);
+  --color-secondary-foreground: #f1f5f9;
+  --color-muted: rgba(255,255,255,0.04);
+  --color-muted-foreground: #64748b;
+  --color-accent: rgba(255,107,0,0.08);
+  --color-accent-foreground: #ff6b00;
+  --color-destructive: #ef4444;
+  --color-border: rgba(255,255,255,0.08);
+  --color-input: #0d0d1f;
+  --color-ring: #ff6b00;
+  --radius: 0.5rem;
+
+  /* shadcn tokens */
+  --button-outline: rgba(255,255,255,0.12);
+  --primary-border: rgba(255,107,0,0.4);
+  --destructive-border: rgba(239,68,68,0.4);
+  --secondary-border: rgba(255,255,255,0.1);
+}
+
+/* ── Base ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: #060611;
+  color: #f1f5f9;
+  font-family: "Inter", sans-serif;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+#root { min-height: 100vh; }
+
+/* ── Typography ────────────────────────────────────────────────────── */
+.font-orbitron { font-family: "Orbitron", sans-serif !important; }
+.font-inter { font-family: "Inter", sans-serif !important; }
+
+/* ── Gradient Text ─────────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #ff6b00 0%, #e94560 50%, #ff6b00 100%);
+  background-size: 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 4s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ── Glass Morphism ────────────────────────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* ── Cyber Grid Background ─────────────────────────────────────────── */
+.cyber-grid {
+  background-image:
+    linear-gradient(rgba(255,107,0,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,107,0,0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ── Glow Effects ──────────────────────────────────────────────────── */
+.glow-orange {
+  box-shadow: 0 0 30px rgba(255,107,0,0.35), 0 4px 20px rgba(255,107,0,0.2);
+}
+.glow-orange-sm {
+  box-shadow: 0 0 16px rgba(255,107,0,0.25), 0 2px 12px rgba(255,107,0,0.15);
+}
+
+/* ── Card Hover ────────────────────────────────────────────────────── */
+.card-hover {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+
+/* ── Input Dark ────────────────────────────────────────────────────── */
+.input-dark {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #f1f5f9;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input-dark:focus {
+  border-color: rgba(255,107,0,0.4);
+  box-shadow: 0 0 0 2px rgba(255,107,0,0.08);
+}
+.input-dark::placeholder { color: #475569; }
+
+/* ── Status Badges ─────────────────────────────────────────────────── */
+.badge-live {
+  background: rgba(239,68,68,0.12);
+  color: #f87171;
+  border: 1px solid rgba(239,68,68,0.25);
+}
+.badge-upcoming {
+  background: rgba(255,107,0,0.1);
+  color: #fb923c;
+  border: 1px solid rgba(255,107,0,0.2);
+}
+.badge-completed {
+  background: rgba(34,197,94,0.08);
+  color: #4ade80;
+  border: 1px solid rgba(34,197,94,0.2);
+}
+.badge-active {
+  background: rgba(34,197,94,0.08);
+  color: #4ade80;
+  border: 1px solid rgba(34,197,94,0.2);
+}
+
+/* ── Admin Nav Items ───────────────────────────────────────────────── */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-family: "Inter", sans-serif;
+  color: #94a3b8;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  text-align: left;
+  width: 100%;
+}
+.nav-item:hover {
+  color: #f1f5f9;
+  background: rgba(255,255,255,0.04);
+}
+.nav-item.active {
+  color: #fb923c;
+  background: rgba(255,107,0,0.08);
+}
+
+/* ── Section Divider ───────────────────────────────────────────────── */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,107,0,0.3), transparent);
+}
+
+/* ── Skeleton Loading ──────────────────────────────────────────────── */
+.skeleton {
+  animation: skeleton-pulse 1.8s ease-in-out infinite;
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+}
+@keyframes skeleton-pulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+::-webkit-scrollbar-thumb { background: rgba(255,107,0,0.25); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,107,0,0.45); }
+
+/* ── Selection ─────────────────────────────────────────────────────── */
+::selection { background: rgba(255,107,0,0.25); color: #fff; }
+
+/* ── Line Clamp ────────────────────────────────────────────────────── */
+.line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* ── Transitions ───────────────────────────────────────────────────── */
+a, button { transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease; }
+
+/* ── 3D Card Preserve ─────────────────────────────────────────────── */
+.preserve-3d { transform-style: preserve-3d; }
+
+/* ── Hover Elevate (shadcn compat) ────────────────────────────────── */
+.hover-elevate { transition: transform 0.15s ease; }
+.hover-elevate:hover { transform: translateY(-1px); }
+.active-elevate-2:active { transform: translateY(1px); }
+
+/* ── Responsive utilities ─────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .font-orbitron { letter-spacing: 0; }
+}
+
+/* ── Prose Overrides ───────────────────────────────────────────────── */
+.prose-invert a { color: #fb923c; }
+.prose-invert h1, .prose-invert h2, .prose-invert h3 { font-family: "Orbitron", sans-serif; color: white; }

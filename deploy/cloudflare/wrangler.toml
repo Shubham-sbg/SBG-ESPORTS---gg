@@ -1,0 +1,25 @@
+# SBG ARMY GG23 — Cloudflare Pages Deployment Configuration
+# Deploys the sbg-army FRONTEND only.
+# The backend API server must be deployed separately (Render recommended).
+
+name = "sbg-army"
+compatibility_date = "2024-01-01"
+
+[build]
+command = "pnpm install --frozen-lockfile && pnpm --filter @workspace/sbg-army run build"
+output_directory = "artifacts/sbg-army/dist/public"
+
+[build.environment_variables]
+NODE_VERSION = "20"
+
+# SPA routing — configure in Cloudflare Pages dashboard:
+# Settings → Functions → Routes: add /* → serve index.html (404 → /index.html)
+
+# Or add a _redirects file in the output directory (see _redirects below)
+
+# Environment variables to set in Cloudflare Pages dashboard:
+# VITE_API_URL — your backend URL (e.g. https://sbg-army-api.onrender.com)
+# VITE_CLERK_PUBLISHABLE_KEY — optional
+
+# NOTE: Cloudflare Pages does not run Node.js servers.
+# The backend (Express API) must be on Render, Railway, or another Node host.

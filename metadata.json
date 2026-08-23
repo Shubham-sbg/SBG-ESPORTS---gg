@@ -1,0 +1,8 @@
+{
+  "name": "SBG Esports",
+  "description": "Official SBG ESPORTS organization platform featuring tournament management, roster, live streams, fan connect, and admin control center.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

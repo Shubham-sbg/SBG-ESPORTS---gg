@@ -1,0 +1,209 @@
+Create a scalable multi-site architecture.
+
+One Super Admin.
+
+One Admin Panel.
+
+One Authentication System.
+
+One Database.
+
+Multiple Websites.
+
+Each website can enable or disable modules independently without changing the codebase.
+
+Future websites should be added from the Admin Panel with minimal configuration. Use minimal tokens.
+
+Fix ONLY production data architecture.
+
+Highest priority.
+
+Requirements:
+
+1. Production database must be the ONLY source of truth.
+
+2. Never load demo JSON in production.
+
+3. Never overwrite production data.
+
+4. Never restore demo data after restart, crash, redeploy or server reboot.
+
+5. Restore ONLY the latest successfully saved production data.
+
+6. Demo seed must execute only once when the production database is empty.
+
+7. Remove every production fallback to demo JSON.
+
+8. Every Admin CRUD operation must save directly to the production database.
+
+9. Every public page must read from the same production database.
+
+10. Never show "Saved Successfully" unless database commit succeeds.
+
+11. Add transactions for all writes.
+
+12. Add proper logging.
+
+13. Prevent future data reset permanently.
+
+14. Detect the actual frontend, backend and database folders automatically because this project uses custom folder names.
+
+15. Do not rewrite the project.
+
+Output only:
+
+Root Cause
+
+Modified Files
+
+Fix SummaryUse minimal tokens.
+
+Fix ONLY roles and permissions.
+
+SUPER_ADMIN > ADMIN > STAFF
+
+Requirements:
+
+Only SUPER_ADMIN can:
+
+Create/Edit/Delete Super Admin
+
+Create/Edit/Delete Admin
+
+Promote/Demote Admin
+
+Assign permissions
+
+Manage Staff
+
+Admin cannot modify Super Admin.
+
+Staff cannot manage Admins.
+
+When creating Staff:
+
+Allow selecting dashboard modules using checkboxes.
+
+Staff only receives selected permissions.
+
+Admin receives all Admin permissions.
+
+Support future modules automatically.
+
+Do not modify UI.
+
+Output only:
+
+Modified Files
+
+Fix SummaryUse minimal tokens.
+
+Fix only missing Admin modules.
+
+Every feature visible on the website must be manageable from Admin Panel.
+
+Currently missing:
+
+Records
+
+Stats
+
+Trophy Room
+
+Team History
+
+Blog
+
+Events
+
+Live Stream
+
+Advertisements
+
+Add complete CRUD for every module.
+
+Allow:
+
+Create
+
+Edit
+
+Delete
+
+Visibility
+
+Featured
+
+Position
+
+Status
+
+Scheduling
+
+Sorting
+
+Keep UI unchanged.
+
+Output only:
+
+Modified Files
+
+Fix SummaryUse minimal tokens.
+
+Optimize the production project.
+
+Requirements:
+
+Improve database queries.
+
+Reduce unnecessary API calls.
+
+Improve caching.
+
+Optimize 3D models.
+
+Improve mobile performance.
+
+Improve loading speed.
+
+Reduce bundle size.
+
+Build Advertisement Manager supporting:
+
+Google AdSense
+
+HilltopAds
+
+Custom HTML
+
+Banner
+
+Popup
+
+Native Ads
+
+Future providers
+
+Admin can:
+
+Enable
+
+Disable
+
+Position
+
+Schedule
+
+Priority
+
+Desktop/Mobile
+
+Analytics
+
+Do not remove features.
+
+Output only:
+
+Modified Files
+
+Fix SummaryTumne pehle hi dekha ki ek deployment ke baad 2 ghante ka admin data unexpectedly revert ho gaya. Isliye sab kuch ek saath change karne se risk aur badh jata hai.

@@ -1,0 +1,11 @@
+- [SBG ARMY platform architecture](sbg-army-arch.md) — frontend uses Supabase auth + local IndexedDB; admin login checks Supabase role=admin via supabaseAuth.ts
+- [SBG ARMY V2 upgrade decisions](sbg-army-v2-upgrades.md) — URL sanitization pattern, extended Player/Sponsor interfaces, new utility components, stats rendering guard
+- [Three.js hero with WebGL fallback](sbg-army-hero-three.md) — HeroSection uses Three.js 3D scene; isWebGLAvailable() check gates it; CSSParticleBackground is the fallback
+- [SBG ARMY admin auth architecture](sbg-army-admin-auth.md) — bcrypt+JWT; password-stripping bug fixed (mergeSensitive); POST /db now auth-protected; SESSION_SECRET fails closed
+- [SBG ARMY persistence pattern](sbg-army-persistence.md) — new collections MUST be added to ALL_COLLECTIONS in database.ts or bulk saveDB() silently skips them; also Footer requires navigation prop
+- [SBG ARMY WS reconnect resync](sbg-army-ws-resync.md) — stale-tab bulk-save bug; client now resyncs from server on WS reconnect/visibility/interval, guarded against races
+- [SBG ARMY external deployment conventions](sbg-army-deploy-env.md) — VITE_API_URL is origin-only (no /api suffix); Render needs a persistent disk for the JSON store; Postgres is required to boot even though it's barely used
+- [Custom code manager + security hardening](custom-code-security.md) — customCode collection; backup/source-export now requireAdmin; body 10mb; admin links stripped
+- [SBG ARMY V3 DB-driven pages](sbg-army-v3-pages.md) — About/Privacy/Terms/Gallery/CookiePolicy now DB-driven; AboutCMS + LegalPages added to AdminPage; JWT refresh endpoint + AdminGuard auto-refresh added
+- [SBG Tournament Platform architecture](sbg-tournament-arch.md) — standalone KO tournament site on port 3001; tnmt_* collections; public /api/tnmt/register; bracket gen in lib/bracket.ts
+- [SBG ARMY demo data removal](sbg-army-no-demo-data.md) — DEFAULT_DB and DEFAULTS now use empty arrays for all content collections; demo players/achievements/etc removed to prevent stale-data bug
