@@ -50,9 +50,9 @@ export default function FacilitySection({
     setError(null);
     try {
       const [facRes, statsRes, setRes] = await Promise.all([
-        fetch((import.meta.env.VITE_API_URL || "") + '/api/db/facility'),
-        fetch((import.meta.env.VITE_API_URL || "") + '/api/db/facilityStats'),
-        fetch((import.meta.env.VITE_API_URL || "") + '/api/db/settings'),
+        fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/db/facility'),
+        fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/db/facilityStats'),
+        fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/db/settings'),
       ]);
 
       if (!facRes.ok || !statsRes.ok) {

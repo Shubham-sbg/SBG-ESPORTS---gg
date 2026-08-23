@@ -167,7 +167,7 @@ export default function AdminSystemHealth() {
       try {
         const token = '' || '' || '';
         const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
-        const r = await fetch((import.meta.env.VITE_API_URL || "") + '/api/health/detailed', { credentials: "include", headers });
+        const r = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/health/detailed', { credentials: "include", headers });
         if (r.ok) setBackendHealth(await r.json() as BackendInfraHealth);
       } catch {}
     };

@@ -46,7 +46,7 @@ export function trackPageVisit(page: string = '/') {
     const id         = `v_${now}_${deviceId.slice(-4)}`;
 
     // Fire-and-forget — never block the page, never throw
-    fetch((import.meta.env.VITE_API_URL || "") + '/api/analytics/track', { credentials: "include",
+    fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/analytics/track', { credentials: "include",
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ page, deviceType, date, id }),

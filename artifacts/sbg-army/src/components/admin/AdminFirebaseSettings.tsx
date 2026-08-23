@@ -124,7 +124,7 @@ export default function AdminFirebaseSettings() {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const res = await fetch((import.meta.env.VITE_API_URL || "") + '/api/settings/firebase');
+        const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/settings/firebase');
         if (!res.ok) throw new Error('Failed to load settings');
         const data = await res.json();
         
@@ -150,7 +150,7 @@ export default function AdminFirebaseSettings() {
     const fetchHealth = async () => {
       try {
         const token = '';
-        const res = await fetch((import.meta.env.VITE_API_URL || "") + '/api/admin/firestore-health', { credentials: "include",
+        const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/admin/firestore-health', { credentials: "include",
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -169,7 +169,7 @@ export default function AdminFirebaseSettings() {
     setSyncMessage('');
     try {
       const token = '';
-      const res = await fetch((import.meta.env.VITE_API_URL || "") + '/api/admin/firestore-sync-all', { credentials: "include",
+      const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/admin/firestore-sync-all', { credentials: "include",
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -177,7 +177,7 @@ export default function AdminFirebaseSettings() {
       if (res.ok) {
         setSyncMessage('Database projection fully synchronized.');
         // Refresh health status
-        const resH = await fetch((import.meta.env.VITE_API_URL || "") + '/api/admin/firestore-health', { credentials: "include",
+        const resH = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/admin/firestore-health', { credentials: "include",
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (resH.ok) setHealth(await resH.json());
@@ -223,7 +223,7 @@ export default function AdminFirebaseSettings() {
         ]
       };
 
-      const res = await fetch((import.meta.env.VITE_API_URL || "") + '/api/settings/bulk', { credentials: "include",
+      const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/settings/bulk', { credentials: "include",
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -248,7 +248,7 @@ export default function AdminFirebaseSettings() {
 
   const handleLogout = () => {
     if (!confirm('Sign out of admin panel?')) return;
-    try { fetch((import.meta.env.VITE_API_URL || "") + '/api/admin/logout', { credentials: 'include' }).catch(() => {}); } catch {}
+    try { fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/admin/logout', { credentials: 'include' }).catch(() => {}); } catch {}
     const guardLogout = (window as unknown as Record<string, unknown>).__sbgAdminLogout;
     if (typeof guardLogout === 'function') (guardLogout as () => void)();
     window.location.href = '/sbg-admin';

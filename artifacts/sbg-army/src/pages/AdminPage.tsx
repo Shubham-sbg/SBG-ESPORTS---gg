@@ -155,7 +155,7 @@ export default function AdminPage() {
     let active = true;
     const fetchStatus = async () => {
       try {
-        const res = await fetch((import.meta.env.VITE_API_URL || "") + '/api/health/deep');
+        const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/health/deep');
         if (!res.ok) throw new Error('Unhealthy');
         const data = await res.json();
         if (active) {
@@ -196,7 +196,7 @@ export default function AdminPage() {
 
   const handleLogout = () => {
     // Clear JWT token and call guard logout
-    try { fetch((import.meta.env.VITE_API_URL || "") + '/api/admin/logout', { credentials: 'include' }).catch(() => {}); } catch {}
+    try { fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/admin/logout', { credentials: 'include' }).catch(() => {}); } catch {}
     const guardLogout = (window as unknown as Record<string, unknown>).__sbgAdminLogout;
     if (typeof guardLogout === 'function') (guardLogout as () => void)();
     navigate('/sbg-admin');

@@ -430,7 +430,7 @@ class HealthMonitor {
     // API Server
     try {
       const t0 = performance.now();
-      const res = await fetch((import.meta.env.VITE_API_URL || "") + '/api/db', { credentials: "include", signal: AbortSignal.timeout(5000) });
+      const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/db', { credentials: "include", signal: AbortSignal.timeout(5000) });
       const latency = Math.round(performance.now() - t0);
       const svc = this.services.find(s => s.name === 'API Server')!;
       svc.status = res.ok ? 'online' : 'degraded';

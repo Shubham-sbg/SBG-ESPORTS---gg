@@ -117,7 +117,7 @@ export default function AdminStaffManager({ onRefresh }: { onRefresh: () => void
       if (form.password.trim()) payload.password = form.password.trim();
       if (editId) payload.id = editId;
 
-      const res = await fetch((import.meta.env.VITE_API_URL || "") + '/api/admin/staff', { credentials: "include",
+      const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/admin/staff', { credentials: "include",
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -146,7 +146,7 @@ export default function AdminStaffManager({ onRefresh }: { onRefresh: () => void
   const handleDelete = async (id: string) => {
     const token = getAdminToken();
     try {
-      await fetch(`${import.meta.env.VITE_API_URL || ""}/api/admin/staff/${id}`, { credentials: "include",
+      await fetch(`${import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com"}/api/admin/staff/${id}`, { credentials: "include",
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });

@@ -75,7 +75,7 @@ export default function AdminWebsiteManager() {
   const loadStaffStats = async () => {
     try {
       const token = '' || '' || '';
-      const r = await fetch((import.meta.env.VITE_API_URL || "") + '/api/db/staffAccounts', { credentials: "include",
+      const r = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/db/staffAccounts', { credentials: "include",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       if (r.ok) {

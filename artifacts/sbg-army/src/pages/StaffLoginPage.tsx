@@ -18,7 +18,7 @@ export default function StaffLoginPage() {
 
     try {
       // Always authenticate via the server — the client DB has passwords scrubbed for security.
-      const res = await fetch((import.meta.env.VITE_API_URL || "") + '/api/admin/login', {
+      const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -34,7 +34,7 @@ export default function StaffLoginPage() {
       try {
         data = await res.json();
       } catch {
-        setError('Server returned an unexpected response. Please try again.');
+        setError(`Server returned an unexpected response (${res.status} ${res.statusText}). URL: ${res.url}`);
         return;
       }
 

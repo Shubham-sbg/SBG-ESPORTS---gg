@@ -57,13 +57,13 @@ function clearToken() {
       localStorage.removeItem(TOKEN_KEY);
     }
   } catch {}
-  fetch((import.meta.env.VITE_API_URL || "") + '/api/admin/logout', { credentials: 'include' }).catch(() => {});
+  fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/admin/logout', { credentials: 'include' }).catch(() => {});
 }
 
 /** Verify a JWT with the server. Returns session info or null. */
 async function verifyToken(): Promise<AdminSession | null> {
   try {
-    const res = await fetch((import.meta.env.VITE_API_URL || "") + '/api/admin/verify', { credentials: 'include' });
+    const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/admin/verify', { credentials: 'include' });
     if (!res.ok) return null;
     const data = await res.json() as { success: boolean; email: string; name: string; role: string; token?: string };
     if (!data.success || !ADMIN_ROLES.includes(data.role)) return null;
@@ -97,7 +97,7 @@ function FirstTimeSetup({ onDone }: { onDone: () => void }) {
     if (password.length < 8) { setError('Password must be at least 8 characters.'); return; }
     setLoading(true);
     try {
-      const res = await fetch((import.meta.env.VITE_API_URL || "") + '/api/admin/setup', {
+      const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/admin/setup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -224,7 +224,7 @@ function AdminLoginForm({ onGranted }: { onGranted: (session: AdminSession) => v
     if (!password) { setError('Please enter your password.'); return; }
     setLoading(true);
     try {
-      const res = await fetch((import.meta.env.VITE_API_URL || "") + '/api/admin/login', {
+      const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/admin/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -246,7 +246,7 @@ function AdminLoginForm({ onGranted }: { onGranted: (session: AdminSession) => v
         try {
           data = JSON.parse(text);
         } catch {
-          setError('Backend server returned a non-JSON response. Please ensure API server is active.');
+          setError(`Backend server returned a non-JSON response (${res.status} ${res.statusText}). URL: ${res.url}`);
           return;
         }
       }
@@ -484,7 +484,7 @@ function decodeJwtPayload(token: string): { iat?: number; exp?: number } | null 
  */
 async function refreshJwt(): Promise<string | null> {
   try {
-    const res = await fetch((import.meta.env.VITE_API_URL || "") + '/api/admin/refresh', { method: 'POST', credentials: 'include' });
+    const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/admin/refresh', { method: 'POST', credentials: 'include' });
     if (!res.ok) return null;
     const data = await res.json() as { success: boolean; token?: string };
     return data.success && data.token ? data.token : null;

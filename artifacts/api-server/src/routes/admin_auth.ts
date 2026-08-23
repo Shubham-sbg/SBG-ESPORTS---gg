@@ -60,6 +60,32 @@ const hashPassword = async (pass: string): Promise<string> => {
 };
 
 /**
+ * POST /debug-login (Diagnostic endpoint)
+ * Logs and returns the exact headers and request body received during an authentication attempt.
+ */
+router.post(['/debug-login', '/admin/debug-login'], (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  console.log('[DEBUG-LOGIN] Request received:', {
+    method: req.method,
+    url: req.originalUrl,
+    headers: req.headers,
+    body: req.body,
+    ip: req.ip
+  });
+  
+  res.status(200).json({
+    success: true,
+    diagnostic: true,
+    message: 'Diagnostic endpoint reached successfully',
+    method: req.method,
+    url: req.originalUrl,
+    headers: req.headers,
+    body: req.body,
+    ip: req.ip
+  });
+});
+
+/**
  * POST /login (also /admin/login for backwards compatibility)
  * Authenticates against stored staffAccounts database using standard bcrypt verification.
  * Returns JWT + allowedModules so the client can build the staff session.

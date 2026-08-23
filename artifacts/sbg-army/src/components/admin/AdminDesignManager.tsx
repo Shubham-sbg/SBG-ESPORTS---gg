@@ -46,7 +46,7 @@ export default function AdminDesignManager() {
 
       // Persist to server API
       const token = '' || '';
-      const res = await fetch((import.meta.env.VITE_API_URL || "") + '/api/theme', { credentials: "include",
+      const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/theme', { credentials: "include",
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
