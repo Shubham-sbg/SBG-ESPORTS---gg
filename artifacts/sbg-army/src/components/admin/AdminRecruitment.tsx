@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { RecruitmentApplication, RecruitmentOpening, RecruitmentCustomQuestion, RecruitmentFormFieldConfig } from '@/lib/database';
 import PlayerMatchIndicator from '@/components/PlayerMatchIndicator';
 import { ADMIN_BRAND_NAME } from '@/lib/brandConfig';
+import { apiUrl } from '@/lib/api';
 
 const GOLD = '#d4af37';
 
@@ -59,8 +60,8 @@ export default function AdminRecruitment() {
     setLoading(true);
     try {
       const [resApps, resOpenings] = await Promise.all([
-        fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/db/recruitment', { credentials: "include", headers: { Authorization: `Bearer ${getToken()}` } }),
-        fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/db/recruitmentOpenings', { credentials: "include", headers: { Authorization: `Bearer ${getToken()}` } })
+        fetch(apiUrl('/api/db/recruitment'), { credentials: "include", headers: { Authorization: `Bearer ${getToken()}` } }),
+        fetch(apiUrl('/api/db/recruitmentOpenings'), { credentials: "include", headers: { Authorization: `Bearer ${getToken()}` } })
       ]);
 
       if (resApps.ok) {
@@ -83,7 +84,7 @@ export default function AdminRecruitment() {
   const persistApps = async (updated: RecruitmentApplication[]) => {
     setApps(updated);
     try {
-      await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/db/recruitment', { credentials: "include",
+      await fetch(apiUrl('/api/db/recruitment'), { credentials: "include",
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
         body: JSON.stringify(updated),
@@ -97,7 +98,7 @@ export default function AdminRecruitment() {
   const persistOpenings = async (updated: RecruitmentOpening[]) => {
     setOpenings(updated);
     try {
-      await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/db/recruitmentOpenings', { credentials: "include",
+      await fetch(apiUrl('/api/db/recruitmentOpenings'), { credentials: "include",
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
         body: JSON.stringify(updated),

@@ -1,3 +1,5 @@
+import { apiUrl } from './api';
+
 export type AdminRole = 'super_admin' | 'admin' | 'staff';
 export type AdminModule = string;
 
@@ -39,7 +41,7 @@ export function getOwnerModules(): AdminModule[] {
 
 export function createStaffSession(email: string, role: 'admin' | 'staff', modules: AdminModule[], name: string): void {}
 export function destroyStaffSession(): void {
-  fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/admin/logout', { credentials: 'include' }).catch(() => {});
+  fetch(apiUrl('/api/admin/logout'), { credentials: 'include' }).catch(() => {});
 }
 
 export function isStaffAuthenticated(): boolean {

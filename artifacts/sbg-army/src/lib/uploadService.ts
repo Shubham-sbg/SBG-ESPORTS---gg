@@ -1,5 +1,5 @@
 import { getDB, saveDB } from './database';
-import { getApiBase } from './wsClient';
+import { apiUrl } from './api';
 
 export interface FileValidationOptions {
   maxSizeMB?: number; // default 20MB
@@ -162,11 +162,7 @@ export async function uploadFileToServer(
   }
 
   const rawEndpoint = options.endpoint || '/api/upload';
-  const apiBase = getApiBase();
-  let endpoint = rawEndpoint;
-  if (rawEndpoint.startsWith('/api') && apiBase && apiBase !== '/api') {
-    endpoint = apiBase + rawEndpoint.substring(4);
-  }
+  const endpoint = apiUrl(rawEndpoint);
 
   const fieldName = options.fieldName || 'image';
 

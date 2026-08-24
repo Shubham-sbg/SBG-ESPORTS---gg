@@ -1,3 +1,5 @@
+import { API_BASE, getWsUrl, apiUrl } from './api';
+
 type WsListener = (event: { collection?: string; data?: unknown; updates?: Record<string, unknown> }) => void;
 
 const listeners = new Set<WsListener>();
@@ -18,27 +20,8 @@ export function onWsReconnect(cb: () => void): void {
   reconnectCallback = cb;
 }
 
-// In a single-origin deployment (Replit, or Vercel serving both frontend and
-// backend behind one domain) leave VITE_API_URL unset — relative '/api'
-// works unchanged. For split deployments (e.g. frontend on Vercel, backend
-// on Render) set VITE_API_URL to the backend's origin only, e.g.
-// "https://sbg-army-api.onrender.com" (no trailing /api — this is the same
-// variable ImageUpload.tsx uses as a prefix in front of "/api/upload", so
-// both must share the same origin-only convention).
-const configuredOrigin = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '');
-const API_BASE = configuredOrigin ? `${configuredOrigin}/api` : '/api';
-const WS_PATH = '/ws';
-
 function resolveWsUrl(): string {
-  if (configuredOrigin) {
-    // Derive the ws(s):// URL from the configured backend origin so both
-    // stay in sync when pointed at a remote backend.
-    const apiUrl = new URL(configuredOrigin);
-    const protocol = apiUrl.protocol === 'https:' ? 'wss:' : 'ws:';
-    return `${protocol}//${apiUrl.host}${WS_PATH}`;
-  }
-  const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-  return `${protocol}//${location.host}${WS_PATH}`;
+  return getWsUrl();
 }
 
 export function getApiBase(): string {

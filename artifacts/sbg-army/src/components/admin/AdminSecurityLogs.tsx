@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { apiUrl } from '@/lib/api';
 
 interface LoginAttempt {
   id: string;
@@ -32,8 +33,8 @@ export default function AdminSecurityLogs() {
       const token = '' || '' || '';
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       const [attemptsRes, auditRes] = await Promise.all([
-        fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/security/login-attempts', { credentials: "include", headers }).catch(() => null),
-        fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/security/audit-logs', { credentials: "include", headers }).catch(() => null),
+        fetch(apiUrl('/api/security/login-attempts'), { credentials: "include", headers }).catch(() => null),
+        fetch(apiUrl('/api/security/audit-logs'), { credentials: "include", headers }).catch(() => null),
       ]);
       if (attemptsRes?.ok) setLoginAttempts(await attemptsRes.json());
       if (auditRes?.ok) setAuditLogs(await auditRes.json());

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { RecruitmentOpening } from '@/lib/database';
 import { useDatabase } from '@/hooks/useDatabase';
+import { apiUrl } from '@/lib/api';
 
 export default function RecruitmentPopup() {
   const [isOpen, setIsOpen]     = useState(false);
@@ -17,7 +18,7 @@ export default function RecruitmentPopup() {
     }
 
     // Fetch active featured openings
-    fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/recruitment/openings')
+    fetch(apiUrl('/api/recruitment/openings'))
       .then(res => res.json())
       .then(data => {
         if (data.ok && Array.isArray(data.openings) && data.openings.length > 0) {

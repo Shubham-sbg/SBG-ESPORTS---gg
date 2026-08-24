@@ -46,7 +46,13 @@ router.post('/login', playerAuthLimiter, async (req, res) => {
     if (!match) return res.status(401).json({ success: false, error: 'Invalid credentials' });
 
     const token = jwt.sign({ uid: user.id, username: user.username, role: 'player' }, JWT_SECRET, { expiresIn: '7d' });
-    res.cookie('sbg_player_token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict', maxAge: 7*24*60*60*1000 });
+    const isProd = process.env.NODE_ENV === 'production' || Boolean(process.env.RENDER);
+    res.cookie('sbg_player_token', token, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
     
     // Auto upgrade hash
     if (!user.passwordHash.startsWith('$2')) {
@@ -54,7 +60,7 @@ router.post('/login', playerAuthLimiter, async (req, res) => {
       await writeCol('playerUsers', users);
     }
     
-    res.json({ success: true, userId: user.id });
+    res.json({ success: true, userId: user.id, token });
   } catch (err) {
     res.status(500).json({ success: false, error: 'Server error' });
   }

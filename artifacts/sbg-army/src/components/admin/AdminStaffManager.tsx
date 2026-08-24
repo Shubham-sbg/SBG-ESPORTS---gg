@@ -5,6 +5,7 @@ import { STAFF_ASSIGNABLE_MODULES } from '@/lib/auth';
 import { MODULE_LABELS, MODULE_ICONS, ROLE_COLORS, ROLE_LABELS } from '@/lib/roles';
 import type { AdminModule } from '@/lib/auth';
 import MediaUpload from '@/components/shared/MediaUpload';
+import { apiUrl } from '@/lib/api';
 
 const GOLD = '#d4af37';
 
@@ -117,7 +118,7 @@ export default function AdminStaffManager({ onRefresh }: { onRefresh: () => void
       if (form.password.trim()) payload.password = form.password.trim();
       if (editId) payload.id = editId;
 
-      const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/admin/staff', { credentials: "include",
+      const res = await fetch(apiUrl('/api/admin/staff'), { credentials: "include",
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -146,7 +147,7 @@ export default function AdminStaffManager({ onRefresh }: { onRefresh: () => void
   const handleDelete = async (id: string) => {
     const token = getAdminToken();
     try {
-      await fetch(`${import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com"}/api/admin/staff/${id}`, { credentials: "include",
+      await fetch(apiUrl(`/api/admin/staff/${id}`), { credentials: "include",
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` },
       });

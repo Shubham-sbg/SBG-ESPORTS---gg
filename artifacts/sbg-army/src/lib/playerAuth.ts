@@ -1,11 +1,12 @@
 import { PlayerUser } from './database';
+import { apiUrl } from './api';
 
 export async function registerPlayer(data: {
   username: string; password: string; name: string; uid: string;
   preferredGame: string; whatsapp: string; country: string; email?: string;
 }): Promise<{ success: boolean; error?: string; userId?: string }> {
   try {
-    const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/player-auth/register', {
+    const res = await fetch(apiUrl('/api/player-auth/register'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -19,7 +20,7 @@ export async function registerPlayer(data: {
 
 export async function loginPlayer(username: string, password: string): Promise<{ success: boolean; error?: string }> {
   try {
-    const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/player-auth/login', {
+    const res = await fetch(apiUrl('/api/player-auth/login'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -32,7 +33,7 @@ export async function loginPlayer(username: string, password: string): Promise<{
 }
 
 export async function logoutPlayer(): Promise<void> {
-  await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/player-auth/logout', { method: 'POST', credentials: 'include' }).catch(() => {});
+  await fetch(apiUrl('/api/player-auth/logout'), { method: 'POST', credentials: 'include' }).catch(() => {});
   if (typeof window !== 'undefined') {
     (window as any).__sbgPlayerSession = null;
   }
@@ -40,7 +41,7 @@ export async function logoutPlayer(): Promise<void> {
 
 export async function verifyPlayerSession(): Promise<PlayerUser | null> {
   try {
-    const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/player-auth/verify', { credentials: 'include' });
+    const res = await fetch(apiUrl('/api/player-auth/verify'), { credentials: 'include' });
     if (!res.ok) return null;
     const data = await res.json();
     if (data.success) {

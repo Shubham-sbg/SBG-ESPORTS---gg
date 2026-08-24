@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { FacilitySection as FacilitySectionType, FacilityStat, Settings } from '@/lib/database';
+import { apiUrl } from '@/lib/api';
 
 interface Props {
   facility?: FacilitySectionType[];
@@ -50,9 +51,9 @@ export default function FacilitySection({
     setError(null);
     try {
       const [facRes, statsRes, setRes] = await Promise.all([
-        fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/db/facility'),
-        fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/db/facilityStats'),
-        fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/db/settings'),
+        fetch(apiUrl('/api/db/facility')),
+        fetch(apiUrl('/api/db/facilityStats')),
+        fetch(apiUrl('/api/db/settings')),
       ]);
 
       if (!facRes.ok || !statsRes.ok) {

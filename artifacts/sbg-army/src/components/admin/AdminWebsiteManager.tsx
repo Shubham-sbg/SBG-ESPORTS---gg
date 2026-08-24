@@ -7,13 +7,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ADMIN_BRAND_NAME } from '@/lib/brandConfig';
+import { apiUrl } from '@/lib/api';
 
 const GOLD = '#d4af37';
-const API_BASE = typeof window !== 'undefined'
-  ? (window.location.hostname.includes('localhost') || window.location.hostname.includes('replit')
-    ? ''
-    : '')
-  : '';
 
 interface Website {
   id: string;
@@ -75,7 +71,7 @@ export default function AdminWebsiteManager() {
   const loadStaffStats = async () => {
     try {
       const token = '' || '' || '';
-      const r = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/db/staffAccounts', { credentials: "include",
+      const r = await fetch(apiUrl('/api/db/staffAccounts'), { credentials: "include",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       if (r.ok) {

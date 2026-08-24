@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { saveCollection } from '@/lib/database';
 import { getAdminToken } from '@/lib/auth';
+import { apiUrl } from '@/lib/api';
 
 const GOLD = '#d4af37';
 
@@ -69,7 +70,7 @@ export default function AdminPlatforms({ onRefresh }: Props) {
 
   const loadConfig = async () => {
     try {
-      const r = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/db/platforms', { credentials: "include", cache: 'no-store' });
+      const r = await fetch(apiUrl('/api/db/platforms'), { credentials: "include", cache: 'no-store' });
       const data = await r.json();
       if (data && typeof data === 'object' && !Array.isArray(data) && 'platforms' in data) {
         setConfig({ ...DEFAULT_CONFIG, ...data });
@@ -83,7 +84,7 @@ export default function AdminPlatforms({ onRefresh }: Props) {
     setSaving(true);
     try {
       const token = getAdminToken();
-      await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/db/platforms', { credentials: "include",
+      await fetch(apiUrl('/api/db/platforms'), { credentials: "include",
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

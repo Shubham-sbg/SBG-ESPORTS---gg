@@ -1,3 +1,5 @@
+import { apiUrl } from './api';
+
 /**
  * Client-side analytics — sends page visit data to the public server endpoint.
  * No auth required. Falls back silently on any error.
@@ -46,7 +48,8 @@ export function trackPageVisit(page: string = '/') {
     const id         = `v_${now}_${deviceId.slice(-4)}`;
 
     // Fire-and-forget — never block the page, never throw
-    fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/analytics/track', { credentials: "include",
+    fetch(apiUrl('/api/analytics/track'), {
+      credentials: "include",
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ page, deviceType, date, id }),

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { applyAspectRatio, AspectRatioOption } from '../shared/ImageUpload';
 import { uploadFileToServer, validateFile } from '@/lib/uploadService';
+import { apiUrl } from '@/lib/api';
 
 interface MediaItem {
   id: string;
@@ -75,7 +76,7 @@ export default function AdminMediaManager() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/media', { credentials: "include",
+      const res = await fetch(apiUrl('/api/media'), { credentials: "include",
         headers: { ...getAuthHeader() },
       });
       const data = await res.json();
@@ -185,7 +186,7 @@ export default function AdminMediaManager() {
     formData.append('module', selectedModule);
 
     try {
-      const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/media/batch', { credentials: "include",
+      const res = await fetch(apiUrl('/api/media/batch'), { credentials: "include",
         method: 'POST',
         headers: { ...getAuthHeader() },
         body: formData,
@@ -254,7 +255,7 @@ export default function AdminMediaManager() {
   const handleSaveEdit = async () => {
     if (!editItem) return;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com"}/api/media/${editItem.id}`, { credentials: "include",
+      const res = await fetch(apiUrl(`/api/media/${editItem.id}`), { credentials: "include",
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -287,7 +288,7 @@ export default function AdminMediaManager() {
     if (!confirm(`Are you sure you want to delete "${item.title || item.filename}"? This operation cannot be undone.`)) return;
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com"}/api/media/${item.id}`, { credentials: "include",
+      const res = await fetch(apiUrl(`/api/media/${item.id}`), { credentials: "include",
         method: 'DELETE',
         headers: { ...getAuthHeader() },
       });
@@ -321,7 +322,7 @@ export default function AdminMediaManager() {
     setItems(newItems);
 
     try {
-      await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/media/reorder', { credentials: "include",
+      await fetch(apiUrl('/api/media/reorder'), { credentials: "include",
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

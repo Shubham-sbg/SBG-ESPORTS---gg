@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
+import { apiUrl } from '@/lib/api';
 
 export default function StaffGuard({ children }: { children: React.ReactNode }) {
   const [, navigate] = useLocation();
@@ -9,7 +10,7 @@ export default function StaffGuard({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/admin/verify', { credentials: 'include' });
+        const res = await fetch(apiUrl('/api/admin/verify'), { credentials: 'include' });
         if (!res.ok) {
           setIsAuthenticated(false);
           return;
