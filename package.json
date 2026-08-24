@@ -11,8 +11,8 @@
   ],
   "scripts": {
     "start": "node server.ts",
-    "dev": "concurrently \"bun run dev --workspace=@workspace/api-server\" \"bun run dev --workspace=@workspace/sbg-army\"",
-    "build": "bun run build --workspace=@workspace/api-server && bun run build --workspace=@workspace/sbg-army",
+    "dev": "concurrently \"npm run dev -w @workspace/api-server\" \"npm run dev -w @workspace/sbg-army\"",
+    "build": "npm run build -w @workspace/api-server && npm run build -w @workspace/sbg-army",
     "typecheck": "tsc --build",
     "lint": "tsc --noEmit"
   },
