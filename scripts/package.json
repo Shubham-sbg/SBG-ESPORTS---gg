@@ -9,7 +9,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@workspace/db": "workspace:*",
+    "@workspace/db": "*",
     "drizzle-orm": "^0.38.4"
   },
   "devDependencies": {
