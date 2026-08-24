@@ -4,59 +4,20 @@ services:
     env: node
     region: singapore
     plan: free
-
-    # ── Build ─────────────────────────────────────────────────────────────────
-    # Run pnpm install from the workspace root so all internal packages
-    # (e.g. @workspace/db, @workspace/api-zod) are resolved correctly.
-    # --no-frozen-lockfile prevents ERR_PNPM_OUTDATED_LOCKFILE on CI.
-    buildCommand: >
-      pnpm install --no-frozen-lockfile &&
-      pnpm --filter @workspace/sbg-army run build &&
-      pnpm --filter @workspace/api-server run build
-
-    # ── Start ─────────────────────────────────────────────────────────────────
-    # Run from the repo root; Render injects PORT automatically.
+    buildCommand: bun install && bun run build --workspace=@workspace/api-server
     startCommand: node --enable-source-maps artifacts/api-server/dist/index.mjs
-
-    # ── Environment variables ──────────────────────────────────────────────────
     envVars:
       - key: NODE_ENV
         value: production
-
-      # Render injects PORT automatically — do NOT set it here.
-
       - key: SESSION_SECRET
-        generateValue: true      # Render generates a secure random value
-
+        generateValue: true
       - key: LOG_LEVEL
         value: info
 
-      # ── Optional: PostgreSQL for pg-backed match features ──────────────────
-      # If not set, the /api/matches-pg routes return errors gracefully;
-      # all other features (JSON store) continue to work normally.
-      # Uncomment and set when you add a Render PostgreSQL service:
-      # - key: DATABASE_URL
-      #   fromDatabase:
-      #     name: sbg-army-db
-      #     property: connectionString
-
-      # ── Optional: Persistent storage path ─────────────────────────────────
-      # Render Free does not support persistent disks. All JSON data and
-      # uploads are stored inside the container and reset on each deploy.
-      # Upgrade to a paid plan, add a disk mounted at /data, and set:
-      # - key: DATA_DIR
-      #   value: /data/database
-
-      # ── Optional: Clerk player authentication ─────────────────────────────
-      # The server starts and works fully without these. Add them ONLY if you
-      # want to enable Clerk-based player login. Get both keys from your Clerk
-      # dashboard → API Keys.
-      # - key: CLERK_SECRET_KEY
-      #   sync: false          # paste sk_live_... from Clerk dashboard
-      # - key: CLERK_PUBLISHABLE_KEY
-      #   sync: false          # paste pk_live_... from Clerk dashboard
-
-      # ── Optional: CORS for split deployments ──────────────────────────────
-      # Set if your frontend is on a different domain (e.g. Vercel):
-      # - key: CORS_ORIGIN
-      #   value: https://your-frontend.vercel.app
+  - type: static
+    name: sbg-army-frontend
+    env: static
+    region: singapore
+    plan: free
+    buildCommand: bun install && bun run build --workspace=@workspace/sbg-army
+    publishPath: artifacts/sbg-army/dist
