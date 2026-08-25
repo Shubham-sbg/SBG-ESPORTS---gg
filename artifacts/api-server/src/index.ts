@@ -24,7 +24,9 @@ if (!isProduction) {
   }
 }
 
+console.log("Starting server...");
 await initStore();
+console.log("Store initialized.");
 
 // Seed Firebase Settings if database is available
 if (process.env.DATABASE_URL) {

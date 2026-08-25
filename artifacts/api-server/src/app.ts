@@ -223,8 +223,8 @@ app.use("/api", async (err: any, req: Request, res: Response, _next: any) => {
   }
 });
 
-// Root health check endpoints for Cloud Run / load balancers
-app.get(["/", "/healthz", "/health", "/api/healthz", "/api/health"], (_req: Request, res: Response) => {
+// Health check endpoints for Cloud Run / load balancers
+app.get(["/healthz", "/health", "/api/healthz", "/api/health"], (_req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/json");
   res.status(200).json({ status: "ok", service: "sbg-esports-api", uptime: process.uptime(), timestamp: Date.now() });
 });
@@ -277,7 +277,7 @@ app.get('/sitemap.xml',  async (req, res, next) => {
   }
 });
 
-if (existsSync(staticDir)) {
+if (existsSync(path.join(staticDir, "index.html"))) {
   app.use(
     express.static(staticDir, {
       maxAge: "1d",
@@ -297,9 +297,239 @@ if (existsSync(staticDir)) {
   });
   logger.info({ staticDir }, "Serving SBG ARMY frontend static files");
 } else {
-  // If static directory not yet created, render a clean fallback
-  app.use((_req: Request, res: Response) => {
-    res.send("<!DOCTYPE html><html><head><title>SBG Esports</title></head><body><div id='root'></div><script>console.log('App loading...');</script></body></html>");
+  // Standalone API Gateway mode (e.g. Render backend service deployment)
+  app.get("/", (req: Request, res: Response) => {
+    if (req.accepts("html", "json") === "json" || req.query.format === "json") {
+      res.setHeader("Content-Type", "application/json");
+      return res.status(200).json({
+        status: "ok",
+        service: "sbg-esports-api",
+        message: "SBG Esports Backend API Service is active and operational",
+        uptime: process.uptime(),
+        timestamp: Date.now(),
+        endpoints: {
+          health: "/healthz",
+          settings: "/api/db/settings",
+          posts: "/api/db/posts",
+          tournaments: "/api/db/tournaments",
+          players: "/api/db/players",
+          auth: "/api/auth/login",
+          playerAuth: "/api/player-auth/login",
+          media: "/api/media/list",
+        },
+      });
+    }
+
+    const uptimeSec = Math.floor(process.uptime());
+    const hours = Math.floor(uptimeSec / 3600);
+    const minutes = Math.floor((uptimeSec % 3600) / 60);
+    const seconds = uptimeSec % 60;
+    const uptimeStr = `${hours}h ${minutes}m ${seconds}s`;
+
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SBG Esports — Backend API Gateway</title>
+  <style>
+    :root {
+      --bg: #07070a;
+      --card-bg: #0f0f16;
+      --gold: #d4af37;
+      --gold-dim: rgba(212, 175, 55, 0.15);
+      --gold-border: rgba(212, 175, 55, 0.3);
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --green: #10b981;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .container {
+      max-width: 680px;
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--gold-border);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--green);
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+    .indicator {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--green);
+    }
+    h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    h1 span { color: var(--gold); }
+    p.sub {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .stat-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .stat-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 4px;
+    }
+    .endpoints {
+      background: #09090e;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    .endpoints-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+    .endpoint-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 13px;
+    }
+    .endpoint-item:last-child { border-bottom: none; }
+    .method {
+      background: var(--gold-dim);
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-right: 8px;
+    }
+    .endpoint-link {
+      color: var(--text);
+      text-decoration: none;
+      font-family: monospace;
+    }
+    .endpoint-link:hover { color: var(--gold); }
+    .footer-note {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="badge">
+      <span class="indicator"></span>
+      Service Operational
+    </div>
+    <h1>SBG ESPORTS <span>API GATEWAY</span></h1>
+    <p class="sub">Production Backend API Server powering SBG ARMY Esports data, real-time WebSocket sync, and admin management.</p>
+    
+    <div class="grid">
+      <div class="stat-box">
+        <div class="stat-label">Service</div>
+        <div class="stat-value">REST & WS API</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Server Uptime</div>
+        <div class="stat-value">${uptimeStr}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Health Check</div>
+        <div class="stat-value" style="color: var(--green);">200 OK</div>
+      </div>
+    </div>
+
+    <div class="endpoints">
+      <div class="endpoints-title">Quick Endpoints</div>
+      <div class="endpoint-item">
+        <div><span class="method">GET</span><a class="endpoint-link" href="/healthz">/healthz</a></div>
+        <span style="color: var(--text-muted); font-size: 11px;">Health Monitor</span>
+      </div>
+      <div class="endpoint-item">
+        <div><span class="method">GET</span><a class="endpoint-link" href="/api/db/settings">/api/db/settings</a></div>
+        <span style="color: var(--text-muted); font-size: 11px;">Site Settings</span>
+      </div>
+      <div class="endpoint-item">
+        <div><span class="method">GET</span><a class="endpoint-link" href="/api/db/tournaments">/api/db/tournaments</a></div>
+        <span style="color: var(--text-muted); font-size: 11px;">Tournaments</span>
+      </div>
+      <div class="endpoint-item">
+        <div><span class="method">GET</span><a class="endpoint-link" href="/api/db/players">/api/db/players</a></div>
+        <span style="color: var(--text-muted); font-size: 11px;">Roster</span>
+      </div>
+    </div>
+
+    <p class="footer-note">
+      This service is the live backend API for SBG Esports. Web traffic from your frontend application connects automatically via <code>${req.protocol}://${req.get('host')}/api</code>.
+    </p>
+  </div>
+</body>
+</html>`);
+  });
+
+  // Catch-all for any unmatched non-API routes when staticDir is not present
+  app.use((req: Request, res: Response) => {
+    if (req.path.startsWith("/api")) {
+      res.setHeader("Content-Type", "application/json");
+      return res.status(404).json({ ok: false, error: "API endpoint not found" });
+    }
+    res.redirect("/");
   });
 }
 
