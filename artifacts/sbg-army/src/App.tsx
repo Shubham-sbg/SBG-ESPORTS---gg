@@ -145,9 +145,7 @@ function Router() {
         </AdminGuard>
       </Route>
       <Route path="/admin">
-        <AdminGuard>
-          <AdminPage />
-        </AdminGuard>
+        <Redirect to="/sbg-admin" />
       </Route>
 
       {/* ── 404 ──────────────────────────────────────────────────────────── */}
