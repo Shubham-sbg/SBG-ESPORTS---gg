@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Combobox from '@/components/shared/Combobox';
 import { PUBLIC_BRAND_NAME } from '@/lib/brandConfig';
+import { apiUrl } from '@/lib/api';
 
 const ROLES = [
   'IGL (In-Game Leader)',
@@ -99,7 +100,7 @@ export default function JoinTeamPage() {
 
   // Load active openings & check URL query params
   useEffect(() => {
-    fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/recruitment/openings')
+    fetch(apiUrl('/api/recruitment/openings'))
       .then(res => res.json())
       .then(data => {
         if (data.ok && Array.isArray(data.openings)) {
@@ -156,7 +157,7 @@ export default function JoinTeamPage() {
       const reader = new FileReader();
       reader.onload = async (e) => {
         const base64 = e.target?.result as string;
-        const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/recruitment/upload', { credentials: "include",
+        const res = await fetch(apiUrl('/api/recruitment/upload'), { credentials: "include",
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -229,7 +230,7 @@ export default function JoinTeamPage() {
         availability: form.availability,
       };
 
-      const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/recruitment/apply', { credentials: "include",
+      const res = await fetch(apiUrl('/api/recruitment/apply'), { credentials: "include",
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

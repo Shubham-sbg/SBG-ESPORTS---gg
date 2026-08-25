@@ -4,6 +4,7 @@ import { useDatabase } from '@/hooks/useDatabase';
 import { updateDBCache, saveCollection } from '@/lib/database';
 import { applyTheme } from '@/lib/applyTheme';
 import { ADMIN_BRAND_NAME } from '@/lib/brandConfig';
+import { apiUrl } from '@/lib/api';
 
 const PREV_THEME_STORAGE_KEY = 'sbg_previous_theme_backup';
 
@@ -45,12 +46,18 @@ export default function AdminDesignManager() {
       refresh();
 
       // Persist to server API
-      const token = '' || '';
-      const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/theme', { credentials: "include",
+      const token = (() => {
+        try {
+          return sessionStorage.getItem('sbg_admin_token') || localStorage.getItem('sbg_admin_token') || '';
+        } catch {
+          return '';
+        }
+      })();
+      const res = await fetch(apiUrl('/api/theme'), { credentials: "include",
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({ activeTheme: themeToPublish }),
       });

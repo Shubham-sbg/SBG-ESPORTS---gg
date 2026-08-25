@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'wouter';
 import { useDatabase } from '@/hooks/useDatabase';
 import { applyTheme } from '@/lib/applyTheme';
+import { apiUrl } from '@/lib/api';
 // Local session auth — Firebase no longer required for admin login
 import AdminDashboard from '@/components/admin/AdminDashboard';
 import AdminRoster from '@/components/admin/AdminRoster';
@@ -155,7 +156,7 @@ export default function AdminPage() {
     let active = true;
     const fetchStatus = async () => {
       try {
-        const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/health/deep');
+        const res = await fetch(apiUrl('/api/health/deep'), { credentials: 'include' });
         if (!res.ok) throw new Error('Unhealthy');
         const data = await res.json();
         if (active) {
@@ -196,7 +197,7 @@ export default function AdminPage() {
 
   const handleLogout = () => {
     // Clear JWT token and call guard logout
-    try { fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/admin/logout', { credentials: 'include' }).catch(() => {}); } catch {}
+    try { fetch(apiUrl('/api/admin/logout'), { credentials: 'include' }).catch(() => {}); } catch {}
     const guardLogout = (window as unknown as Record<string, unknown>).__sbgAdminLogout;
     if (typeof guardLogout === 'function') (guardLogout as () => void)();
     navigate('/sbg-admin');

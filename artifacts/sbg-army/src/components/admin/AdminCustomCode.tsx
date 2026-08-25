@@ -6,6 +6,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { getAdminToken } from '@/lib/auth';
 import Combobox from '@/components/shared/Combobox';
+import { apiUrl } from '@/lib/api';
 
 interface Snippet {
   id: string;
@@ -55,7 +56,7 @@ function applyToPreview(snippets: Snippet[], iframe: HTMLIFrameElement) {
 }
 
 async function load(): Promise<Snippet[]> {
-  const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/db/customCode');
+  const res = await fetch(apiUrl('/api/db/customCode'));
   if (!res.ok) return [];
   const data = await res.json();
   return Array.isArray(data) ? data : [];
@@ -63,7 +64,7 @@ async function load(): Promise<Snippet[]> {
 
 async function save(snippets: Snippet[]): Promise<void> {
   const token = getAdminToken();
-  await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/db/customCode', { credentials: "include",
+  await fetch(apiUrl('/api/db/customCode'), { credentials: "include",
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify(snippets),

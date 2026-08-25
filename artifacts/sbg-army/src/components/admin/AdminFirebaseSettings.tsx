@@ -125,7 +125,7 @@ export default function AdminFirebaseSettings() {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/settings/firebase');
+        const res = await fetch(apiUrl('/api/settings/firebase'));
         if (!res.ok) throw new Error('Failed to load settings');
         const data = await res.json();
         

@@ -2,17 +2,20 @@ import admin from "firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
 import { db, siteSettingsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
+import { parseFirebaseServiceAccount, loadFirebaseAppletConfig } from "./firebaseConfig.js";
 
 let adminApp: admin.app.App | null = null;
 let firestoreDb: any = null;
+
+const appletConfig = loadFirebaseAppletConfig();
 
 export const firestoreHealth = {
   connected: false,
   lastSync: null as string | null,
   lastWrite: null as string | null,
   lastError: null as string | null,
-  databaseId: "ai-studio-sbgarmygg-50d61416-99c8-4021-beb1-783af9dce49c",
-  projectId: "sbg-army-web",
+  databaseId: appletConfig.firestoreDatabaseId || "ai-studio-sbgarmygg-50d61416-99c8-4021-beb1-783af9dce49c",
+  projectId: appletConfig.projectId || "sbg-army-web",
 };
 
 // Lazy initialization of Firebase Admin SDK
@@ -35,14 +38,17 @@ export async function getFirestoreInstance() {
     }
 
     if (!serviceAccountStr) {
-      throw new Error("No Firebase Service Account credentials found. Please save them in Settings.");
+      throw new Error("No Firebase Service Account credentials found. Please save them in Settings or set FIREBASE_SERVICE_ACCOUNT_JSON.");
     }
 
-    const serviceAccount = JSON.parse(serviceAccountStr);
+    const serviceAccount = parseFirebaseServiceAccount(serviceAccountStr);
+    if (!serviceAccount) {
+      throw new Error("Invalid Firebase Service Account credentials format.");
+    }
 
     // 2. Fetch Project ID and Database ID dynamically
     let databaseId = firestoreHealth.databaseId;
-    let projId = "sbg-army-web";
+    let projId = serviceAccount.project_id || firestoreHealth.projectId;
     if (process.env.DATABASE_URL) {
       const dbIdRows = await db
         .select()

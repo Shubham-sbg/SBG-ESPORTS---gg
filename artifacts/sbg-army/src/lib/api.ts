@@ -2,18 +2,32 @@
  * Centralized API & WebSocket Configuration
  * 
  * Supports both:
- * 1. Split Deployments (Frontend on Vercel / Netlify, Backend on Render / Cloud Run):
- *    Set VITE_API_URL=https://<your-backend-domain> (e.g. https://sbg-esportsgg.onrender.com)
+ * 1. Split Deployments (Frontend on Vercel / Netlify / AI Studio, Backend on Render / Cloud Run):
+ *    Uses VITE_API_URL or defaults to https://sbg-esports-gg.onrender.com
  * 2. Unified / Same-Origin / Local Development:
- *    Leave VITE_API_URL unset or empty (uses relative /api routes with Vite dev proxy)
+ *    Uses relative /api routes with Vite dev proxy
  */
 
 const envApiUrl = (import.meta.env.VITE_API_URL as string | undefined)?.trim();
 
+export const PRODUCTION_DEFAULT_BACKEND_URL = 'https://sbg-esports-gg.onrender.com';
+
+function resolveBackendUrl(): string {
+  if (envApiUrl) {
+    return envApiUrl.replace(/\/+$/, '').replace(/\/api$/, '');
+  }
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    // Local development or running directly on Render host -> relative /api
+    if (host === 'localhost' || host === '127.0.0.1' || host === 'sbg-esports-gg.onrender.com' || host === '0.0.0.0') {
+      return '';
+    }
+  }
+  return PRODUCTION_DEFAULT_BACKEND_URL;
+}
+
 // Clean up trailing slash and any accidental trailing '/api'
-export const BACKEND_URL: string = envApiUrl
-  ? envApiUrl.replace(/\/+$/, '').replace(/\/api$/, '')
-  : '';
+export const BACKEND_URL: string = resolveBackendUrl();
 
 export const API_BASE: string = BACKEND_URL ? `${BACKEND_URL}/api` : '/api';
 

@@ -3,6 +3,7 @@ import { useLocation } from 'wouter';
 import { createStaffSession, ADMIN_MODULES } from '@/lib/auth';
 import type { AdminModule } from '@/lib/auth';
 import { ADMIN_BRAND_NAME } from '@/lib/brandConfig';
+import { apiUrl } from '@/lib/api';
 
 export default function StaffLoginPage() {
   const [, navigate] = useLocation();
@@ -18,7 +19,7 @@ export default function StaffLoginPage() {
 
     try {
       // Always authenticate via the server — the client DB has passwords scrubbed for security.
-      const res = await fetch((import.meta.env.VITE_API_URL || "https://sbg-esportsgg.onrender.com") + '/api/admin/login', {
+      const res = await fetch(apiUrl('/api/admin/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

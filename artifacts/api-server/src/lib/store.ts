@@ -4,6 +4,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { existsSync, mkdirSync, copyFileSync, readFileSync, writeFileSync, unlinkSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadFirebaseAppletConfig, parseFirebaseServiceAccount } from './firebaseConfig.js';
 
 let DatabaseSyncClass: any = null;
 try {
@@ -164,16 +165,13 @@ let firestoreInitialized = false;
 async function initFirestore(): Promise<any> {
   if (firestoreInitialized) return firestoreClient;
   try {
-    const configPath = join(process.cwd(), 'firebase-applet-config.json');
-    let config: any = {};
-    if (existsSync(configPath)) {
-      config = JSON.parse(readFileSync(configPath, 'utf8'));
-    }
+    const config = loadFirebaseAppletConfig();
     const projectId = config.projectId || 'sbg-army-web';
     const databaseId = config.firestoreDatabaseId || 'ai-studio-sbgarmygg-50d61416-99c8-4021-beb1-783af9dce49c';
 
-    if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
-      const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+    const serviceAccount = parseFirebaseServiceAccount(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+
+    if (serviceAccount) {
       if (!admin.apps.length) {
         admin.initializeApp({
           credential: admin.credential.cert(serviceAccount),
