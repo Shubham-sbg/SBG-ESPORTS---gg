@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState, useEffect } from 'react';
 import { useDatabase } from '@/hooks/useDatabase';
 import { applyTheme } from '@/lib/applyTheme';
@@ -193,7 +195,7 @@ function StreamCard({ stream }: { stream: any }) {
                 allowFullScreen 
               />
             </div>
-          ) : isLive && twitchChannel ? (
+          ) : (isLive && twitchChannel ? (
             <div className="aspect-video rounded-xl overflow-hidden border border-white/5 shadow-lg bg-black">
               <iframe
                 className="w-full h-full"
@@ -204,7 +206,7 @@ function StreamCard({ stream }: { stream: any }) {
           ) : (
             <div className="aspect-video bg-black/60 border border-white/5 rounded-xl relative overflow-hidden group">
               {stream.thumbnail ? (
-                <img src={stream.thumbnail} alt={stream.title} className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-all duration-300" />
+                <Image src={stream.thumbnail} alt={stream.title} objectFit="cover" className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-all duration-300" />
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-[#12121a] to-black/80 flex items-center justify-center">
                   <span className="text-4xl filter grayscale opacity-40">🎮</span>
@@ -221,7 +223,7 @@ function StreamCard({ stream }: { stream: any }) {
                 </a>
               </div>
             </div>
-          )}
+          ))}
         </div>
       </div>
     </div>
@@ -318,7 +320,8 @@ export default function LivePage() {
                   return (
                     <div key={i} className="bg-white/[0.03] border border-white/5 rounded-2xl overflow-hidden hover:border-orange-500/20 transition-all">
                       <div className="aspect-video bg-black relative cursor-pointer group">
-                        <img src={`https://img.youtube.com/vi/${m.ytVideoId}/hqdefault.jpg`} alt={m.title}
+                        <Image src={`https://img.youtube.com/vi/${m.ytVideoId}/hqdefault.jpg`} alt={m.title}
+                          objectFit="cover"
                           className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity" />
                         <div className="absolute inset-0 flex items-center justify-center">
                           <div className="w-14 h-14 bg-red-600/90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -329,7 +332,7 @@ export default function LivePage() {
                       <div className="p-4">
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-xs font-bold text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded">{m.game}</span>
-                          <span className={`text-xs font-bold ${m.result.includes('WIN') ? 'text-green-400' : 'text-red-400'}`}>{m.result}</span>
+                          <span className={`text-xs font-bold ${m.result.includes('WIN') ?'text-green-400' : ('text-red-400')}`}>{m.result}</span>
                         </div>
                         <h3 className="text-white font-bold text-sm mb-1">{m.title}</h3>
                         <p className="text-gray-500 text-xs">{m.date}</p>

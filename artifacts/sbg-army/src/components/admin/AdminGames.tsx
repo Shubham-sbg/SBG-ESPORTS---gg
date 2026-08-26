@@ -1,3 +1,4 @@
+import { getImageUrl } from '@/lib/imageResolver';
 import { useState } from 'react';
 import { Game, getDB, saveDB } from '@/lib/database';
 import { uploadFileToServer } from '@/lib/uploadService';
@@ -108,7 +109,7 @@ export default function AdminGames({ games, onRefresh }: Props) {
         <div className="p-6 rounded-xl border border-orange-500/30 bg-orange-500/5 space-y-4">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-xl border-2 border-dashed border-white/20 flex items-center justify-center overflow-hidden bg-white/3">
-              {form.logo ? <img src={form.logo} alt="" className="w-full h-full object-contain p-1" /> : <span>🕹️</span>}
+              {form.logo ? <img src={getImageUrl(form.logo)} alt="" className="w-full h-full object-contain p-1" /> : <span>🕹️</span>}
             </div>
             <label className="cursor-pointer px-4 py-2 rounded-lg bg-white/10 text-gray-300 text-sm font-bold hover:bg-white/20">
               Upload Logo <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
@@ -134,7 +135,7 @@ export default function AdminGames({ games, onRefresh }: Props) {
         {sorted.map(g => (
           <div key={g.id} className="flex items-center gap-4 p-4 rounded-xl border border-white/5 bg-white/3 hover:border-white/10 transition-all">
             <div className="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center overflow-hidden flex-shrink-0">
-              {g.logo ? <img src={g.logo} alt="" className="w-full h-full object-contain p-1" /> : <span className="font-black text-orange-400">{g.name.charAt(0)}</span>}
+              {g.logo ? <img src={getImageUrl(g.logo)} alt="" className="w-full h-full object-contain p-1" /> : <span className="font-black text-orange-400">{g.name.charAt(0)}</span>}
             </div>
             <div className="flex-1 font-bold text-white">{g.name}</div>
             <div className="flex items-center gap-3 flex-shrink-0">

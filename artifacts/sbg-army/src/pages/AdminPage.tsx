@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation } from 'wouter';
@@ -59,6 +61,7 @@ import AdminTeamHistory from '@/components/admin/AdminTeamHistory';
 import AdminLiveStream from '@/components/admin/AdminLiveStream';
 import AdminMediaManager from '@/components/admin/AdminMediaManager';
 import AdminDesignManager from '@/components/admin/AdminDesignManager';
+import AdminCtaManager from '@/components/admin/AdminCtaManager';
 import { canAccess, SUPER_ADMIN_ONLY } from '@/lib/permissions';
 
 const GOLD = '#d4af37';
@@ -73,7 +76,7 @@ type AdminModule =
   | 'events_admin' | 'rankings_admin' | 'security_logs' | 'enterprise' | 'features'
   | 'system_health' | 'achievements' | 'hof_timeline' | 'custom_code'
   | 'about_cms' | 'legal_pages' | 'feedback' | 'quick_access'
-  | 'hero_cms' | 'countdown_mgr' | 'bg_manager' | 'footer_cms'
+  | 'hero_cms' | 'countdown_mgr' | 'bg_manager' | 'footer_cms' | 'cta_mgr'
   | 'website_manager' | 'platforms' | 'external_links' | 'design_manager' | 'media_manager'
   | 'trophy_room' | 'team_records' | 'team_history' | 'live_stream';
 
@@ -97,6 +100,7 @@ const MODULES: { id: AdminModule; label: string; icon: string; group?: string }[
   { id: 'team_history',      label: 'Team History',       icon: '📅',  group: 'ESPORTS' },
   { id: 'live_stream',       label: 'Live Stream',        icon: '🔴',  group: 'CONTENT' },
   { id: 'hero_cms',          label: 'Hero Section CMS',   icon: '🚀',  group: 'CONTENT' },
+  { id: 'cta_mgr',        label: 'CTA Manager',       icon: '🎯', group: 'CONTENT' },
   { id: 'countdown_mgr',    label: 'Countdown Manager',  icon: '⏱️', group: 'CONTENT' },
   { id: 'bg_manager',       label: 'Background Manager', icon: '✨',  group: 'CONTENT' },
   { id: 'footer_cms',       label: 'Footer CMS',         icon: '🦶',  group: 'CONTENT' },
@@ -265,6 +269,7 @@ export default function AdminPage() {
       case 'feedback':       return <AdminFeedback onRefresh={refresh} />;
       case 'quick_access':   return <AdminQuickAccess navigation={db.navigation} onRefresh={refresh} />;
       case 'hero_cms':       return <AdminHeroCMS onRefresh={refresh} />;
+      case 'cta_mgr':      return <AdminCtaManager onRefresh={refresh} />;
       case 'countdown_mgr':  return <AdminCountdown onRefresh={refresh} />;
       case 'bg_manager':     return <AdminBackgroundManager onRefresh={refresh} />;
       case 'footer_cms':     return <AdminFooterCMS onRefresh={refresh} />;
@@ -357,7 +362,7 @@ export default function AdminPage() {
         <div className="px-4 py-5 border-b border-gold/8 flex-shrink-0">
           <div className="flex items-center gap-3">
             {db.settings.logo ? (
-              <img src={db.settings.logo} alt="" className="h-8 w-auto" />
+              <Image src={db.settings.logo} alt="" objectFit="contain" className="h-8 w-auto object-contain" />
             ) : (
               <div className="h-8 w-8 rounded-lg flex items-center justify-center font-black text-black text-xs flex-shrink-0"
                 style={{ background: 'linear-gradient(135deg, #d4af37, #b8960c)' }}>

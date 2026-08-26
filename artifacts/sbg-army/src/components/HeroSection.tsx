@@ -1,7 +1,9 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import * as THREE from 'three';
-import { Ad, Settings, Database, isFeatureActive, isPlacementActive } from '@/lib/database';
+import { Ad, Settings, Database, isFeatureActive, isPlacementActive, isAdActive } from '@/lib/database';
 
 /* ─── Count-Up Component ─────────────────────────────────────────────────── */
 function CountUpStat({ numericEnd, suffix, value, label, icon }: {
@@ -109,14 +111,6 @@ interface Props {
   settings: Settings;
   ads: Ad[];
   db?: Database;
-}
-
-function isAdActive(ad: Ad): boolean {
-  if (!ad.enabled) return false;
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-  if (ad.startDate) { const s = new Date(ad.startDate); s.setHours(0, 0, 0, 0); if (today < s) return false; }
-  if (ad.endDate) { const e = new Date(ad.endDate); e.setHours(23, 59, 59, 999); if (today > e) return false; }
-  return true;
 }
 
 /** Check if WebGL is fully usable (context must be non-null and not lost) */
@@ -737,7 +731,7 @@ export default function HeroSection({ settings, ads, db }: Props) {
         <>
           <video
             ref={videoRef}
-            src={heroVideo}
+            src={getImageUrl(heroVideo)}
             className="absolute inset-0 w-full h-full object-cover z-[1]"
             style={{ opacity: settings.heroOverlayOpacity ?? 0.15 }}
             autoPlay muted loop playsInline
@@ -791,10 +785,11 @@ export default function HeroSection({ settings, ads, db }: Props) {
             transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="mb-8"
           >
-            <img
+            <Image
               src={settings.logo}
               alt={name}
-              className="h-28 w-auto mx-auto drop-shadow-[0_0_50px_rgba(212,175,55,0.5)]"
+              objectFit="contain"
+              className="h-28 w-auto mx-auto drop-shadow-[0_0_50px_rgba(212,175,55,0.5)] object-contain"
             />
           </motion.div>
         )}
@@ -892,6 +887,43 @@ export default function HeroSection({ settings, ads, db }: Props) {
           )}
         </motion.div>
 
+        {/* Dynamic CTAs */}
+        {settings?.ctaEnabled !== false && db?.ctas && db.ctas.filter(c => c.enabled).length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1 }}
+            className="mt-6 flex flex-wrap gap-4 justify-center items-center max-w-4xl mx-auto px-4"
+          >
+            {db.ctas
+              .filter(c => c.enabled)
+              .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+              .map(cta => {
+                const isSafeUrl = cta.url && (cta.url.startsWith('http://') || cta.url.startsWith('https://'));
+                if (!isSafeUrl) return null;
+                return (
+                  <a
+                    key={cta.id}
+                    href={cta.url}
+                    target={cta.openInNewTab ? '_blank' : '_self'}
+                    rel={cta.openInNewTab ? 'noopener noreferrer' : undefined}
+                    className="group relative px-8 py-3.5 text-xs md:text-sm font-black tracking-widest uppercase text-white overflow-hidden rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(212,175,55,0.4)] flex items-center gap-3 border border-yellow-500/40 bg-black/60 backdrop-blur-md"
+                    style={{ borderColor: 'rgba(212, 175, 55, 0.4)' }}
+                    aria-label={cta.title}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-amber-600/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <span className="relative z-10 flex items-center gap-2">
+                      <span>{cta.title}</span>
+                      <span className="text-yellow-400 font-bold px-2 py-0.5 rounded bg-yellow-500/10 border border-yellow-500/20 text-[11px]">
+                        {cta.buttonText} {cta.openInNewTab ? '↗' : '→'}
+                      </span>
+                    </span>
+                  </a>
+                );
+              })}
+          </motion.div>
+        )}
+
         {/* Stats bar */}
         {canHeroStats && processedStats.length > 0 && (
           <motion.div
@@ -923,7 +955,8 @@ export default function HeroSection({ settings, ads, db }: Props) {
         {heroAd?.imageUrl && (
           <div className="mt-14">
             <a href={heroAd.link} target="_blank" rel="noopener noreferrer">
-              <img src={heroAd.imageUrl} alt="Advertisement"
+              <Image src={heroAd.imageUrl} alt="Advertisement"
+                objectFit="contain"
                 className="mx-auto max-w-2xl w-full rounded-sm opacity-60 hover:opacity-90 transition-opacity" />
             </a>
           </div>

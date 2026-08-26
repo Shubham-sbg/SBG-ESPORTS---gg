@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState } from 'react';
 import { Tournament, getDB, saveDB } from '@/lib/database';
 import Combobox from '@/components/shared/Combobox';
@@ -247,7 +249,7 @@ export default function AdminTournaments({ tournaments, onRefresh }: Props) {
             <div key={t.id} className="p-5 rounded-xl border border-white/5 bg-white/3">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  {t.logo ? <img src={t.logo} alt="" className="h-12 w-12 rounded-lg object-cover" /> : <div className="h-12 w-12 rounded-lg bg-white/5 flex items-center justify-center text-xl">🏆</div>}
+                  {t.logo ? <Image src={t.logo} alt="" objectFit="cover" className="h-12 w-12 rounded-lg object-cover" /> : <div className="h-12 w-12 rounded-lg bg-white/5 flex items-center justify-center text-xl">🏆</div>}
                   <div>
                     <h3 className="font-bold text-white">{t.title}</h3>
                     <p className="text-xs text-gray-500">{t.game} · {t.type} · {t.slots} slots · {t.entryType === 'free' ? 'Free' : `₹${t.entryFee}`}</p>
@@ -307,7 +309,7 @@ export default function AdminTournaments({ tournaments, onRefresh }: Props) {
               {form.entryType === 'paid' && (
                 <div className="col-span-2">
                   <label className="label">UPI QR Code</label>
-                  <div className="flex items-center gap-3 mt-1">{form.upiQr && <img src={form.upiQr} alt="QR" className="h-16 rounded" />}<label className="cursor-pointer px-4 py-2 rounded-lg bg-white/10 text-gray-300 text-sm font-semibold hover:bg-white/20">Upload QR<input type="file" accept="image/*" onChange={handleQrUpload} className="hidden" /></label></div>
+                  <div className="flex items-center gap-3 mt-1">{form.upiQr && <Image src={form.upiQr} alt="QR" objectFit="contain" className="h-16 rounded object-contain" />}<label className="cursor-pointer px-4 py-2 rounded-lg bg-white/10 text-gray-300 text-sm font-semibold hover:bg-white/20">Upload QR<input type="file" accept="image/*" onChange={handleQrUpload} className="hidden" /></label></div>
                 </div>
               )}
               <div><label className="label">Registration Deadline</label><input className="inp" type="date" value={form.registrationDeadline} onChange={e => setForm(f => ({ ...f, registrationDeadline: e.target.value }))} /></div>
@@ -328,7 +330,7 @@ export default function AdminTournaments({ tournaments, onRefresh }: Props) {
               </div>
               <div><label className="label">Room ID</label><input className="inp" placeholder="Room ID here" value={form.roomId} onChange={e => setForm(f => ({ ...f, roomId: e.target.value }))} /></div>
               <div><label className="label">Room Password</label><input className="inp" placeholder="Password" value={form.roomPassword} onChange={e => setForm(f => ({ ...f, roomPassword: e.target.value }))} /></div>
-              <div className="col-span-2"><label className="label">Tournament Logo</label><div className="flex items-center gap-3 mt-1">{form.logo && <img src={form.logo} alt="" className="h-12 rounded" />}<label className="cursor-pointer px-4 py-2 rounded-lg bg-white/10 text-gray-300 text-sm font-semibold hover:bg-white/20">Upload Logo<input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" /></label></div></div>
+              <div className="col-span-2"><label className="label">Tournament Logo</label><div className="flex items-center gap-3 mt-1">{form.logo && <Image src={form.logo} alt="" objectFit="contain" className="h-12 rounded object-contain" />}<label className="cursor-pointer px-4 py-2 rounded-lg bg-white/10 text-gray-300 text-sm font-semibold hover:bg-white/20">Upload Logo<input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" /></label></div></div>
               <div className="col-span-2"><label className="label">Rules</label><textarea className="inp min-h-[80px]" placeholder="Tournament rules..." value={form.rules} onChange={e => setForm(f => ({ ...f, rules: e.target.value }))} /></div>
               <div className="col-span-2"><label className="label">Description</label><textarea className="inp min-h-[60px]" placeholder="Short description..." value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} /></div>
             </div>

@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useEffect, useState, useRef } from 'react';
 import Navbar from '@/components/Navbar';
 import AnnouncementBar from '@/components/AnnouncementBar';
@@ -99,7 +101,7 @@ export default function MotionHomePage({ db }: Props) {
             <div className="absolute inset-0 z-0 overflow-hidden">
               {heroSettings.heroVideoUrl ? (
                 <video
-                  src={heroSettings.heroVideoUrl}
+                  src={getImageUrl(heroSettings.heroVideoUrl)}
                   autoPlay
                   loop
                   muted
@@ -107,9 +109,10 @@ export default function MotionHomePage({ db }: Props) {
                   className="w-full h-full object-cover opacity-25 scale-105 transition-transform duration-1000"
                 />
               ) : heroSettings.heroImageUrl ? (
-                <img
+                <Image
                   src={heroSettings.heroImageUrl}
                   alt="Esports Arena"
+                  objectFit="cover"
                   className="w-full h-full object-cover opacity-20 scale-105 transition-transform duration-1000"
                 />
               ) : (

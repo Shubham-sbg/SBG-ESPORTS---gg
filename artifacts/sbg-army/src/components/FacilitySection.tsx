@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { FacilitySection as FacilitySectionType, FacilityStat, Settings } from '@/lib/database';
 import { apiUrl } from '@/lib/api';
@@ -216,10 +218,11 @@ export default function FacilitySection({
                 key={feat.id}
                 className="flex gap-5 p-6 rounded-2xl border border-white/5 bg-white/3 hover:border-orange-500/30 hover:bg-white/5 transition-all duration-300">
                 {feat.image ? (
-                  <img
+                  <Image
                     src={feat.image}
                     alt={feat.title}
                     loading="lazy"
+                    objectFit="cover"
                     className="w-14 h-14 rounded-xl object-cover flex-shrink-0 border border-white/10"
                   />
                 ) : (

@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Settings, Navigation } from '@/lib/database';
@@ -206,8 +208,8 @@ export default function Navbar({ settings, navigation }: Props) {
 
             {/* Logo */}
             <a href="/" className="flex items-center gap-3 group flex-shrink-0">
-              <img src={settings.logo || '/transparent_eagle_logo.png'} alt={settings.organizationName || 'SBG ESPORTS'}
-                width="40" height="40" decoding="async"
+              <Image src={settings.logo || '/src/assets/images/transparent_eagle_logo_1787472221946.jpg'} alt={settings.organizationName || 'SBG ESPORTS'}
+                width={40} height={40} decoding="async" objectFit="contain"
                 className="h-10 w-auto group-hover:drop-shadow-[0_0_12px_rgba(212,175,55,0.6)] transition-all duration-300 object-contain" />
               <div className="hidden sm:block">
                 <div className="font-black text-sm tracking-[0.25em] text-white leading-none group-hover:text-gold transition-colors duration-300"

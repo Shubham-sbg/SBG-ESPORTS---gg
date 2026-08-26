@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useEffect, useState, useCallback } from 'react';
 import { useDatabase } from '@/hooks/useDatabase';
 import { applyTheme } from '@/lib/applyTheme';
@@ -274,7 +276,7 @@ function BuyModal({ item, settings, profile, onClose }: BuyModalProps) {
                 <p className="text-xs font-black text-gray-400 uppercase tracking-widest">Pay via UPI</p>
                 {upiQr ? (
                   <div className="flex flex-col items-center gap-3">
-                    <img src={upiQr} alt="UPI QR Code" className="h-44 w-44 rounded-xl object-contain bg-white p-2" />
+                    <Image src={upiQr} alt="UPI QR Code" objectFit="contain" className="h-44 w-44 rounded-xl object-contain bg-white p-2" />
                     {upiId && <p className="text-sm text-gray-300">UPI ID: <span className="font-mono font-black text-white">{upiId}</span></p>}
                   </div>
                 ) : upiId ? (
@@ -291,7 +293,7 @@ function BuyModal({ item, settings, profile, onClose }: BuyModalProps) {
                 <label className={label}>Upload Payment Screenshot *</label>
                 {form.screenshot ? (
                   <div className="relative">
-                    <img src={form.screenshot} alt="Screenshot" className="w-full rounded-xl border border-green-500/30 object-contain max-h-48" />
+                    <Image src={form.screenshot} alt="Screenshot" objectFit="contain" className="w-full rounded-xl border border-green-500/30 object-contain max-h-48" />
                     <button onClick={() => set('screenshot', null)}
                       className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/80 text-white text-sm flex items-center justify-center hover:bg-red-500">✕</button>
                   </div>
@@ -367,7 +369,7 @@ function ShopCard({ item, onBuy, isLoggedIn }: { item: ShopItem; onBuy: () => vo
     <div className="group relative rounded-2xl border border-white/5 bg-white/3 hover:border-orange-500/20 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl overflow-hidden flex flex-col">
       <div className="relative aspect-square overflow-hidden bg-white/3 cursor-pointer" onClick={() => item.image && setLightbox(true)}>
         {item.image ? (
-          <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          <Image src={item.image} alt={item.title} objectFit="cover" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <span className="text-8xl opacity-20">👕</span>
@@ -440,7 +442,7 @@ function ShopCard({ item, onBuy, isLoggedIn }: { item: ShopItem; onBuy: () => vo
       {lightbox && item.image && (
         <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4" onClick={() => setLightbox(false)}>
           <button className="absolute top-4 right-4 text-white text-3xl font-bold hover:text-orange-400 transition-colors">✕</button>
-          <img src={item.image} alt={item.title} className="max-w-full max-h-[90vh] object-contain rounded-xl" onClick={e => e.stopPropagation()} />
+          <Image src={item.image} alt={item.title} objectFit="contain" className="max-w-full max-h-[90vh] object-contain rounded-xl" onClick={e => e.stopPropagation()} />
         </div>
       )}
     </div>
@@ -493,7 +495,7 @@ export default function ShopPage() {
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <a href="/" className="flex items-center gap-3">
             {db.settings.logo
-              ? <img src={db.settings.logo} alt={db.settings.organizationName} className="h-10 w-auto" />
+              ? <Image src={db.settings.logo} alt={db.settings.organizationName} objectFit="contain" className="h-10 w-auto object-contain" />
               : <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center font-black text-white text-sm">SBG</div>
             }
             <span className="font-black text-xl tracking-widest text-white">{db.settings.organizationName}</span>

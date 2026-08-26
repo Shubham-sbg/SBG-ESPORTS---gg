@@ -163,7 +163,7 @@ export default function AdminHOFTimeline({ onRefresh }: Props) {
           </div>
           <div className="col-span-2">
             <label className={label}>Image</label>
-            <MediaUpload value={form.image ?? ''} onChange={url => setForm(f => ({ ...f, image: url }))} useServerUpload label="Upload image" size="md" shape="square" />
+            <MediaUpload imageUrl={form.image ?? ''} onImageChange={url => setForm(f => ({ ...f, image: url }))} useServerUpload label="Upload image" size="md" shape="square" />
           </div>
           <div className="flex items-center gap-3">
             <input type="checkbox" checked={form.featured} onChange={e => setForm(f => ({ ...f, featured: e.target.checked }))} className="w-5 h-5" />

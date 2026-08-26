@@ -1,7 +1,10 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState, useRef } from 'react';
-import { Ad, getDB, saveDB } from '@/lib/database';
+import { Ad, getDB, saveDB, getAdStatus, AdStatus } from '@/lib/database';
 import AdminAdProviderManager from './AdminAdProviderManager';
 import { uploadFileToServer } from '@/lib/uploadService';
+import MediaUpload from '@/components/shared/MediaUpload';
 
 interface Props {
   ads: Ad[];
@@ -106,6 +109,7 @@ function isIframeType(adType: string) {
 
 export default function AdminAds({ ads, onRefresh }: Props) {
   const [viewTab, setViewTab] = useState<'providers' | 'units'>('providers');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'upcoming' | 'expired' | 'disabled'>('all');
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(BLANK_FORM);
@@ -144,6 +148,34 @@ export default function AdminAds({ ads, onRefresh }: Props) {
     });
     setShowModal(true);
   };
+
+  const setDateOffset = (days: number | null) => {
+    const today = new Date().toISOString().split('T')[0];
+    if (days === null) {
+      setForm(f => ({ ...f, startDate: '', endDate: '' }));
+      return;
+    }
+    const end = new Date();
+    end.setDate(end.getDate() + days);
+    setForm(f => ({
+      ...f,
+      startDate: f.startDate || today,
+      endDate: end.toISOString().split('T')[0],
+    }));
+  };
+
+  const counts = {
+    all: ads.length,
+    active: ads.filter(a => getAdStatus(a) === 'active').length,
+    upcoming: ads.filter(a => getAdStatus(a) === 'upcoming').length,
+    expired: ads.filter(a => getAdStatus(a) === 'expired').length,
+    disabled: ads.filter(a => getAdStatus(a) === 'disabled').length,
+  };
+
+  const filteredAds = ads.filter(a => {
+    if (statusFilter === 'all') return true;
+    return getAdStatus(a) === statusFilter;
+  });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -316,55 +348,139 @@ export default function AdminAds({ ads, onRefresh }: Props) {
         <AdminAdProviderManager />
       ) : (
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="font-bold text-lg text-white">Custom Ad Units & Direct Placements</h3>
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <h3 className="font-bold text-lg text-white">Custom Ad Units & Direct Placements</h3>
+              <p className="text-xs text-gray-500">Manage banner images, popups, hero ads, video ads, and scripts.</p>
+            </div>
             <button onClick={openCreate}
               className="px-4 py-2 rounded-lg bg-orange-500 text-black text-sm font-bold hover:bg-orange-400 transition-colors">
               + Add Ad Unit
             </button>
           </div>
 
-          {ads.length === 0 && (
+          {/* Status Filter Tabs */}
+          <div className="flex flex-wrap gap-2 pt-1 pb-2">
+            {[
+              { id: 'all', label: `All (${counts.all})`, color: 'bg-white/10 text-white' },
+              { id: 'active', label: `Active (${counts.active})`, color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
+              { id: 'upcoming', label: `Upcoming (${counts.upcoming})`, color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+              { id: 'expired', label: `Expired (${counts.expired})`, color: 'bg-red-500/20 text-red-400 border-red-500/30' },
+              { id: 'disabled', label: `Disabled (${counts.disabled})`, color: 'bg-gray-700/50 text-gray-400 border-gray-600' },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setStatusFilter(tab.id as any)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                  statusFilter === tab.id
+                    ? 'bg-orange-500 text-black border-orange-500 shadow'
+                    : `${tab.color} border-white/5 hover:border-white/20`
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {filteredAds.length === 0 && (
             <div className="p-10 rounded-xl border border-white/5 bg-white/3 text-center text-gray-500 text-sm">
-              No custom ads created yet. Click <strong className="text-orange-400">+ Add Ad Unit</strong> to create your first ad.
+              {ads.length === 0 ? (
+                <>No custom ads created yet. Click <strong className="text-orange-400">+ Add Ad Unit</strong> to create your first ad.</>
+              ) : (
+                <>No ads matching the <strong>{statusFilter}</strong> status.</>
+              )}
             </div>
           )}
 
-      <div className="space-y-3">
-        {ads.map(ad => (
-          <div key={ad.id} className="p-5 rounded-xl border border-white/5 bg-white/3 flex items-center justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-bold text-white text-sm">{ad.title || ad.adType || 'Untitled Ad'}</span>
-                <span className="px-2 py-0.5 rounded text-xs bg-orange-500/20 text-orange-400 font-semibold">{ad.placement}</span>
-                {ad.adType && <span className="px-2 py-0.5 rounded text-xs bg-white/10 text-gray-400">{AD_TYPES.find(t => t.value === ad.adType)?.label || ad.adType}</span>}
-                {ad.deviceTarget && ad.deviceTarget !== 'all' && <span className="px-2 py-0.5 rounded text-xs bg-blue-500/20 text-blue-400">{ad.deviceTarget}</span>}
-              </div>
-              {(ad.startDate || ad.endDate) && (
-                <p className="text-xs text-gray-500 mt-1">
-                  {ad.startDate && `From: ${ad.startDate}`} {ad.endDate && `To: ${ad.endDate}`}
-                </p>
-              )}
-            </div>
-            <div className="flex items-center gap-3">
-              <button onClick={() => toggleAd(ad.id)}
-                className={`relative w-12 h-6 rounded-full transition-all ${ad.enabled ? 'bg-orange-500' : 'bg-gray-700'}`}>
-                <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${ad.enabled ? 'left-7' : 'left-1'}`} />
-              </button>
-              <button onClick={() => openEdit(ad)}
-                className="px-3 py-1.5 rounded-lg bg-white/10 text-gray-300 text-xs font-semibold hover:bg-white/20 transition-colors">
-                Edit
-              </button>
-              <button onClick={() => deleteAd(ad.id)}
-                className="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 text-xs font-semibold hover:bg-red-500/40 transition-colors">
-                Delete
-              </button>
-            </div>
+          <div className="space-y-3">
+            {filteredAds.map(ad => {
+              const status = getAdStatus(ad);
+              return (
+                <div key={ad.id} className="p-4 sm:p-5 rounded-xl border border-white/5 bg-white/3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors hover:border-white/10">
+                  {/* Media Thumbnail */}
+                  <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                    <div className="w-14 h-14 rounded-lg bg-black/40 border border-white/10 overflow-hidden flex-shrink-0 flex items-center justify-center relative">
+                      {ad.imageUrl ? (
+                        <Image src={ad.imageUrl} alt={ad.title || 'Ad'} objectFit="cover" className="w-full h-full object-cover" />
+                      ) : ad.videoUrl ? (
+                        <div className="text-xl">🎬</div>
+                      ) : ad.script || ad.adType === 'adsense' ? (
+                        <div className="text-xs font-mono text-yellow-400">&lt;/&gt;</div>
+                      ) : ad.iframeSrc ? (
+                        <div className="text-xs font-mono text-blue-400">FRAME</div>
+                      ) : (
+                        <div className="text-xs text-gray-600">📢</div>
+                      )}
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <span className="font-bold text-white text-sm truncate max-w-[200px] sm:max-w-xs">{ad.title || ad.adType || 'Untitled Ad'}</span>
+                        
+                        {/* Status Badge */}
+                        {status === 'active' && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Active
+                          </span>
+                        )}
+                        {status === 'upcoming' && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                            ⏳ Upcoming ({ad.startDate})
+                          </span>
+                        )}
+                        {status === 'expired' && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-red-500/20 text-red-400 border border-red-500/30">
+                            ⛔ Expired ({ad.endDate})
+                          </span>
+                        )}
+                        {status === 'disabled' && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-gray-700 text-gray-400">
+                            Disabled
+                          </span>
+                        )}
+
+                        <span className="px-2 py-0.5 rounded text-xs bg-orange-500/20 text-orange-400 font-semibold">{ad.placement}</span>
+                        {ad.adType && <span className="px-2 py-0.5 rounded text-xs bg-white/10 text-gray-400">{AD_TYPES.find(t => t.value === ad.adType)?.label || ad.adType}</span>}
+                        {ad.deviceTarget && ad.deviceTarget !== 'all' && <span className="px-2 py-0.5 rounded text-xs bg-blue-500/20 text-blue-400">{ad.deviceTarget}</span>}
+                      </div>
+
+                      <div className="flex items-center gap-3 text-xs text-gray-500 flex-wrap">
+                        {ad.link && (
+                          <a href={ad.link} target="_blank" rel="noreferrer" className="text-orange-400/80 hover:underline truncate max-w-xs">
+                            🔗 {ad.link}
+                          </a>
+                        )}
+                        {(ad.startDate || ad.endDate) && (
+                          <span>
+                            🗓️ {ad.startDate ? `From ${ad.startDate}` : 'Now'} {ad.endDate ? `to ${ad.endDate}` : '(No expiry)'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-3 self-end sm:self-center">
+                    <button onClick={() => toggleAd(ad.id)}
+                      title={ad.enabled ? 'Disable Ad' : 'Enable Ad'}
+                      className={`relative w-12 h-6 rounded-full transition-all ${ad.enabled ? 'bg-orange-500' : 'bg-gray-700'}`}>
+                      <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${ad.enabled ? 'left-7' : 'left-1'}`} />
+                    </button>
+                    <button onClick={() => openEdit(ad)}
+                      className="px-3 py-1.5 rounded-lg bg-white/10 text-gray-300 text-xs font-semibold hover:bg-white/20 transition-colors">
+                      Edit
+                    </button>
+                    <button onClick={() => deleteAd(ad.id)}
+                      className="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 text-xs font-semibold hover:bg-red-500/40 transition-colors">
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        ))}
-      </div>
-    </div>
-  )}
+        </div>
+      )}
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
@@ -444,7 +560,7 @@ export default function AdminAds({ ads, onRefresh }: Props) {
                     <label className="label">Upload Video (10s – 2min max)</label>
                     <div className="flex items-center gap-4 mt-1">
                       {form.videoUrl && (
-                        <video src={form.videoUrl} className="h-20 rounded border border-white/10" controls />
+                        <video src={getImageUrl(form.videoUrl)} className="h-20 rounded border border-white/10" controls />
                       )}
                       <label className="cursor-pointer px-4 py-2 rounded-lg bg-white/10 text-gray-300 text-sm font-semibold hover:bg-white/20">
                         Choose Video
@@ -457,39 +573,71 @@ export default function AdminAds({ ads, onRefresh }: Props) {
               )}
 
               {!isScript && !isIframe && !isVideo && (
-                <div>
-                  <label className="label">Ad Image</label>
-                  <div className="flex items-center gap-4 mt-1">
-                    {form.imageUrl && (
-                      <img src={form.imageUrl} alt="" className="h-12 rounded object-contain border border-white/10" />
-                    )}
-                    <label className="cursor-pointer px-4 py-2 rounded-lg bg-white/10 text-gray-300 text-sm font-semibold hover:bg-white/20">
-                      Upload Image
-                      <input ref={imageRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                    </label>
+                <div className="space-y-2">
+                  <label className="label">Ad Image (Upload or Direct URL)</label>
+                  <div className="flex flex-col sm:flex-row gap-4 items-start p-4 rounded-xl bg-white/3 border border-white/5">
+                    <MediaUpload
+                      imageUrl={form.imageUrl}
+                      onImageChange={url => setForm(f => ({ ...f, imageUrl: url }))}
+                      label="Ad Banner"
+                      size="lg"
+                      shape="square"
+                      useServerUpload
+                      hint="Upload banner image (PNG, JPG, WebP, GIF)"
+                    />
+                    <div className="flex-1 space-y-2 w-full">
+                      <label className="text-xs text-gray-400 font-semibold">Or enter Direct Image URL</label>
+                      <input className="inp" placeholder="https://example.com/banner.png or /uploads/..."
+                        value={form.imageUrl}
+                        onChange={e => setForm(f => ({ ...f, imageUrl: e.target.value }))} />
+                      <p className="text-[11px] text-gray-500">
+                        {form.placement === 'header' && 'Recommended ratio: 728x90 (Leaderboard) or wide banner.'}
+                        {form.placement === 'sidebar' && 'Recommended ratio: 300x250 (Medium Rectangle) or 300x600.'}
+                        {form.placement === 'hero' && 'Recommended ratio: 1200x200 (Wide Hero Banner).'}
+                        {form.placement === 'popup' && 'Recommended ratio: 600x600 (Square Popup) or 800x600.'}
+                        {!['header', 'sidebar', 'hero', 'popup'].includes(form.placement) && 'Uploaded media will be saved securely to the database and rendered on frontend.'}
+                      </p>
+                    </div>
                   </div>
                 </div>
               )}
 
               {!isScript && (
                 <div>
-                  <label className="label">Destination URL</label>
+                  <label className="label">Destination URL (Redirect link on click)</label>
                   <input className="inp" placeholder="https://advertiser-site.com" value={form.link}
                     onChange={e => setForm(f => ({ ...f, link: e.target.value }))} />
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="label">Start Date</label>
-                  <input className="inp" type="date" value={form.startDate}
-                    onChange={e => setForm(f => ({ ...f, startDate: e.target.value }))} />
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="label mb-0">Active Schedule (Start & End Dates)</label>
+                  <div className="flex items-center gap-1.5 text-[11px]">
+                    <span className="text-gray-500">Quick set:</span>
+                    <button type="button" onClick={() => setDateOffset(7)} className="px-2 py-0.5 rounded bg-white/10 text-gray-300 hover:bg-white/20">7d</button>
+                    <button type="button" onClick={() => setDateOffset(14)} className="px-2 py-0.5 rounded bg-white/10 text-gray-300 hover:bg-white/20">14d</button>
+                    <button type="button" onClick={() => setDateOffset(30)} className="px-2 py-0.5 rounded bg-white/10 text-gray-300 hover:bg-white/20">30d</button>
+                    <button type="button" onClick={() => setDateOffset(null)} className="px-2 py-0.5 rounded bg-white/10 text-gray-300 hover:bg-white/20">Always</button>
+                  </div>
                 </div>
-                <div>
-                  <label className="label">End Date</label>
-                  <input className="inp" type="date" value={form.endDate}
-                    onChange={e => setForm(f => ({ ...f, endDate: e.target.value }))} />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">Start Date (Optional)</label>
+                    <input className="inp" type="date" value={form.startDate}
+                      onChange={e => setForm(f => ({ ...f, startDate: e.target.value }))} />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-400 mb-1 block">End Date (Optional)</label>
+                    <input className="inp" type="date" value={form.endDate}
+                      onChange={e => setForm(f => ({ ...f, endDate: e.target.value }))} />
+                  </div>
                 </div>
+                <p className="text-[11px] text-gray-500">
+                  {form.startDate && form.endDate ? `Ad will automatically be active from ${form.startDate} until end of day ${form.endDate}.` :
+                   form.startDate ? `Ad starts on ${form.startDate} with no expiration.` :
+                   form.endDate ? `Ad runs until ${form.endDate}.` : 'No date limits — ad will remain active continuously while enabled.'}
+                </p>
               </div>
 
               <div>

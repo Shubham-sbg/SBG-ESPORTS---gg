@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState } from 'react';
 import { Founder } from '@/lib/database';
 
@@ -21,7 +23,7 @@ function FounderCard({ f }: { f: Founder }) {
           <div className="relative flex-shrink-0">
             <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-orange-500/20 group-hover:border-orange-500/50 transition-all duration-300 shadow-xl">
               {f.photo ? (
-                <img src={f.photo} alt={f.name} loading="lazy" decoding="async" width="96" height="96" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                <Image src={f.photo} alt={f.name} loading="lazy" decoding="async" width={96} height={96} objectFit="cover" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-4xl"
                   style={{ background: 'linear-gradient(135deg, #ff6b0020, #e9456010)' }}>
@@ -91,7 +93,7 @@ function MgmtCard({ f }: { f: Founder }) {
       <div className="flex items-center gap-4 mb-3">
         <div className="w-14 h-14 rounded-xl overflow-hidden border border-white/10 group-hover:border-orange-500/30 flex-shrink-0 transition-all duration-300">
           {f.photo ? (
-            <img src={f.photo} alt={f.name} className="w-full h-full object-cover" />
+            <Image src={f.photo} alt={f.name} objectFit="cover" className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-2xl"
               style={{ background: 'linear-gradient(135deg, #ff6b0015, #e9456008)' }}>

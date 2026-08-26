@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { Settings, Navigation } from '@/lib/database';
 import { Link } from 'wouter';
 import { getDB, isFeatureActive } from '@/lib/database';
@@ -94,7 +96,8 @@ export default function Footer({ settings, navigation }: Props) {
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <img src={settings?.logo || '/transparent_eagle_logo.png'} alt={settings?.organizationName || 'SBG ESPORTS'}
+              <Image src={settings?.logo || '/transparent_eagle_logo.png'} alt={settings?.organizationName || 'SBG ESPORTS'}
+                objectFit="contain"
                 className="h-10 w-auto object-contain drop-shadow-[0_0_12px_rgba(212,175,55,0.3)]" />
               <div>
                 <span className="block font-black text-sm tracking-[0.25em] text-white uppercase">

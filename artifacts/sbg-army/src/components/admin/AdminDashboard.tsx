@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState } from 'react';
 import type { Database } from '@/lib/database';
 
@@ -158,7 +160,7 @@ export default function AdminDashboard({ db, onRefresh }: Props) {
           {db.settings.logo && (
             <div className="p-4 rounded-2xl text-center" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
               <p className="text-[10px] text-gray-600 mb-3 uppercase tracking-widest">Current Logo</p>
-              <img src={db.settings.logo} alt="Logo" className="h-16 w-auto mx-auto object-contain" />
+              <Image src={db.settings.logo} alt="Logo" objectFit="contain" className="h-16 w-auto mx-auto object-contain" />
             </div>
           )}
         </div>

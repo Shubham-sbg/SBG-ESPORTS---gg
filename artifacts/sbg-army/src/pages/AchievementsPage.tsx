@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDatabase } from '@/hooks/useDatabase';
@@ -143,7 +145,7 @@ function AchievementModal({ item, onClose }: { item: Achievement; onClose: () =>
                 <p className="text-[10px] font-black tracking-widest uppercase text-gray-500 mb-2">Gallery</p>
                 <div className="grid grid-cols-3 gap-2">
                   {item.gallery.filter(Boolean).map((img, i) => (
-                    <img key={i} src={img} alt="" className="w-full h-20 object-cover rounded-lg" />
+                    <Image key={i} src={img} alt="" objectFit="cover" className="w-full h-20 object-cover rounded-lg" />
                   ))}
                 </div>
               </div>

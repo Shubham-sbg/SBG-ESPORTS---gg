@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDatabase } from '@/hooks/useDatabase';
@@ -155,7 +157,7 @@ function EventCard({ event }: { event: WeeklyEvent }) {
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">
             {event.gameLogo && (
-              <img src={event.gameLogo} alt={event.game} className="w-6 h-6 rounded object-contain" />
+              <Image src={event.gameLogo} alt={event.game} objectFit="contain" className="w-6 h-6 rounded object-contain" />
             )}
             <span
               className="text-xs font-black uppercase tracking-widest px-2 py-0.5 rounded-full"

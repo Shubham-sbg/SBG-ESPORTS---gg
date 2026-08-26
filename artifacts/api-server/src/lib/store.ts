@@ -87,6 +87,7 @@ const COLLECTIONS = [
 const DEFAULT_SUPER_ADMIN_PASSWORD_HASH = '$2b$10$fs1CMTHxeIDdhZLAMKQA7.I1L6Uud2lnz3OFjQKgxjcJtMe6VWIBy'; // official7Sbgarmyweb2@
 
 const DEFAULTS: Record<string, unknown> = {
+  ctas: [],
   staffAccounts: [
     {
       id: 'admin_sbgarmy_001',
@@ -189,7 +190,14 @@ async function initFirestore(): Promise<any> {
     const client = getFirestore(admin.apps[0]!, databaseId);
     
     // Test access permissions
-    await client.collection('health_check').doc('ping').get();
+    try {
+      await client.collection('health_check').doc('ping').get();
+    } catch (err: any) {
+      if (err.message && err.message.includes('Unexpected non-whitespace character after JSON')) {
+        throw new Error('Invalid JSON format in GOOGLE_APPLICATION_CREDENTIALS or Firebase Service Account file.');
+      }
+      throw err;
+    }
 
     firestoreClient = client;
     firestoreInitialized = true;
@@ -644,7 +652,34 @@ export async function backupDatabase(targetPath: string): Promise<void> {
   }
 }
 
-export async function saveUploadedFile(filename: string, mimeType: string, buffer: Buffer): Promise<void> {
+export async function saveUploadedFile(filename: string, mimeType: string, buffer: Buffer): Promise<string | null> {
+  // Try Firebase Storage first
+  try {
+    const fs = await initFirestore(); // ensures admin is initialized
+    if (fs && admin.apps.length > 0) {
+      const config = loadFirebaseAppletConfig();
+      if (config.storageBucket) {
+        const bucket = admin.storage().bucket(config.storageBucket);
+        const file = bucket.file(`uploads/${filename}`);
+        const { randomUUID } = require('crypto');
+        const token = randomUUID();
+        await file.save(buffer, {
+          metadata: {
+            contentType: mimeType,
+            metadata: {
+              firebaseStorageDownloadTokens: token
+            }
+          }
+        });
+        const url = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${encodeURIComponent('uploads/' + filename)}?alt=media&token=${token}`;
+        console.log(`[Store] Uploaded ${filename} to Firebase Storage.`);
+        return url;
+      }
+    }
+  } catch (err: any) {
+    console.warn('[Store] Firebase Storage saveUploadedFile error:', err.message);
+  }
+
   // Save to SQLite
   try {
     const db = getSqlite();
@@ -675,22 +710,8 @@ export async function saveUploadedFile(filename: string, mimeType: string, buffe
       console.warn('[Store] PG saveUploadedFile error:', err.message);
     }
   }
-
-  // Save to Firestore for durable persistence
-  try {
-    const fs = await initFirestore();
-    if (fs) {
-      const base64Data = buffer.toString('base64');
-      await fs.collection('uploaded_files').doc(filename).set({
-        mime_type: mimeType,
-        data: base64Data,
-        updatedAt: new Date().toISOString()
-      });
-      console.log(`[Store] Saved uploaded file ${filename} to Firestore.`);
-    }
-  } catch (err: any) {
-    console.warn('[Store] Firestore saveUploadedFile error:', err.message);
-  }
+  
+  return null;
 }
 
 export async function getUploadedFile(filename: string): Promise<{ mime_type: string; data: Buffer } | null> {

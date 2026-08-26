@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 /**
  * PlatformsSection — "Explore Our Other Platforms" section on the SBG ARMY homepage.
  * Admin-controlled via AdminPlatforms. Shows when platforms.enabled = true and has visible platforms.
@@ -112,9 +114,9 @@ export default function PlatformsSection() {
               {/* Image */}
               {platform.image && (
                 <div className="relative h-36 overflow-hidden">
-                  <img src={platform.image} alt={platform.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                  <Image src={platform.image} alt={platform.name}
+                    objectFit="cover"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   <div className="absolute inset-0"
                     style={{ background: `linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.7))` }} />
                 </div>

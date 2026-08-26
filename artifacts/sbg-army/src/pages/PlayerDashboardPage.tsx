@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useDatabase } from '@/hooks/useDatabase';
 import { applyTheme } from '@/lib/applyTheme';
@@ -197,7 +199,7 @@ export default function PlayerDashboardPage() {
               <div className="relative w-20 h-20 group">
                 <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-orange-500/30">
                   {profile.avatar_url ? (
-                    <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                    <Image src={profile.avatar_url} alt="Avatar" objectFit="cover" className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-2xl font-black text-white">
                       {(profile.username || profile.email || 'P').charAt(0).toUpperCase()}
@@ -393,7 +395,7 @@ export default function PlayerDashboardPage() {
       {lightboxImg && (
         <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4" onClick={() => setLightboxImg(null)}>
           <button className="absolute top-4 right-4 text-white text-3xl font-bold hover:text-orange-400 transition-colors">✕</button>
-          <img src={lightboxImg} alt="Payment proof" className="max-w-full max-h-[90vh] object-contain rounded-xl" onClick={e => e.stopPropagation()} />
+          <Image src={lightboxImg} alt="Payment proof" objectFit="contain" className="max-w-full max-h-[90vh] object-contain rounded-xl" onClick={e => e.stopPropagation()} />
         </div>
       )}
     </div>

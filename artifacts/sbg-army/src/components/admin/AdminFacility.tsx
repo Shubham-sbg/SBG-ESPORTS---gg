@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState } from 'react';
 import { FacilitySection as FacilitySectionType, FacilityStat, Settings, getDB, saveDB } from '@/lib/database';
 import FacilitySection from '@/components/FacilitySection';
@@ -776,7 +778,7 @@ export default function AdminFacility({ facility, facilityStats, settings, onRef
                 className={`p-4 rounded-2xl border transition-all flex items-center justify-between gap-4 ${f.visible !== false ? 'bg-white/3 border-white/10 hover:border-orange-500/40' : 'bg-white/1 border-white/5 opacity-60'}`}>
                 <div className="flex items-center gap-4 min-w-0">
                   {f.image ? (
-                    <img src={f.image} alt="" className="w-12 h-12 rounded-xl object-cover border border-white/10 flex-shrink-0" />
+                    <Image src={f.image} alt="" objectFit="cover" className="w-12 h-12 rounded-xl object-cover border border-white/10 flex-shrink-0" />
                   ) : (
                     <div className="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 text-2xl flex items-center justify-center flex-shrink-0">
                       {f.icon || '🎮'}
@@ -1091,7 +1093,7 @@ export default function AdminFacility({ facility, facilityStats, settings, onRef
               </label>
               <div className="flex items-center gap-3">
                 {featForm.image && (
-                  <img src={featForm.image} alt="" className="w-12 h-12 rounded-xl object-cover border border-white/20" />
+                  <Image src={featForm.image} alt="" objectFit="cover" className="w-12 h-12 rounded-xl object-cover border border-white/20" />
                 )}
                 <label className="cursor-pointer px-4 py-2 bg-white/10 hover:bg-white/20 text-xs font-bold text-gray-200 rounded-xl transition-all">
                   Upload Image

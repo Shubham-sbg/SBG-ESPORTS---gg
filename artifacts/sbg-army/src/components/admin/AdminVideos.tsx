@@ -1,3 +1,4 @@
+import { getImageUrl } from '@/lib/imageResolver';
 import { useState } from 'react';
 import { Video, getDB, saveDB } from '@/lib/database';
 import Combobox from '@/components/shared/Combobox';
@@ -193,7 +194,7 @@ export default function AdminVideos({ videos, onRefresh }: Props) {
         {sorted.map(v => (
           <div key={v.id} className="p-5 rounded-xl border border-white/5 bg-white/3 flex items-center gap-4">
             {v.thumbnail ? (
-              <img src={v.thumbnail} alt={v.title} className="w-20 h-14 object-cover rounded-lg flex-shrink-0 bg-white/5" />
+              <img src={getImageUrl(v.thumbnail)} alt={v.title} className="w-20 h-14 object-cover rounded-lg flex-shrink-0 bg-white/5" />
             ) : (
               <div className="w-20 h-14 rounded-lg bg-white/5 flex items-center justify-center text-2xl flex-shrink-0">▶</div>
             )}
@@ -271,7 +272,7 @@ export default function AdminVideos({ videos, onRefresh }: Props) {
                     <input type="file" accept="video/*" className="hidden" onChange={handleVideoUpload} />
                   </label>
                   {form.url && (
-                    <video src={form.url} className="mt-2 w-full rounded-lg max-h-40 object-cover" controls />
+                    <video src={getImageUrl(form.url)} className="mt-2 w-full rounded-lg max-h-40 object-cover" controls />
                   )}
                 </div>
               ) : (
@@ -291,7 +292,7 @@ export default function AdminVideos({ videos, onRefresh }: Props) {
                 <label className="label">Thumbnail Image</label>
                 <div className="flex items-center gap-4">
                   {form.thumbnail && (
-                    <img src={form.thumbnail} alt="Thumbnail" className="h-16 rounded-lg object-cover border border-white/10" />
+                    <img src={getImageUrl(form.thumbnail)} alt="Thumbnail" className="h-16 rounded-lg object-cover border border-white/10" />
                   )}
                   <label className="cursor-pointer px-4 py-2 rounded-lg bg-white/10 text-gray-300 text-sm font-semibold hover:bg-white/20">
                     {form.thumbnail ? 'Change Thumbnail' : 'Upload Thumbnail'}

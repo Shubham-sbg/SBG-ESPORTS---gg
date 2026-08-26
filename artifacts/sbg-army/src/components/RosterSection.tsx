@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Player } from '@/lib/database';
 import { sanitizeUrl } from '@/lib/sanitizeUrl';
@@ -105,13 +107,14 @@ function PlayerCard({ player, isActive, onClick }: { player: Player; isActive: b
       <div className="relative mx-auto mt-6 w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0"
         style={{ boxShadow: `0 0 20px ${color}44` }}>
         {player.image ? (
-          <img
+          <Image
             src={player.image}
             alt={`${player.ign} — ${player.role} player`}
             loading="lazy"
             decoding="async"
-            width="80"
-            height="80"
+            width={80}
+            height={80}
+            objectFit="cover"
             className="w-full h-full object-cover"
           />
         ) : (
@@ -164,7 +167,7 @@ function PlayerCard({ player, isActive, onClick }: { player: Player; isActive: b
                 <div className="text-[9px] text-gray-600 tracking-widest uppercase">K/D</div>
                 {player.kdRatioImage && (
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 p-1.5 bg-black/90 border border-white/10 rounded-lg shadow-xl opacity-0 group-hover/kd:opacity-100 transition-opacity pointer-events-none z-50">
-                    <img src={player.kdRatioImage} alt="K/D Proof" className="w-24 h-auto rounded border border-white/20" />
+                    <Image src={player.kdRatioImage} alt="K/D Proof" objectFit="contain" className="w-24 h-auto rounded border border-white/20" />
                   </div>
                 )}
               </div>
@@ -372,11 +375,12 @@ export default function RosterSection({ players }: Props) {
                       aria-hidden="true"
                     />
                     {player.image ? (
-                      <img
+                      <Image
                         src={player.image}
                         alt={`${player.ign} — ${player.role}`}
                         loading="lazy"
                         draggable={false}
+                        objectFit="contain"
                         className="relative z-10 max-h-80 w-auto object-contain drop-shadow-2xl transition-all duration-500"
                         style={{ filter: `drop-shadow(0 0 40px ${color}66)` }}
                       />
@@ -443,7 +447,7 @@ export default function RosterSection({ players }: Props) {
                               {player.kdRatioImage && (
                                 <div className="absolute top-0 right-0 -mt-16 -mr-16 p-2 bg-black/90 border border-white/10 rounded-xl shadow-2xl opacity-0 group-hover/kd:opacity-100 transition-opacity pointer-events-none z-50">
                                   <span className="text-[9px] text-gray-400 uppercase tracking-widest block mb-1">Proof</span>
-                                  <img src={player.kdRatioImage} alt="K/D Proof" className="w-32 h-auto rounded border border-white/20" />
+                                  <Image src={player.kdRatioImage} alt="K/D Proof" objectFit="contain" className="w-32 h-auto rounded border border-white/20" />
                                 </div>
                               )}
                             </div>

@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useEffect, useState, useRef } from 'react';
 import { getDB } from '@/lib/database';
 import { PUBLIC_BRAND_NAME } from '@/lib/brandConfig';
@@ -336,7 +338,8 @@ export default function LoadingScreen({ onDone }: Props) {
             }}>
               {logoUrl ? (
                 <>
-                  <img src={logoUrl} alt={PUBLIC_BRAND_NAME} onLoad={() => setLogoLoaded(true)}
+                  <Image src={logoUrl} alt={PUBLIC_BRAND_NAME} onLoad={() => setLogoLoaded(true)}
+                    objectFit="contain" showSkeleton={false}
                     style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain',
                       opacity: logoLoaded ? 1 : 0, transition: 'opacity 0.5s ease' }} />
                   {logoLoaded && (

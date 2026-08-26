@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useRef, useEffect, useState } from 'react';
 import { Sponsor } from '@/lib/database';
 import { sanitizeUrl } from '@/lib/sanitizeUrl';
@@ -73,10 +75,11 @@ function SponsorCard({ sponsor }: { sponsor: Sponsor }) {
 
         {/* Logo */}
         {sponsor.logo ? (
-          <img
+          <Image
             src={sponsor.logo}
             alt={sponsor.name}
             loading="lazy"
+            objectFit="contain"
             className={`${config.imageSize} w-auto max-w-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105`}
             style={{
               maxHeight: sponsor.height ? `${sponsor.height}px` : undefined,

@@ -1,3 +1,5 @@
+import ImageUpload from '@/components/shared/ImageUpload';
+import { getImageUrl } from '@/lib/imageResolver';
 import { useState } from 'react';
 import { Player, Game, getDB, saveCollection } from '@/lib/database';
 import Combobox from '@/components/shared/Combobox';
@@ -165,12 +167,7 @@ export default function AdminRoster({ players, games, onRefresh }: Props) {
         </div>
         <div className="p-6 rounded-xl border border-white/5 bg-white/3 space-y-5">
           <div className="flex items-center gap-6">
-            <div className="w-24 h-24 rounded-xl border-2 border-dashed border-white/20 flex items-center justify-center overflow-hidden bg-white/3">
-              {form.image ? <img src={form.image} alt="" className="w-full h-full object-cover" /> : <span className="text-3xl">👤</span>}
-            </div>
-            <label className="cursor-pointer px-4 py-2 rounded-lg bg-orange-500 text-black text-sm font-bold hover:bg-orange-400">
-              Upload Image <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-            </label>
+            <ImageUpload imageUrl={form.image || ""} onImageChange={url => setForm(f => ({ ...f, image: url }))} label="Upload Image" size="lg" shape="square" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div><label className="label">Full Name</label><input className="inp" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} /></div>
@@ -226,22 +223,7 @@ export default function AdminRoster({ players, games, onRefresh }: Props) {
               <div>
                 <label className="label">K/D Ratio Proof (Screenshot)</label>
                 <div className="flex items-center gap-4">
-                  {form.kdRatioImage && (
-                    <img src={form.kdRatioImage} alt="K/D Ratio" className="w-12 h-12 rounded object-cover border border-white/20" />
-                  )}
-                  <label className="cursor-pointer px-3 py-1.5 rounded-lg bg-white/10 text-white text-xs font-bold hover:bg-white/20 transition">
-                    {form.kdRatioImage ? 'Change Image' : 'Upload Proof'}
-                    <input type="file" accept="image/*" onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      const reader = new FileReader();
-                      reader.onload = ev => setForm(f => ({ ...f, kdRatioImage: ev.target?.result as string }));
-                      reader.readAsDataURL(file);
-                    }} className="hidden" />
-                  </label>
-                  {form.kdRatioImage && (
-                    <button onClick={() => setForm(f => ({ ...f, kdRatioImage: '' }))} className="text-red-400 hover:text-red-300 text-xs font-bold">Remove</button>
-                  )}
+                  <ImageUpload imageUrl={form.kdRatioImage || ""} onImageChange={url => setForm(f => ({ ...f, kdRatioImage: url }))} label="Upload Proof" size="sm" shape="square" showRatioControls={false} />
                 </div>
               </div>
             </div>
@@ -309,7 +291,7 @@ export default function AdminRoster({ players, games, onRefresh }: Props) {
                 <button onClick={() => moveOrder(player.id, 'down')} disabled={idx === displayed.length - 1} className="text-gray-500 hover:text-white disabled:opacity-30 text-xs">▼</button>
               </div>
               <div className="w-12 h-12 rounded-lg overflow-hidden bg-white/5 flex-shrink-0 flex items-center justify-center">
-                {player.image ? <img src={player.image} alt="" className="w-full h-full object-cover" /> : <span className="text-xl">👤</span>}
+                {player.image ? <img src={getImageUrl(player.image)} alt="" className="w-full h-full object-cover" /> : <span className="text-xl">👤</span>}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-white truncate">{player.ign}</p>

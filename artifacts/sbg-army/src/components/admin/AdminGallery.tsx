@@ -1,3 +1,4 @@
+import { getImageUrl } from '@/lib/imageResolver';
 import { useState } from 'react';
 import { getDB, saveDB } from '@/lib/database';
 import ImageUpload from '@/components/shared/ImageUpload';
@@ -141,8 +142,8 @@ export default function AdminGallery({ onRefresh }: { onRefresh?: () => void }) 
 
           <div className="flex flex-col sm:flex-row gap-6">
             <ImageUpload
-              value={form.image}
-              onChange={url => setForm(f => ({ ...f, image: url }))}
+              imageUrl={form.image}
+              onImageChange={url => setForm(f => ({ ...f, image: url }))}
               label="Photo"
               size="lg"
               shape="square"
@@ -152,7 +153,7 @@ export default function AdminGallery({ onRefresh }: { onRefresh?: () => void }) 
               <div>
                 <label className="block text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Title *</label>
                 <input
-                  value={form.title}
+                  imageUrl={form.title}
                   onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                   placeholder="Photo title"
                   className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/8 text-white text-sm focus:outline-none focus:border-yellow-500/40"
@@ -162,7 +163,7 @@ export default function AdminGallery({ onRefresh }: { onRefresh?: () => void }) 
                 <div>
                   <label className="block text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Category</label>
                   <Combobox
-                    value={form.category}
+                    imageUrl={form.category}
                     onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
                     className="w-full px-4 py-2.5 rounded-xl bg-[#0a0a0f] border border-white/8 text-white text-sm focus:outline-none focus:border-yellow-500/40"
                   >
@@ -173,7 +174,7 @@ export default function AdminGallery({ onRefresh }: { onRefresh?: () => void }) 
                   <label className="block text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wider">Date</label>
                   <input
                     type="date"
-                    value={form.date}
+                    imageUrl={form.date}
                     onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
                     className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/8 text-white text-sm focus:outline-none focus:border-yellow-500/40"
                   />
@@ -234,7 +235,7 @@ export default function AdminGallery({ onRefresh }: { onRefresh?: () => void }) 
               {/* Image */}
               <div className="aspect-square bg-white/3 relative">
                 {item.image ? (
-                  <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                  <img src={getImageUrl(item.image)} alt={item.title} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-3xl text-gray-700">📷</div>
                 )}

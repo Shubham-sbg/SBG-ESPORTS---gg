@@ -1,17 +1,30 @@
-# SBG ARMY Frontend — Vercel Deployment
+# SBG ARMY Frontend — Production Deployment (Render / Vercel)
 
-> **Default setup:** The frontend is served by the API server (Render).
-> Use this guide only if you want to deploy the **frontend separately on Vercel** (split deploy).
+> **Static Site Deployment Guide** for `artifacts/sbg-army`.
 
-## Quick Deployment (Vercel)
+## Render Static Site Settings
+
+| Setting | Value |
+|---------|-------|
+| **Name** | `sbg-esports` |
+| **Root Directory** | `artifacts/sbg-army` |
+| **Build Command** | `npm install && npm run build` |
+| **Publish Directory** | `dist` |
+
+### Render Redirects / Rewrites (Crucial for SPA Routing)
+Add a Rewrite rule in Render Dashboard (or via `render.yaml`):
+- **Type**: `Rewrite`
+- **Source**: `/*`
+- **Destination**: `/index.html`
+
+## Vercel Settings
 
 | Setting | Value |
 |---------|-------|
 | **Root Directory** | `artifacts/sbg-army` |
-| **Framework** | Vite (auto-detected) |
-| **Build Command** | `pnpm run build` |
-| **Output Directory** | `dist/public` |
-| **Install Command** | `corepack enable && pnpm install --frozen-lockfile` |
+| **Framework** | Vite |
+| **Build Command** | `npm run build` |
+| **Output Directory** | `dist` |
 
 > The `vercel.json` in this folder is already configured correctly. Vercel will pick it up automatically.
 

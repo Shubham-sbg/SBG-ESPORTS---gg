@@ -1,6 +1,9 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useDatabase } from '@/hooks/useDatabase';
 import { isFeatureActive } from '@/lib/database';
 import Navbar from '@/components/Navbar';
+import AdsRenderer from '@/components/AdsRenderer';
 import Footer from '@/components/Footer';
 
 export default function ProArenaHomePage() {
@@ -15,6 +18,7 @@ export default function ProArenaHomePage() {
 
   return (
     <div className="min-h-screen bg-[#09090b] text-white font-sans selection:bg-blue-600 selection:text-white">
+      {show('ads') && <AdsRenderer ads={db.ads || []} />}
       <Navbar settings={db.settings} navigation={db.navigation} />
       
       <main className="max-w-[1400px] mx-auto px-6 py-24 space-y-32">
@@ -34,7 +38,7 @@ export default function ProArenaHomePage() {
               {db.players.map((p: any) => (
                 <div key={p.id} className="bg-[#111113] border border-white/5 rounded-2xl p-6 transition-transform hover:-translate-y-2">
                   <div className="aspect-square bg-gray-800 rounded-xl mb-6 overflow-hidden">
-                    <img src={p.avatar} alt={p.name} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" />
+                    <Image src={p.avatar} alt={p.name} objectFit="cover" className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" />
                   </div>
                   <h3 className="text-xl font-bold uppercase">{p.name}</h3>
                   <p className="text-blue-500 font-medium">{p.role}</p>

@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useRef, useEffect, useState } from 'react';
 import { Post } from '@/lib/database';
 
@@ -64,7 +66,7 @@ export default function NewsSection({ posts }: Props) {
                     onClick={() => post.thumbnail && setLightboxImg(post.thumbnail)}>
                     {post.thumbnail ? (
                       <>
-                        <img src={post.thumbnail} alt={post.title} loading="lazy" decoding="async"
+                        <Image src={post.thumbnail} alt={post.title} loading="lazy" decoding="async" objectFit="cover"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                         <div className="absolute bottom-3 right-3 w-8 h-8 rounded-full bg-black/60 flex items-center justify-center text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity">
@@ -114,7 +116,7 @@ export default function NewsSection({ posts }: Props) {
         <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={() => setLightboxImg(null)}>
           <button className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-orange-500/30 text-white text-xl font-bold flex items-center justify-center transition-all">✕</button>
-          <img src={lightboxImg} alt="News image"
+          <Image src={lightboxImg} alt="News image" objectFit="contain"
             className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl border border-white/10"
             onClick={e => e.stopPropagation()} />
         </div>

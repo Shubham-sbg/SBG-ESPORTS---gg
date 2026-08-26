@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState, useEffect, useRef } from 'react';
 import { applyAspectRatio, AspectRatioOption } from '../shared/ImageUpload';
 import { uploadFileToServer, validateFile } from '@/lib/uploadService';
@@ -547,10 +549,10 @@ export default function AdminMediaManager() {
             >
               {/* Image Thumbnail Preview */}
               <div className="relative aspect-video bg-black/40 overflow-hidden flex items-center justify-center">
-                <img
+                <Image
                   src={item.url}
                   alt={item.altText || item.title || 'Media item'}
-                  loading="lazy"
+                  objectFit="cover"
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
 
@@ -651,7 +653,7 @@ export default function AdminMediaManager() {
             </div>
 
             <div className="aspect-video bg-black rounded-xl overflow-hidden flex items-center justify-center border border-white/10">
-              <img src={previewItem.url} alt={previewItem.altText || previewItem.title} className="max-h-full max-w-full object-contain" />
+              <Image src={previewItem.url} alt={previewItem.altText || previewItem.title} objectFit="contain" className="max-h-full max-w-full object-contain" />
             </div>
 
             <div className="grid grid-cols-2 gap-3 text-xs text-gray-300 bg-white/3 p-4 rounded-xl border border-white/5">

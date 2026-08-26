@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useEffect, useRef, useState } from 'react';
 import { useDatabase } from '@/hooks/useDatabase';
 import { applyTheme } from '@/lib/applyTheme';
@@ -197,7 +199,7 @@ function RegistrationModal({ tournament, onClose }: { tournament: Tournament; on
                   <label className={label}>Payment Screenshot *</label>
                   <div className={`${inp} cursor-pointer flex items-center gap-3 p-3`} onClick={() => document.getElementById('pay-proof')?.click()}>
                     {form.paymentScreenshot ? (
-                      <><img src={form.paymentScreenshot} alt="" className="h-10 rounded" /><span className="text-green-400 text-xs font-bold">✓ Uploaded</span></>
+                      <><Image src={form.paymentScreenshot} alt="" objectFit="contain" className="h-10 rounded object-contain" /><span className="text-green-400 text-xs font-bold">✓ Uploaded</span></>
                     ) : (
                       <span className="text-gray-500 text-sm">📸 Click to upload payment screenshot</span>
                     )}
@@ -210,7 +212,7 @@ function RegistrationModal({ tournament, onClose }: { tournament: Tournament; on
                 <p className="text-gray-600 text-xs mb-2">Upload a screenshot showing you follow ${PUBLIC_BRAND_NAME} on Instagram/YouTube.</p>
                 <div className={`${inp} cursor-pointer flex items-center gap-3 p-3`} onClick={() => document.getElementById('follow-proof')?.click()}>
                   {form.followProof ? (
-                    <><img src={form.followProof} alt="" className="h-10 rounded" /><span className="text-green-400 text-xs font-bold">✓ Uploaded</span></>
+                    <><Image src={form.followProof} alt="" objectFit="contain" className="h-10 rounded object-contain" /><span className="text-green-400 text-xs font-bold">✓ Uploaded</span></>
                   ) : (
                     <span className="text-gray-500 text-sm">📸 Click to upload follow proof</span>
                   )}
@@ -268,7 +270,7 @@ function TournamentCard({ t, onRegister }: { t: Tournament; onRegister: (t: Tour
     <div className="rounded-2xl border border-white/10 bg-white/3 overflow-hidden hover:border-orange-500/30 transition-all duration-300">
       <div className="relative">
         {t.logo ? (
-          <img src={t.logo} alt={t.title} className="w-full h-40 object-cover" />
+          <Image src={t.logo} alt={t.title} objectFit="cover" className="w-full h-40 object-cover" />
         ) : (
           <div className="w-full h-40 flex items-center justify-center"
             style={{ background: 'linear-gradient(135deg, #ff6b0022, #e9456022)' }}>

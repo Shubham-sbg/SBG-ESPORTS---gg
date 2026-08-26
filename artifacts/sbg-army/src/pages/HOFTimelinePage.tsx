@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useDatabase } from '@/hooks/useDatabase';
@@ -246,9 +248,10 @@ function TimelineCard({
 
           {/* Image */}
           {milestone.image && (
-            <img
+            <Image
               src={milestone.image}
               alt={milestone.title}
+              objectFit="cover"
               className="w-full h-36 object-cover rounded-xl mb-3"
             />
           )}

@@ -91,13 +91,13 @@ export default function AdminHeroCMS({ onRefresh }: Props) {
           </div>
           <div>
             {label('Organization Name', '— the main H1 title')}
-            <input className={inp} value={form.organizationName ?? ''}
+            <input className={inp} imageUrl={form.organizationName ?? ''}
               onChange={e => set('organizationName', e.target.value)}
               placeholder={ADMIN_BRAND_NAME} />
           </div>
           <div>
             {label('Tagline / Subtitle')}
-            <input className={inp} value={form.tagline ?? ''}
+            <input className={inp} imageUrl={form.tagline ?? ''}
               onChange={e => set('tagline', e.target.value)}
               placeholder="Born to Win. Built to Dominate." />
           </div>
@@ -116,8 +116,8 @@ export default function AdminHeroCMS({ onRefresh }: Props) {
           <div>
             {label('Hero Logo', '— large logo shown in hero (leave blank to hide)')}
             <MediaUpload
-              value={form.logo ?? ''}
-              onChange={url => set('logo', url)}
+              imageUrl={form.logo ?? ''}
+              onImageChange={url => set('logo', url)}
               accept="image/*"
               hint="PNG with transparent background recommended"
             />

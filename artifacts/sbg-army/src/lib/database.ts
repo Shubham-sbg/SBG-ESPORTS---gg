@@ -1,3 +1,15 @@
+
+export interface CtaItem {
+  id: string;
+  title: string;
+  buttonText: string;
+  url: string;
+  enabled: boolean;
+  openInNewTab: boolean;
+  order: number;
+  createdAt?: number | string;
+  updatedAt?: number | string;
+}
 import { get, set, createStore } from 'idb-keyval';
 import { apiGetAll, apiPost, apiPostBulk, connectWs, onWsReconnect } from './wsClient';
 
@@ -263,6 +275,7 @@ export interface Settings {
   // ── External Links ────────────────────────────────────────────────────────
   externalLinksVisible?: boolean;
   externalLinks?: ExternalLink[];
+  ctaEnabled?: boolean;
   // ── Ad Provider Manager Settings ─────────────────────────────────────────
   adProviders?: AdProviderSettings;
 }
@@ -439,6 +452,38 @@ export function isPlacementActive(config: FeatureConfig | boolean | undefined, p
   if (Array.isArray(config.placements)) {
     return config.placements.includes(placement);
   }
+  return true;
+}
+
+export type AdStatus = 'active' | 'expired' | 'upcoming' | 'disabled';
+
+export function getAdStatus(ad: Ad): AdStatus {
+  if (ad.enabled === false) return 'disabled';
+  const now = new Date();
+  if (ad.startDate) {
+    const start = new Date(ad.startDate);
+    start.setHours(0, 0, 0, 0);
+    if (now < start) return 'upcoming';
+  }
+  if (ad.endDate) {
+    const end = new Date(ad.endDate);
+    end.setHours(23, 59, 59, 999);
+    if (now > end) return 'expired';
+  }
+  return 'active';
+}
+
+export function isAdActive(ad: Ad): boolean {
+  return getAdStatus(ad) === 'active';
+}
+
+export function matchesAdDevice(target?: string): boolean {
+  if (!target || target === 'all') return true;
+  if (typeof window === 'undefined') return true;
+  const w = window.innerWidth;
+  if (target === 'mobile') return w < 768;
+  if (target === 'tablet') return w >= 768 && w < 1024;
+  if (target === 'desktop') return w >= 1024;
   return true;
 }
 
@@ -759,6 +804,7 @@ export interface ThemeSettings {
 }
 
 export interface Database {
+  ctas: CtaItem[];
   settings: Settings;
   themeSettings?: ThemeSettings;
   about: AboutContent;
@@ -806,6 +852,7 @@ export interface Database {
 }
 
 const DEFAULT_DB: Database = {
+  ctas: [],
   settings: {
     logo: '/transparent_eagle_logo.png', organizationName: 'SBG ESPORTS',
     tagline: 'BORN TO WIN. BUILT TO DOMINATE.',
@@ -1128,6 +1175,8 @@ function mergeWithDefaults(stored: Partial<Database>): Database {
     };
   }
   if (!Array.isArray(merged.faq)) merged.faq = [];
+  if (!Array.isArray(merged.ctas)) merged.ctas = [];
+  if (merged.settings && merged.settings.ctaEnabled === undefined) merged.settings.ctaEnabled = true;
   if (!merged.features || typeof merged.features !== 'object') {
     merged.features = DEFAULT_DB.features;
   } else {
@@ -1197,6 +1246,7 @@ const ALL_COLLECTIONS: (keyof Database)[] = [
   'orders', 'projects', 'tasks', 'gallery', 'features', 'achievements',
   'weeklyEvents', 'feedback', 'hofMilestones', 'trophies', 'teamRecords', 'teamSeasons',
   'about', 'faq', 'leaderboard', 'customCode', 'recruitment', 'recruitmentOpenings', 'livestreams',
+  'ctas',
 ];
 
 let resyncInFlight: Promise<void> | null = null;

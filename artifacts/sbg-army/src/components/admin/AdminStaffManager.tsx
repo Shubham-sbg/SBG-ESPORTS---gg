@@ -1,3 +1,4 @@
+import { getImageUrl } from '@/lib/imageResolver';
 import { useState } from 'react';
 import { getDB, saveDB } from '@/lib/database';
 import type { StaffAccount } from '@/lib/database';
@@ -46,7 +47,7 @@ function Avatar({ acc }: { acc: StaffAccount }) {
 
 export default function AdminStaffManager({ onRefresh }: { onRefresh: () => void }) {
   const db = getDB();
-  const accounts: StaffAccount[] = db.staffAccounts ?? [];
+  const accounts: StaffAccount[] = db.staffAccounts || [];
 
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
@@ -220,8 +221,8 @@ export default function AdminStaffManager({ onRefresh }: { onRefresh: () => void
             {/* Photo + basic info */}
             <div className="flex flex-col sm:flex-row gap-6">
               <MediaUpload
-                value={form.photo}
-                onChange={url => setForm(f => ({ ...f, photo: url }))}
+                imageUrl={form.photo}
+                onImageChange={url => setForm(f => ({ ...f, photo: url }))}
                 label="Profile Photo"
                 size="lg"
                 shape="circle"
@@ -231,13 +232,13 @@ export default function AdminStaffManager({ onRefresh }: { onRefresh: () => void
               />
               <div className="flex-1 space-y-3">
                 <Field label="Full Name *">
-                  <Input value={form.name} onChange={v => setForm(f => ({ ...f, name: v }))} placeholder="Staff Member Name" />
+                  <Input imageUrl={form.name} onChange={v => setForm(f => ({ ...f, name: v }))} placeholder="Staff Member Name" />
                 </Field>
                 <Field label="Email Address *">
-                  <Input type="email" value={form.email} onChange={v => setForm(f => ({ ...f, email: v }))} placeholder="staff@example.com" />
+                  <Input type="email" imageUrl={form.email} onChange={v => setForm(f => ({ ...f, email: v }))} placeholder="staff@example.com" />
                 </Field>
                 <Field label={editId ? 'Password (leave blank to keep current)' : 'Password *'}>
-                  <Input type="text" value={form.password} onChange={v => setForm(f => ({ ...f, password: v }))} placeholder="Set a strong password" />
+                  <Input type="text" imageUrl={form.password} onChange={v => setForm(f => ({ ...f, password: v }))} placeholder="Set a strong password" />
                 </Field>
               </div>
             </div>

@@ -1,25 +1,10 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState, useEffect } from 'react';
-import { Ad, getDB } from '@/lib/database';
+import { Ad, getDB, isAdActive, matchesAdDevice } from '@/lib/database';
 
 interface Props {
   ads: Ad[];
-}
-
-function isAdActive(ad: Ad): boolean {
-  if (!ad.enabled) return false;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  if (ad.startDate) {
-    const start = new Date(ad.startDate);
-    start.setHours(0, 0, 0, 0);
-    if (today < start) return false;
-  }
-  if (ad.endDate) {
-    const end = new Date(ad.endDate);
-    end.setHours(23, 59, 59, 999);
-    if (today > end) return false;
-  }
-  return true;
 }
 
 function isDismissed(adId: string): boolean {
@@ -42,19 +27,19 @@ function setDismissed(adId: string) {
 
 function AdContent({ ad, className = '' }: { ad: Ad; className?: string }) {
   if (ad.imageUrl) {
-    const img = <img src={ad.imageUrl} alt={ad.title || 'Advertisement'} className={`object-contain ${className}`} />;
+    const img = <Image src={ad.imageUrl} alt={ad.title || 'Advertisement'} objectFit="contain" className={`object-contain ${className}`} />;
     return ad.link ? (
       <a href={ad.link} target="_blank" rel="noopener noreferrer">{img}</a>
     ) : img;
   }
   if (ad.videoUrl) {
-    return <video src={ad.videoUrl} autoPlay muted loop playsInline className={`object-cover ${className}`} />;
+    return <video src={getImageUrl(ad.videoUrl)} autoPlay muted loop playsInline className={`object-cover ${className}`} />;
   }
   if (ad.script) {
     return <div dangerouslySetInnerHTML={{ __html: ad.script }} />;
   }
   if (ad.iframeSrc) {
-    return <iframe src={ad.iframeSrc} className={`border-none ${className}`} title={ad.title || 'Ad'} />;
+    return <iframe src={getImageUrl(ad.iframeSrc)} className={`border-none ${className}`} title={ad.title || 'Ad'} />;
   }
   if (ad.title && ad.link) {
     return (
@@ -69,7 +54,9 @@ function AdContent({ ad, className = '' }: { ad: Ad; className?: string }) {
 
 export default function AdsRenderer({ ads }: Props) {
   const safeAds = ads || [];
-  const activeAds = safeAds.filter(isAdActive);
+  const activeAds = safeAds
+    .filter(isAdActive)
+    .filter(a => matchesAdDevice(a.deviceTarget));
 
   // Dynamically inject configured Ad Network Scripts (Google AdSense / HilltopAds / Custom)
   useEffect(() => {
@@ -128,8 +115,10 @@ export default function AdsRenderer({ ads }: Props) {
   );
 
   const bannerAds = activeAds.filter(a =>
-    (a.adType === 'banner' || a.placement === 'header' || a.placement === 'hero') &&
-    a.adType !== 'popup' && a.placement !== 'popup'
+    (a.adType === 'banner' || a.placement === 'header' || a.placement === 'top-banner') &&
+    a.placement !== 'hero' &&
+    a.adType !== 'popup' &&
+    a.placement !== 'popup'
   );
 
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
@@ -185,7 +174,7 @@ export default function AdsRenderer({ ads }: Props) {
                 )}
                 {visiblePopup.script && <div dangerouslySetInnerHTML={{ __html: visiblePopup.script }} />}
                 {visiblePopup.iframeSrc && (
-                  <iframe src={visiblePopup.iframeSrc} className="w-full min-h-48 border-none mt-4 rounded-lg" title={visiblePopup.title || 'Ad'} />
+                  <iframe src={getImageUrl(visiblePopup.iframeSrc)} className="w-full min-h-48 border-none mt-4 rounded-lg" title={visiblePopup.title || 'Ad'} />
                 )}
               </div>
             )}

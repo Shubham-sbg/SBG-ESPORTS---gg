@@ -10,9 +10,8 @@ backend's source code to build or run.
 | Setting | Value |
 |---|---|
 | Root Directory | `artifacts/sbg-army` |
-| Install Command | `corepack enable && pnpm install --frozen-lockfile` |
-| Build Command | `cd ../.. && pnpm run typecheck:libs && pnpm --filter @workspace/sbg-army run build` |
-| Output Directory | `dist/public` |
+| Build Command | `npm install && npm run build` |
+| Output/Publish Directory | `dist` |
 
 These are already encoded in [`vercel.json`](./vercel.json) in this folder —
 Vercel reads them automatically when you import the repo with this Root

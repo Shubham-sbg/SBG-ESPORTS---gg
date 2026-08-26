@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState } from 'react';
 import { getDB, saveDB } from '@/lib/database';
 import type { LiveStream } from '@/lib/database';
@@ -232,9 +234,9 @@ export default function AdminLiveStream({ onRefresh }: Props) {
             <div key={s.id} className="flex items-start gap-3 p-4 rounded-2xl border transition-all"
               style={{ borderColor: `${sm.color}25`, background: `${sm.color}05` }}>
               {s.thumbnail && (
-                <img src={s.thumbnail} alt={s.title}
-                  className="w-16 h-10 rounded-lg object-cover flex-shrink-0"
-                  onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                <Image src={s.thumbnail} alt={s.title}
+                  objectFit="cover"
+                  className="w-16 h-10 rounded-lg object-cover flex-shrink-0" />
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-1">

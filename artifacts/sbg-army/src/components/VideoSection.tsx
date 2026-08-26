@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState } from 'react';
 import { Video } from '@/lib/database';
 
@@ -52,7 +54,7 @@ export default function VideoSection({ videos }: Props) {
               >
                 <div className="relative aspect-video bg-black/50 overflow-hidden">
                   {thumb ? (
-                    <img src={thumb} alt={v.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100" />
+                    <Image src={thumb} alt={v.title} loading="lazy" decoding="async" objectFit="cover" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <span className="text-5xl opacity-30">🎬</span>
@@ -99,7 +101,7 @@ export default function VideoSection({ videos }: Props) {
             <div className="aspect-video bg-black">
               {modalVideo.videoType === 'upload' && modalVideo.url ? (
                 <video
-                  src={modalVideo.url}
+                  src={getImageUrl(modalVideo.url)}
                   controls
                   autoPlay
                   className="w-full h-full object-contain"

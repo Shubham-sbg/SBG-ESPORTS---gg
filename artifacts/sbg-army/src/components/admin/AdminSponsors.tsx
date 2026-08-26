@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState } from 'react';
 import { Sponsor, getDB, saveDB } from '@/lib/database';
 import Combobox from '@/components/shared/Combobox';
@@ -123,7 +125,7 @@ export default function AdminSponsors({ sponsors, onRefresh }: Props) {
         <div className="p-6 rounded-xl border border-white/5 bg-white/3 space-y-5">
           <div className="flex items-center gap-6">
             <div className="w-24 h-16 rounded-lg border-2 border-dashed border-white/20 flex items-center justify-center overflow-hidden bg-white/3">
-              {form.logo ? <img src={form.logo} alt="" className="w-full h-full object-contain p-1" /> : <span>🤝</span>}
+              {form.logo ? <Image src={form.logo} alt="" objectFit="contain" className="w-full h-full object-contain p-1" /> : <span>🤝</span>}
             </div>
             <label className="cursor-pointer px-4 py-2 rounded-lg bg-orange-500 text-black text-sm font-bold hover:bg-orange-400">
               Upload Logo <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
@@ -175,7 +177,7 @@ export default function AdminSponsors({ sponsors, onRefresh }: Props) {
         {sorted.map(s => (
           <div key={s.id} className="flex items-center gap-4 p-4 rounded-xl border border-white/5 bg-white/3 hover:border-white/10 transition-all">
             <div className="w-16 h-10 rounded-lg bg-white/5 flex items-center justify-center overflow-hidden flex-shrink-0">
-              {s.logo ? <img src={s.logo} alt="" className="w-full h-full object-contain p-1" /> : <span className="text-gray-500 text-xs">{s.name.charAt(0)}</span>}
+              {s.logo ? <Image src={s.logo} alt="" objectFit="contain" className="w-full h-full object-contain p-1" /> : <span className="text-gray-500 text-xs">{s.name.charAt(0)}</span>}
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-bold text-white">{s.name}</p>

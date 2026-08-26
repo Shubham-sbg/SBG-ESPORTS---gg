@@ -1,3 +1,4 @@
+import { getImageUrl } from '@/lib/imageResolver';
 import { useState } from 'react';
 import { Founder, getDB, saveDB } from '@/lib/database';
 import Combobox from '@/components/shared/Combobox';
@@ -72,7 +73,7 @@ export default function AdminFounders({ founders, onRefresh }: Props) {
         <div className="p-6 rounded-xl border border-white/5 bg-white/3 space-y-5">
           <div className="flex items-center gap-6">
             <div className="w-24 h-24 rounded-xl border-2 border-dashed border-white/20 flex items-center justify-center overflow-hidden bg-white/3">
-              {form.photo ? <img src={form.photo} alt="" className="w-full h-full object-cover" /> : <span className="text-3xl">👤</span>}
+              {form.photo ? <img src={getImageUrl(form.photo)} alt="" className="w-full h-full object-cover" /> : <span className="text-3xl">👤</span>}
             </div>
             <label className="cursor-pointer px-4 py-2 rounded-lg bg-orange-500 text-black text-sm font-bold hover:bg-orange-400">
               Upload Photo <input type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
@@ -137,7 +138,7 @@ export default function AdminFounders({ founders, onRefresh }: Props) {
         {filtered.map(f => (
           <div key={f.id} className="flex items-center gap-4 p-4 rounded-xl border border-white/5 bg-white/3 hover:border-white/10 transition-all">
             <div className="w-14 h-14 rounded-xl overflow-hidden bg-white/5 flex-shrink-0 flex items-center justify-center">
-              {f.photo ? <img src={f.photo} alt="" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
+              {f.photo ? <img src={getImageUrl(f.photo)} alt="" className="w-full h-full object-cover" /> : <span className="text-2xl">👤</span>}
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-bold text-white">{f.name}</p>

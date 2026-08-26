@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDatabase } from '@/hooks/useDatabase';
@@ -176,9 +178,10 @@ function SeasonCard({ season, index }: { season: TeamSeason; index: number }) {
                         }}
                       >
                         {player.photo ? (
-                          <img
+                          <Image
                             src={player.photo}
                             alt={player.ign}
+                            objectFit="cover"
                             className="w-14 h-14 rounded-full object-cover mx-auto mb-2"
                           />
                         ) : (
@@ -227,7 +230,7 @@ function SeasonCard({ season, index }: { season: TeamSeason; index: number }) {
                         }}
                       >
                         {staff.photo ? (
-                          <img src={staff.photo} alt={staff.name} className="w-8 h-8 rounded-full object-cover" />
+                          <Image src={staff.photo} alt={staff.name} objectFit="cover" className="w-8 h-8 rounded-full object-cover" />
                         ) : (
                           <div
                             className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-black"
@@ -252,9 +255,10 @@ function SeasonCard({ season, index }: { season: TeamSeason; index: number }) {
                   <h3 className="text-xs font-black uppercase tracking-[0.3em] text-gray-400 mb-4">
                     Jersey
                   </h3>
-                  <img
+                  <Image
                     src={season.jerseyImage}
                     alt="Season Jersey"
+                    objectFit="contain"
                     className="h-48 object-contain rounded-xl"
                     style={{ border: '1px solid rgba(255,255,255,0.06)' }}
                   />

@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState, useEffect } from 'react';
 import { useDatabase } from '@/hooks/useDatabase';
 import { applyTheme } from '@/lib/applyTheme';
@@ -37,7 +39,7 @@ export default function BlogPage() {
             </button>
             {selected.image && (
               <div className="aspect-video rounded-2xl overflow-hidden mb-8">
-                <img src={selected.image} alt={selected.title} className="w-full h-full object-cover" />
+                <Image src={selected.image} alt={selected.title} objectFit="cover" className="w-full h-full object-cover" />
               </div>
             )}
             <div className="flex items-center gap-3 mb-4">
@@ -103,7 +105,7 @@ export default function BlogPage() {
                   <div className="grid grid-cols-1 md:grid-cols-5">
                     {featured.image && (
                       <div className="md:col-span-3 aspect-video md:aspect-auto">
-                        <img src={featured.image} alt={featured.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <Image src={featured.image} alt={featured.title} objectFit="cover" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       </div>
                     )}
                     <div className={`${featured.image ? 'md:col-span-2' : 'md:col-span-5'} p-6 md:p-8 flex flex-col justify-center`}>
@@ -127,7 +129,7 @@ export default function BlogPage() {
                       className="text-left bg-white/[0.03] border border-white/5 rounded-2xl overflow-hidden hover:border-orange-500/20 transition-all group">
                       {post.image && (
                         <div className="aspect-video overflow-hidden">
-                          <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                          <Image src={post.image} alt={post.title} objectFit="cover" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                         </div>
                       )}
                       <div className="p-5">

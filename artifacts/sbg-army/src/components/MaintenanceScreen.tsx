@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { Settings } from '@/lib/database';
 
 interface Props {
@@ -13,7 +15,7 @@ export default function MaintenanceScreen({ settings }: Props) {
         }} />
       <div className="relative z-10 text-center px-4 max-w-2xl mx-auto">
         {settings.logo ? (
-          <img src={settings.logo} alt={settings.organizationName} className="h-24 w-auto mx-auto mb-8" />
+          <Image src={settings.logo} alt={settings.organizationName} objectFit="contain" className="h-24 w-auto mx-auto mb-8 object-contain" />
         ) : (
           <div className="h-24 w-24 mx-auto mb-8 rounded-2xl flex items-center justify-center font-black text-3xl text-white"
             style={{ background: `linear-gradient(135deg, ${settings.primaryColor}, ${settings.accentColor})` }}>

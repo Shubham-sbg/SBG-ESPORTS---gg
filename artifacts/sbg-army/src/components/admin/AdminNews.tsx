@@ -1,3 +1,6 @@
+import ImageUpload from '@/components/shared/ImageUpload';
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState } from 'react';
 import { Post, getDB, saveCollection } from '@/lib/database';
 
@@ -48,13 +51,7 @@ export default function AdminNews({ posts, onRefresh }: Props) {
     onRefresh();
   };
 
-  const handleThumbUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => setForm(f => ({ ...f, thumbnail: ev.target?.result as string }));
-    reader.readAsDataURL(file);
-  };
+  
 
   if (adding || editing) {
     return (
@@ -66,20 +63,7 @@ export default function AdminNews({ posts, onRefresh }: Props) {
         <div className="p-6 rounded-xl border border-white/5 bg-white/3 space-y-5">
           <div>
             <label className="label">Thumbnail</label>
-            <div className="flex items-center gap-4 mt-1">
-              {form.thumbnail && (
-                <img src={form.thumbnail} alt="" className="w-20 h-14 object-cover rounded-lg" />
-              )}
-              <label className="cursor-pointer px-4 py-2 rounded-lg bg-orange-500 text-black text-sm font-bold hover:bg-orange-400">
-                Upload Image <input type="file" accept="image/*" onChange={handleThumbUpload} className="hidden" />
-              </label>
-              {form.thumbnail && (
-                <button onClick={() => setForm(f => ({ ...f, thumbnail: '' }))}
-                  className="px-3 py-2 rounded-lg text-xs font-bold bg-red-500/10 text-red-400 hover:bg-red-500/20">
-                  Remove
-                </button>
-              )}
-            </div>
+            <ImageUpload imageUrl={form.thumbnail} onImageChange={url => setForm(f => ({ ...f, thumbnail: url }))} label="" size="lg" shape="square" showRatioControls={true} />
           </div>
           <div><label className="label">Title</label><input className="inp" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} /></div>
           <div>
@@ -130,7 +114,7 @@ export default function AdminNews({ posts, onRefresh }: Props) {
         {(posts || []).map(p => (
           <div key={p.id} className="flex items-center gap-4 p-4 rounded-xl border border-white/5 bg-white/3 hover:border-white/10 transition-all">
             <div className="w-16 h-10 rounded-lg bg-white/5 overflow-hidden flex-shrink-0">
-              {p.thumbnail ? <img src={p.thumbnail} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-gray-500 text-xs">📰</div>}
+              {p.thumbnail ? <Image src={p.thumbnail} alt="" objectFit="cover" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-gray-500 text-xs">📰</div>}
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-bold text-white truncate">{p.title}</p>

@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useEffect } from 'react';
 import { useDatabase } from '@/hooks/useDatabase';
 import { applyTheme } from '@/lib/applyTheme';
@@ -149,7 +151,7 @@ export default function AboutPage() {
               {enabledGames.map((g) => (
                 <div key={g.id} className="bg-white/[0.03] border border-white/8 rounded-2xl p-4 sm:p-6 hover:border-white/15 transition-all duration-300 group text-center">
                   {g.logo ? (
-                    <img src={g.logo} alt={g.name} className="w-12 h-12 object-contain mx-auto mb-3 group-hover:scale-110 transition-transform" />
+                    <Image src={g.logo} alt={g.name} objectFit="contain" className="w-12 h-12 object-contain mx-auto mb-3 group-hover:scale-110 transition-transform" />
                   ) : (
                     <div className="text-3xl mb-3">🎮</div>
                   )}
@@ -206,7 +208,7 @@ export default function AboutPage() {
                   <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-2xl mb-3 sm:mb-4 overflow-hidden flex items-center justify-center"
                     style={{ background: `linear-gradient(135deg, ${db.settings.primaryColor}33, ${db.settings.accentColor}22)` }}>
                     {f.photo ? (
-                      <img src={f.photo} alt={f.name} className="w-full h-full object-cover" />
+                      <Image src={f.photo} alt={f.name} objectFit="cover" className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-2xl sm:text-3xl font-black text-orange-400">{f.name.charAt(0)}</span>
                     )}

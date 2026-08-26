@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { Creator } from '@/lib/database';
 
 interface Props {
@@ -44,7 +46,7 @@ export default function CreatorsSection({ creators }: Props) {
                   <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 bg-white/5 flex items-center justify-center mx-auto"
                     style={{ borderColor: roleColor + '44' }}>
                     {creator.photo
-                      ? <img src={creator.photo} alt={creator.name} loading="lazy" decoding="async" width="96" height="96" className="w-full h-full object-cover" />
+                      ? <Image src={creator.photo} alt={creator.name} loading="lazy" decoding="async" width={96} height={96} objectFit="cover" className="w-full h-full object-cover" />
                       : <span className="text-4xl">🎥</span>
                     }
                   </div>

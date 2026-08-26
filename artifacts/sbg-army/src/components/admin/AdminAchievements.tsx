@@ -148,10 +148,10 @@ export default function AdminAchievements({ onRefresh }: Props) {
           {/* Title + Category */}
           <div className="grid sm:grid-cols-2 gap-4">
             <Field label="Achievement Title *">
-              <Input value={form.title} onChange={v => setForm(f => ({ ...f, title: v }))} placeholder="BGMI National Championship" />
+              <Input imageUrl={form.title} onChange={v => setForm(f => ({ ...f, title: v }))} placeholder="BGMI National Championship" />
             </Field>
             <Field label="Category *">
-              <Combobox value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value as Achievement['category'] }))}
+              <Combobox imageUrl={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value as Achievement['category'] }))}
                 className="w-full px-4 py-2.5 rounded-xl text-sm text-white focus:outline-none"
                 style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
                 {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -172,17 +172,17 @@ export default function AdminAchievements({ onRefresh }: Props) {
                   {icon}
                 </button>
               ))}
-              <Input value={form.trophyIcon} onChange={v => setForm(f => ({ ...f, trophyIcon: v }))} placeholder="Custom emoji" />
+              <Input imageUrl={form.trophyIcon} onChange={v => setForm(f => ({ ...f, trophyIcon: v }))} placeholder="Custom emoji" />
             </div>
           </Field>
 
           {/* Date + Placement + Result */}
           <div className="grid sm:grid-cols-3 gap-4">
             <Field label="Date *">
-              <Input type="date" value={form.date} onChange={v => setForm(f => ({ ...f, date: v }))} />
+              <Input type="date" imageUrl={form.date} onChange={v => setForm(f => ({ ...f, date: v }))} />
             </Field>
             <Field label="Placement">
-              <Combobox value={form.placement} onChange={e => setForm(f => ({ ...f, placement: e.target.value }))}
+              <Combobox imageUrl={form.placement} onChange={e => setForm(f => ({ ...f, placement: e.target.value }))}
                 className="w-full px-4 py-2.5 rounded-xl text-sm text-white focus:outline-none"
                 style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
                 {['1st','2nd','3rd','4th','5th','Top 8','Top 16','Qualifier','Record','Participant'].map(p => (
@@ -191,7 +191,7 @@ export default function AdminAchievements({ onRefresh }: Props) {
               </Combobox>
             </Field>
             <Field label="Result">
-              <Combobox value={form.result} onChange={e => setForm(f => ({ ...f, result: e.target.value }))}
+              <Combobox imageUrl={form.result} onChange={e => setForm(f => ({ ...f, result: e.target.value }))}
                 className="w-full px-4 py-2.5 rounded-xl text-sm text-white focus:outline-none"
                 style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
                 {['W','L','Draw','Record','Participant'].map(r => <option key={r} value={r}>{r}</option>)}
@@ -202,10 +202,10 @@ export default function AdminAchievements({ onRefresh }: Props) {
           {/* Prize Pool + MVP */}
           <div className="grid sm:grid-cols-2 gap-4">
             <Field label="Prize Pool">
-              <Input value={form.prizePool ?? ''} onChange={v => setForm(f => ({ ...f, prizePool: v }))} placeholder="$10,000" />
+              <Input imageUrl={form.prizePool ?? ''} onChange={v => setForm(f => ({ ...f, prizePool: v }))} placeholder="$10,000" />
             </Field>
             <Field label="MVP Player">
-              <Input value={form.mvp ?? ''} onChange={v => setForm(f => ({ ...f, mvp: v }))} placeholder="Player name" />
+              <Input imageUrl={form.mvp ?? ''} onChange={v => setForm(f => ({ ...f, mvp: v }))} placeholder="Player name" />
             </Field>
           </div>
 
@@ -225,8 +225,8 @@ export default function AdminAchievements({ onRefresh }: Props) {
           {/* Tournament Logo */}
           <Field label="Tournament Logo">
             <MediaUpload
-              value={form.tournamentLogo ?? ''}
-              onChange={url => setForm(f => ({ ...f, tournamentLogo: url }))}
+              imageUrl={form.tournamentLogo ?? ''}
+              onImageChange={url => setForm(f => ({ ...f, tournamentLogo: url }))}
               label="Tournament Logo"
               size="md"
               shape="square"
@@ -238,7 +238,7 @@ export default function AdminAchievements({ onRefresh }: Props) {
           {/* Description */}
           <Field label="Description">
             <textarea
-              value={form.description ?? ''}
+              imageUrl={form.description ?? ''}
               onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
               rows={3}
               placeholder="Describe this achievement…"
@@ -250,20 +250,20 @@ export default function AdminAchievements({ onRefresh }: Props) {
           {/* External links */}
           <div className="grid sm:grid-cols-3 gap-4">
             <Field label="Match Replay URL">
-              <Input value={form.matchReplayUrl ?? ''} onChange={v => setForm(f => ({ ...f, matchReplayUrl: v }))} placeholder="https://youtube.com/…" />
+              <Input imageUrl={form.matchReplayUrl ?? ''} onChange={v => setForm(f => ({ ...f, matchReplayUrl: v }))} placeholder="https://youtube.com/…" />
             </Field>
             <Field label="Certificate URL">
-              <Input value={form.certificateUrl ?? ''} onChange={v => setForm(f => ({ ...f, certificateUrl: v }))} placeholder="https://…" />
+              <Input imageUrl={form.certificateUrl ?? ''} onChange={v => setForm(f => ({ ...f, certificateUrl: v }))} placeholder="https://…" />
             </Field>
             <Field label="External Link">
-              <Input value={form.externalLink ?? ''} onChange={v => setForm(f => ({ ...f, externalLink: v }))} placeholder="https://…" />
+              <Input imageUrl={form.externalLink ?? ''} onChange={v => setForm(f => ({ ...f, externalLink: v }))} placeholder="https://…" />
             </Field>
           </div>
 
           {/* Toggles */}
           <div className="flex flex-wrap gap-4">
-            <Toggle label="Featured" desc="Show in featured row" value={form.isFeatured} onChange={v => setForm(f => ({ ...f, isFeatured: v }))} />
-            <Toggle label="Visible" desc="Show on public page" value={form.visible} onChange={v => setForm(f => ({ ...f, visible: v }))} />
+            <Toggle label="Featured" desc="Show in featured row" imageUrl={form.isFeatured} onChange={v => setForm(f => ({ ...f, isFeatured: v }))} />
+            <Toggle label="Visible" desc="Show on public page" imageUrl={form.visible} onChange={v => setForm(f => ({ ...f, visible: v }))} />
           </div>
         </div>
 

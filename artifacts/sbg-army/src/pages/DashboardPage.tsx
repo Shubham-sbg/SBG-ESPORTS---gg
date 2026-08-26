@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState, useEffect } from 'react';
 import { useDatabase } from '@/hooks/useDatabase';
 import { applyTheme } from '@/lib/applyTheme';
@@ -230,8 +232,8 @@ export default function DashboardPage() {
                         <span className="text-sm font-black w-5" style={{ color: i < 3 ? ['#ffd700', '#c0c0c0', '#cd7f32'][i] : '#666' }}>
                           #{i + 1}
                         </span>
-                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-sm font-black text-gray-400 flex-shrink-0">
-                          {p.image ? <img src={p.image} alt={p.name} className="w-full h-full object-cover rounded-lg" /> : p.name.charAt(0)}
+                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-sm font-black text-gray-400 flex-shrink-0 overflow-hidden">
+                          {p.image ? <Image src={p.image} alt={p.name} objectFit="cover" className="w-full h-full object-cover rounded-lg" /> : p.name.charAt(0)}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-black text-white">{p.ign}</div>
@@ -292,9 +294,9 @@ export default function DashboardPage() {
                 <div className="space-y-3">
                   {topPlayers.slice(0, 8).map((p, i) => (
                     <div key={p.id} className="bg-white/[0.03] border border-white/8 rounded-xl p-4 flex items-center gap-4 hover:border-orange-500/20 transition-all">
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-orange-400 flex-shrink-0"
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-orange-400 flex-shrink-0 overflow-hidden"
                         style={{ background: `linear-gradient(135deg, ${db.settings.primaryColor}25, ${db.settings.accentColor}15)` }}>
-                        {p.image ? <img src={p.image} alt={p.name} className="w-full h-full object-cover rounded-xl" /> : p.name.charAt(0)}
+                        {p.image ? <Image src={p.image} alt={p.name} objectFit="cover" className="w-full h-full object-cover rounded-xl" /> : p.name.charAt(0)}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="font-black text-white text-sm">{p.ign}</div>

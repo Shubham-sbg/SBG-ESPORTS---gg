@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useRef, useEffect, useState } from 'react';
 import { Game } from '@/lib/database';
 
@@ -39,7 +41,7 @@ export default function GamesSection({ games }: Props) {
               className="group relative overflow-hidden rounded-xl border border-white/5 bg-white/3 hover:border-orange-500/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl cursor-default p-8 text-center">
               <div className={`absolute inset-0 bg-gradient-to-br ${GAME_GRADIENTS[game.name] || 'from-orange-600 to-red-500'} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
               {game.logo ? (
-                <img src={game.logo} alt={game.name} loading="lazy" decoding="async" width="64" height="64" className="h-16 w-auto mx-auto mb-4 object-contain group-hover:scale-110 transition-transform duration-500" />
+                <Image src={game.logo} alt={game.name} loading="lazy" decoding="async" width={64} height={64} objectFit="contain" className="h-16 w-auto mx-auto mb-4 object-contain group-hover:scale-110 transition-transform duration-500" />
               ) : (
                 <div className={`h-16 w-16 mx-auto mb-4 rounded-xl bg-gradient-to-br ${GAME_GRADIENTS[game.name] || 'from-orange-600 to-red-500'} flex items-center justify-center text-2xl font-black text-white group-hover:scale-110 transition-transform duration-500`}>
                   {game.name.charAt(0)}

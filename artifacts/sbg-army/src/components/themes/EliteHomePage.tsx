@@ -1,9 +1,12 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'wouter';
 import { useDatabase } from '@/hooks/useDatabase';
 import { isFeatureActive, isPlacementActive } from '@/lib/database';
 import Navbar from '@/components/Navbar';
+import AdsRenderer from '@/components/AdsRenderer';
 import Footer from '@/components/Footer';
 import MaintenanceScreen from '@/components/MaintenanceScreen';
 import { PUBLIC_BRAND_NAME } from '@/lib/brandConfig';
@@ -33,6 +36,7 @@ export default function EliteHomePage() {
 
   return (
     <div className="min-h-screen bg-[#020202] text-white font-sans selection:bg-[#d4af37] selection:text-black overflow-x-hidden">
+      {show('ads') && <AdsRenderer ads={db.ads || []} />}
       <Navbar settings={db.settings as any} navigation={db.navigation as any} />
       
       {/* Background Cinematic Effects */}
@@ -305,7 +309,7 @@ function ElitePlayers({ db }: any) {
             viewport={{ once: true }}
             className="group relative aspect-[3/4] rounded-xl overflow-hidden border border-white/10 bg-[#050505]"
           >
-            <img src={p.photo || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=400&h=600&fit=crop'} alt={p.name} className="w-full h-full object-cover opacity-50 group-hover:opacity-80 transition-opacity duration-500 filter grayscale group-hover:grayscale-0" />
+            <Image src={p.photo || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=400&h=600&fit=crop'} alt={p.name} objectFit="cover" className="w-full h-full object-cover opacity-50 group-hover:opacity-80 transition-opacity duration-500 filter grayscale group-hover:grayscale-0" />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
             <div className="absolute bottom-0 left-0 p-4 w-full">
               <h4 className="text-lg font-black uppercase tracking-tight">{p.name}</h4>
@@ -500,14 +504,14 @@ function EliteFacility({ db }: any) {
         </div>
       </div>
       <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/10">
-        <img src={facility.image || "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000"} alt="Facility" className="w-full h-full object-cover filter grayscale contrast-125" />
+        <Image src={facility.image || "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000"} alt="Facility" objectFit="cover" className="w-full h-full object-cover filter grayscale contrast-125" />
         <div className="absolute inset-0 bg-gradient-to-tr from-black via-transparent to-[#d4af37]/20 mix-blend-overlay" />
       </div>
     </section>
   );
 }
 
-function EliteLiveStream({ db }: any) {
+function EliteLiveStream({ db }:any) {
   const streams = db.livestreams || [];
   if (!streams.length) return null;
   const activeStream = streams.find((s:any) => s.isLive) || streams[0];
@@ -517,7 +521,7 @@ function EliteLiveStream({ db }: any) {
       <SectionHeader title="Live Streams" subtitle="Watch Us Live" />
       <div className="relative rounded-3xl overflow-hidden border border-[#d4af37]/20 bg-black aspect-video group cursor-pointer">
         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent z-10" />
-        <img src={activeStream.thumbnail || "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2000"} alt="Stream" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" />
+        <Image src={activeStream.thumbnail || "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2000"} alt="Stream" objectFit="cover" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700" />
         
         <div className="absolute inset-0 z-20 flex flex-col justify-between p-8 md:p-12">
           <div className="self-start">
@@ -554,7 +558,7 @@ function EliteNews({ db }: any) {
           <Link key={article.id} href={`/blog/${article.id}`}>
             <a className="group block h-full border border-white/10 rounded-2xl overflow-hidden bg-white/[0.02] hover:bg-white/5 transition-all">
               <div className="aspect-video overflow-hidden">
-                <img src={article.image || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800'} alt={article.title} className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" />
+                <Image src={article.image || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800'} alt={article.title} objectFit="cover" className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" />
               </div>
               <div className="p-6">
                 <div className="flex gap-4 text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-3">
@@ -581,7 +585,7 @@ function EliteSponsors({ db }: any) {
       <p className="text-center text-[10px] text-gray-500 font-black tracking-[0.4em] uppercase mb-8">Powered By Partners</p>
       <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
         {sponsors.map((s: any) => (
-          <img key={s.id} src={s.logo} alt={s.name} className="h-12 object-contain" />
+          <Image key={s.id} src={s.logo} alt={s.name} objectFit="contain" className="h-12 object-contain" />
         ))}
       </div>
     </section>

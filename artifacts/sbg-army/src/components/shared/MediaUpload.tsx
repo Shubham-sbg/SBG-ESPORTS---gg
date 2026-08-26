@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from './Image';
 /**
  * MediaUpload — Premium image upload component with:
  * - File picker with preview
@@ -12,8 +14,8 @@ import { applyAspectRatio, AspectRatioOption } from './ImageUpload';
 import ImageRatioControl from './ImageRatioControl';
 
 interface Props {
-  value: string;
-  onChange: (url: string) => void;
+  imageUrl: string;
+  onImageChange: (url: string) => void;
   label?: string;
   hint?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -37,7 +39,7 @@ const sizeMap = {
 };
 
 export default function MediaUpload({
-  value, onChange, label, hint, size = 'lg', shape = 'square',
+  imageUrl, onImageChange, label, hint, size = 'lg', shape = 'square',
   showBgRemove = true, showRatioControls = true, useServerUpload = true, accept = 'image/*', className = '',
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -87,7 +89,7 @@ export default function MediaUpload({
         }
       }
 
-      onChange(result);
+      onImageChange(result);
       setProcessing('done');
       setProgressMsg('Done!');
       setTimeout(() => { setProcessing('idle'); setProgressMsg(''); }, 1500);
@@ -96,7 +98,7 @@ export default function MediaUpload({
       setProcessing('error');
       setTimeout(() => { setProcessing('idle'); setError(''); }, 4000);
     }
-  }, [bgRemove, tolerance, useServerUpload, selectedRatio, onChange]);
+  }, [bgRemove, tolerance, useServerUpload, selectedRatio, onImageChange]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -113,7 +115,7 @@ export default function MediaUpload({
 
   const busy = processing === 'reading' || processing === 'removing' || processing === 'uploading';
 
-  const imgPreview = value && (value.startsWith('data:') || value.startsWith('/') || value.startsWith('http'));
+  const imgPreview = imageUrl && (imageUrl.startsWith('data:') || imageUrl.startsWith('/') || imageUrl.startsWith('http'));
 
   return (
     <div className={`flex flex-col gap-3 ${className}`}>
@@ -142,11 +144,11 @@ export default function MediaUpload({
       >
         {imgPreview ? (
           <>
-            <img
-              src={value}
+            <Image
+              src={imageUrl}
               alt="Preview"
+              objectFit="contain"
               className="w-full h-full object-contain p-1"
-              style={{ imageRendering: 'auto' }}
             />
             {/* Hover overlay */}
             {!busy && (
@@ -201,13 +203,13 @@ export default function MediaUpload({
           className="px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider text-black transition-all hover:scale-105 active:scale-95 disabled:opacity-40"
           style={{ background: `linear-gradient(135deg, ${GOLD}, #b8960c)` }}
         >
-          {busy ? progressMsg : value ? '🔄 Replace' : '⬆ Upload'}
+          {busy ? progressMsg : imageUrl ? '🔄 Replace' : '⬆ Upload'}
         </button>
 
-        {value && !busy && (
+        {imageUrl && !busy && (
           <button
             type="button"
-            onClick={() => onChange('')}
+            onClick={() => onImageChange('')}
             className="px-3 py-1.5 rounded-lg text-xs font-bold text-red-400 border border-red-400/20 hover:bg-red-400/10 transition-all"
           >
             Remove

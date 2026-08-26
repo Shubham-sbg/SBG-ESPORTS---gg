@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState, useEffect } from 'react';
 import type { RecruitmentApplication, RecruitmentOpening, RecruitmentCustomQuestion, RecruitmentFormFieldConfig } from '@/lib/database';
 import PlayerMatchIndicator from '@/components/PlayerMatchIndicator';
@@ -828,7 +830,7 @@ export default function AdminRecruitment() {
 
                           {/* Photo / Avatar */}
                           {app.photoUrl ? (
-                            <img src={app.photoUrl} alt={app.name} className="w-11 h-11 rounded-xl object-cover border border-white/10 flex-shrink-0" />
+                            <Image src={app.photoUrl} alt={app.name} objectFit="cover" className="w-11 h-11 rounded-xl object-cover border border-white/10 flex-shrink-0" />
                           ) : (
                             <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30 flex items-center justify-center font-black text-amber-400 text-sm flex-shrink-0">
                               {app.name.charAt(0).toUpperCase()}
@@ -895,7 +897,7 @@ export default function AdminRecruitment() {
                   <div className="flex items-start justify-between gap-3 pb-3 border-b border-white/8">
                     <div className="flex items-center gap-3">
                       {selectedApp.photoUrl ? (
-                        <img src={selectedApp.photoUrl} alt={selectedApp.name} className="w-12 h-12 rounded-xl object-cover border border-amber-500/30" />
+                        <Image src={selectedApp.photoUrl} alt={selectedApp.name} objectFit="cover" className="w-12 h-12 rounded-xl object-cover border border-amber-500/30" />
                       ) : (
                         <div className="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center font-black text-amber-400 text-lg">
                           {selectedApp.name.charAt(0)}

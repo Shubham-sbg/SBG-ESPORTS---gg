@@ -1,3 +1,4 @@
+import { getImageUrl } from '@/lib/imageResolver';
 import { useState, useEffect } from 'react';
 import type { Settings } from '@/lib/database';
 import { getDB, saveDB } from '@/lib/database';
@@ -211,8 +212,8 @@ export default function AdminSettings({ settings, onRefresh }: Props) {
           <Section title="🖼️ Logo" desc="Uploaded to server — displayed in navbar, splash, and everywhere">
             <div className="flex flex-col sm:flex-row items-start gap-8">
               <MediaUpload
-                value={form.logo}
-                onChange={url => set('logo', url)}
+                imageUrl={form.logo}
+                onImageChange={url => set('logo', url)}
                 label="Organization Logo"
                 size="xl"
                 shape="square"
@@ -222,10 +223,10 @@ export default function AdminSettings({ settings, onRefresh }: Props) {
               />
               <div className="flex-1 space-y-4">
                 <Field label="Organization Name">
-                  <Input value={form.organizationName} onChange={v => set('organizationName', v)} placeholder="SBG ESPORTS" />
+                  <Input imageUrl={form.organizationName} onChange={v => set('organizationName', v)} placeholder="SBG ESPORTS" />
                 </Field>
                 <Field label="Tagline">
-                  <Input value={form.tagline} onChange={v => set('tagline', v)} placeholder="BORN TO WIN. BUILT TO DOMINATE." />
+                  <Input imageUrl={form.tagline} onChange={v => set('tagline', v)} placeholder="BORN TO WIN. BUILT TO DOMINATE." />
                 </Field>
                 <Field label="Announcement Banner">
                   <Input value={(form as any).announcementText ?? ''} onChange={v => set('announcementText' as any, v)} placeholder="Announcement shown at top of site…" />
@@ -243,8 +244,8 @@ export default function AdminSettings({ settings, onRefresh }: Props) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               <div className="p-4 rounded-xl bg-white/3 border border-white/8 space-y-3">
                 <MediaUpload
-                  value={form.favicon ?? ''}
-                  onChange={url => set('favicon', url)}
+                  imageUrl={form.favicon ?? ''}
+                  onImageChange={url => set('favicon', url)}
                   label="Website Favicon (.ico, .png, .svg)"
                   size="md"
                   shape="square"
@@ -252,14 +253,14 @@ export default function AdminSettings({ settings, onRefresh }: Props) {
                   hint="Displayed in browser tabs and bookmarks. Square PNG or ICO recommended."
                 />
                 <Field label="Direct Favicon URL (Optional)">
-                  <Input value={form.favicon ?? ''} onChange={v => set('favicon', v)} placeholder="/favicon.ico or https://..." />
+                  <Input imageUrl={form.favicon ?? ''} onChange={v => set('favicon', v)} placeholder="/favicon.ico or https://..." />
                 </Field>
               </div>
 
               <div className="p-4 rounded-xl bg-white/3 border border-white/8 space-y-3">
                 <MediaUpload
-                  value={form.appleTouchIcon ?? ''}
-                  onChange={url => set('appleTouchIcon', url)}
+                  imageUrl={form.appleTouchIcon ?? ''}
+                  onImageChange={url => set('appleTouchIcon', url)}
                   label="Apple Touch Icon (.png)"
                   size="md"
                   shape="square"
@@ -267,7 +268,7 @@ export default function AdminSettings({ settings, onRefresh }: Props) {
                   hint="Displayed when users add your site to their iOS / Android home screen (180x180 PNG recommended)."
                 />
                 <Field label="Direct Apple Touch Icon URL (Optional)">
-                  <Input value={form.appleTouchIcon ?? ''} onChange={v => set('appleTouchIcon', v)} placeholder="/apple-touch-icon.png or https://..." />
+                  <Input imageUrl={form.appleTouchIcon ?? ''} onChange={v => set('appleTouchIcon', v)} placeholder="/apple-touch-icon.png or https://..." />
                 </Field>
               </div>
             </div>
@@ -293,13 +294,13 @@ export default function AdminSettings({ settings, onRefresh }: Props) {
             <div className="grid sm:grid-cols-2 gap-6">
               <div className="space-y-3">
                 <Field label="UPI ID">
-                  <Input value={form.upiId ?? ''} onChange={v => set('upiId', v)} placeholder="yourname@upi" />
+                  <Input imageUrl={form.upiId ?? ''} onChange={v => set('upiId', v)} placeholder="yourname@upi" />
                 </Field>
               </div>
               <div>
                 <MediaUpload
-                  value={form.upiQr ?? ''}
-                  onChange={url => set('upiQr', url)}
+                  imageUrl={form.upiQr ?? ''}
+                  onImageChange={url => set('upiQr', url)}
                   label="UPI QR Code Image"
                   size="lg"
                   shape="square"
@@ -322,7 +323,7 @@ export default function AdminSettings({ settings, onRefresh }: Props) {
                 <Input value={(form as any).heroBadgeText ?? ''} onChange={v => set('heroBadgeText' as any, v)} placeholder="Professional Esports Organization" />
               </Field>
               <Field label="Tagline (below name)">
-                <Input value={form.tagline} onChange={v => set('tagline', v)} placeholder="BORN TO WIN. BUILT TO DOMINATE." />
+                <Input imageUrl={form.tagline} onChange={v => set('tagline', v)} placeholder="BORN TO WIN. BUILT TO DOMINATE." />
               </Field>
             </div>
           </Section>
@@ -601,7 +602,7 @@ Allow: /"
             <div className="rounded-xl overflow-hidden mt-2" style={{ border: '1px solid rgba(255,255,255,0.06)' }}>
               <div className="px-4 py-3 flex items-center gap-3" style={{ background: form.secondaryColor }}>
                 {form.logo ? (
-                  <img src={form.logo} alt="Logo" className="h-7 w-auto object-contain" />
+                  <img src={getImageUrl(form.logo)} alt="Logo" className="h-7 w-auto object-contain" />
                 ) : (
                   <div className="h-7 px-2 rounded font-black text-xs flex items-center" style={{ background: form.primaryColor, color: '#000' }}>SBG</div>
                 )}
@@ -625,7 +626,7 @@ Allow: /"
             <div className="flex flex-col sm:flex-row items-start gap-8">
               <MediaUpload
                 value={(form as any).loadingLogo ?? ''}
-                onChange={url => set('loadingLogo' as any, url)}
+                onImageChange={url => set('loadingLogo' as any, url)}
                 label="Loading Screen Logo"
                 size="xl"
                 shape="square"
@@ -978,7 +979,7 @@ Allow: /"
             {form.maintenanceMode && (
               <Field label="Maintenance Message">
                 <textarea
-                  value={form.maintenanceMessage}
+                  imageUrl={form.maintenanceMessage}
                   onChange={e => set('maintenanceMessage', e.target.value)}
                   rows={3}
                   placeholder="We are upgrading our systems. Back soon!"

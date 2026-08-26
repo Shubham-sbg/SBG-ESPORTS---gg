@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState, useEffect } from 'react';
 import { useDatabase } from '@/hooks/useDatabase';
 import { applyTheme } from '@/lib/applyTheme';
@@ -580,7 +582,7 @@ export default function JoinTeamPage() {
                     <div className="border-2 border-dashed border-white/10 hover:border-amber-500/40 rounded-2xl p-4 text-center transition-all bg-white/2">
                       {form.photoUrl ? (
                         <div className="flex items-center gap-3">
-                          <img src={form.photoUrl} alt="Avatar" className="w-12 h-12 rounded-xl object-cover border border-amber-500/40" />
+                          <Image src={form.photoUrl} alt="Avatar" objectFit="cover" className="w-12 h-12 rounded-xl object-cover border border-amber-500/40" />
                           <div className="text-left flex-1 min-w-0">
                             <span className="text-xs text-emerald-400 font-bold block">✓ Photo Uploaded</span>
                             <span className="text-[10px] text-gray-500 truncate block">{form.photoUrl}</span>

@@ -80,8 +80,8 @@ router.post('/upload', requireAdmin, handleSingleUpload, async (req: Request, re
     const filename = req.file.filename;
     const filePath = join(UPLOAD_DIR, filename);
     const buffer = readFileSync(filePath);
-    await saveUploadedFile(filename, req.file.mimetype, buffer);
-    const url = `/api/uploads/${filename}`;
+    const storageUrl = await saveUploadedFile(filename, req.file.mimetype, buffer);
+    const url = storageUrl || `/api/uploads/${filename}`;
 
     // Auto-create media metadata record if it's an image
     if (ALLOWED_IMAGE_TYPES.includes(req.file.mimetype)) {
@@ -147,9 +147,9 @@ router.post('/media/batch', requireAdmin, upload.array('images', 50),  async (re
       const filePath = join(UPLOAD_DIR, filename);
       const buffer = readFileSync(filePath);
 
-      // Save binary blob to SQLite persistent storage
-      await saveUploadedFile(filename, file.mimetype, buffer);
-      const url = `/api/uploads/${filename}`;
+      // Save binary blob to storage
+      const storageUrl = await saveUploadedFile(filename, file.mimetype, buffer);
+      const url = storageUrl || `/api/uploads/${filename}`;
 
       const record: MediaRecord = {
         id: randomUUID(),
@@ -246,9 +246,9 @@ router.post('/media/replace/:id', requireAdmin, upload.single('image'),  async (
     const newFilePath = join(UPLOAD_DIR, newFilename);
     const buffer = readFileSync(newFilePath);
 
-    // Save new file to persistent SQLite store first
-    await saveUploadedFile(newFilename, req.file.mimetype, buffer);
-    const newUrl = `/api/uploads/${newFilename}`;
+    // Save new file to storage
+    const storageUrl = await saveUploadedFile(newFilename, req.file.mimetype, buffer);
+    const newUrl = storageUrl || `/api/uploads/${newFilename}`;
 
     // Step 2: Update database reference to point to new image
     const updatedRecord: MediaRecord = {

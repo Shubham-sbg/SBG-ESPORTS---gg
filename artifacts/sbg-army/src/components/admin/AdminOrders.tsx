@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState } from 'react';
 import { Order, getDB, saveDB } from '@/lib/database';
 
@@ -126,7 +128,7 @@ export default function AdminOrders({ orders, onRefresh }: Props) {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={() => setViewScreenshot(null)}>
           <div className="relative max-w-lg w-full" onClick={e => e.stopPropagation()}>
             <button onClick={() => setViewScreenshot(null)} className="absolute -top-10 right-0 text-gray-400 hover:text-white font-black text-2xl">✕</button>
-            <img src={viewScreenshot} alt="Payment Screenshot" className="w-full rounded-xl border border-white/10" />
+            <Image src={viewScreenshot} alt="Payment Screenshot" objectFit="contain" className="w-full rounded-xl border border-white/10" />
           </div>
         </div>
       )}

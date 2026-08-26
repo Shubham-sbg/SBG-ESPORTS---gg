@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDatabase } from '@/hooks/useDatabase';
@@ -137,7 +139,7 @@ function TrophyCard({ trophy, onClick }: { trophy: Trophy; onClick: () => void }
         {/* FRONT */}
         <div style={{ ...sharedFace, position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: '1.5rem' }}>
           {trophy.tournamentLogo
-            ? <img src={trophy.tournamentLogo} alt="" className="w-14 h-14 object-contain rounded-lg" />
+            ? <Image src={trophy.tournamentLogo} alt="" objectFit="contain" className="w-14 h-14 object-contain rounded-lg" />
             : <div className="text-6xl leading-none">{cfg.icon}</div>
           }
           <span className="text-5xl leading-none">{cfg.icon}</span>
@@ -264,7 +266,7 @@ function TrophyModal({ trophy, onClose }: { trophy: Trophy; onClose: () => void 
                 </div>
               </div>
               {trophy.tournamentLogo && (
-                <img src={trophy.tournamentLogo} alt="Tournament Logo" className="w-16 h-16 object-contain rounded-xl"
+                <Image src={trophy.tournamentLogo} alt="Tournament Logo" objectFit="contain" className="w-16 h-16 object-contain rounded-xl"
                   style={{ border: '1px solid rgba(255,255,255,0.08)' }} />
               )}
             </div>
@@ -308,7 +310,7 @@ function TrophyModal({ trophy, onClose }: { trophy: Trophy; onClose: () => void 
             {trophy.teamPhoto && (
               <div>
                 <div className="text-white/30 text-[10px] uppercase tracking-widest mb-2">Team Photo</div>
-                <img src={trophy.teamPhoto} alt="Team" className="w-full rounded-xl object-cover max-h-64"
+                <Image src={trophy.teamPhoto} alt="Team" objectFit="cover" className="w-full rounded-xl object-cover max-h-64"
                   style={{ border: '1px solid rgba(255,255,255,0.08)' }} />
               </div>
             )}
@@ -319,7 +321,7 @@ function TrophyModal({ trophy, onClose }: { trophy: Trophy; onClose: () => void 
                 <div className="text-white/30 text-[10px] uppercase tracking-widest mb-2">Gallery</div>
                 <div className="grid grid-cols-3 gap-2">
                   {trophy.gallery.map((img, i) => (
-                    <img key={i} src={img} alt={`Gallery ${i+1}`} className="w-full aspect-square object-cover rounded-xl"
+                    <Image key={i} src={img} alt={`Gallery ${i+1}`} objectFit="cover" className="w-full aspect-square object-cover rounded-xl"
                       style={{ border: '1px solid rgba(255,255,255,0.08)' }} />
                   ))}
                 </div>

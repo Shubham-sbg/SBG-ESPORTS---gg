@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState, useEffect } from 'react';
 import { useDatabase } from '@/hooks/useDatabase';
 import { applyTheme } from '@/lib/applyTheme';
@@ -53,7 +55,8 @@ export default function GalleryPage() {
               <button key={item.id} onClick={() => setSelected(item.id)}
                 className="group relative aspect-video rounded-2xl overflow-hidden border border-yellow-500/20 hover:border-yellow-500/50 transition-all duration-300">
                 {item.image ? (
-                  <img src={item.image} alt={item.title}
+                  <Image src={item.image} alt={item.title}
+                    objectFit="cover"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     loading="lazy" />
                 ) : (
@@ -108,7 +111,8 @@ export default function GalleryPage() {
                 className="group relative aspect-square rounded-xl overflow-hidden border border-white/6 bg-white/2 hover:border-white/20 transition-all duration-300"
                 style={item.featured ? { borderColor: 'rgba(212,175,55,0.3)', boxShadow: '0 0 12px rgba(212,175,55,0.15)' } : {}}>
                 {item.image ? (
-                  <img src={item.image} alt={item.title}
+                  <Image src={item.image} alt={item.title}
+                    objectFit="cover"
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     loading="lazy" />
                 ) : (
@@ -135,7 +139,7 @@ export default function GalleryPage() {
             <button onClick={() => setSelected(null)}
               className="absolute -top-10 right-0 text-white/60 hover:text-white text-2xl font-black transition-colors">✕</button>
             {selectedItem.image ? (
-              <img src={selectedItem.image} alt={selectedItem.title} className="w-full max-h-[75vh] object-contain rounded-2xl" />
+              <Image src={selectedItem.image} alt={selectedItem.title} objectFit="contain" className="w-full max-h-[75vh] object-contain rounded-2xl" />
             ) : (
               <div className="w-full h-64 bg-white/5 rounded-2xl flex items-center justify-center text-6xl">📸</div>
             )}

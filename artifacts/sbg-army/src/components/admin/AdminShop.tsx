@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from '@/components/shared/Image';
 import { useState } from 'react';
 import { ShopItem, getDB, saveDB } from '@/lib/database';
 import Combobox from '@/components/shared/Combobox';
@@ -147,7 +149,7 @@ export default function AdminShop({ shop, onRefresh }: Props) {
         <div className="p-6 rounded-xl border border-white/5 bg-white/3 space-y-5">
           <div className="flex items-start gap-6">
             <div className="w-32 h-32 rounded-xl border-2 border-dashed border-white/20 flex items-center justify-center overflow-hidden bg-white/3 flex-shrink-0">
-              {form.image ? <img src={form.image} alt="" className="w-full h-full object-cover" /> : <span className="text-4xl">👕</span>}
+              {form.image ? <Image src={form.image} alt="" objectFit="cover" className="w-full h-full object-cover" /> : <span className="text-4xl">👕</span>}
             </div>
             <div className="space-y-3 flex-1">
               <label className="cursor-pointer px-4 py-2 rounded-lg bg-orange-500 text-black text-sm font-bold hover:bg-orange-400 inline-block">
@@ -205,7 +207,7 @@ export default function AdminShop({ shop, onRefresh }: Props) {
             <div>
               <label className="label">Product UPI QR (overrides global)</label>
               <div className="flex items-center gap-2 mt-1">
-                {form.upiQr && <img src={form.upiQr} alt="QR" className="h-12 rounded bg-white p-0.5" />}
+                {form.upiQr && <Image src={form.upiQr} alt="QR" objectFit="contain" className="h-12 rounded bg-white p-0.5 object-contain" />}
                 <label className="cursor-pointer px-3 py-2 rounded-lg bg-white/10 text-gray-300 text-xs font-semibold hover:bg-white/20">
                   {form.upiQr ? 'Replace' : 'Upload QR'}
                   <input type="file" accept="image/*" className="hidden" onChange={async e => {
@@ -260,7 +262,7 @@ export default function AdminShop({ shop, onRefresh }: Props) {
             <div key={item.id} className="p-4 rounded-xl border border-white/5 bg-white/3 hover:border-white/10 transition-all">
               <div className="flex gap-4">
                 <div className="w-20 h-20 rounded-lg overflow-hidden bg-white/5 flex-shrink-0 flex items-center justify-center">
-                  {item.image ? <img src={item.image} alt="" className="w-full h-full object-cover" /> : <span className="text-3xl">👕</span>}
+                  {item.image ? <Image src={item.image} alt="" objectFit="cover" className="w-full h-full object-cover" /> : <span className="text-3xl">👕</span>}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-bold text-white truncate">{item.title}</p>

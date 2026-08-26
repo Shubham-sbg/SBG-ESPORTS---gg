@@ -1,3 +1,5 @@
+import { getImageUrl } from '@/lib/imageResolver';
+import { Image } from './Image';
 import { useRef, useState } from 'react';
 import ImageRatioControl, { AspectRatioOption, RATIO_OPTIONS } from './ImageRatioControl';
 import { uploadFileToServer } from '@/lib/uploadService';
@@ -5,8 +7,8 @@ import { uploadFileToServer } from '@/lib/uploadService';
 export type { AspectRatioOption };
 
 interface Props {
-  value: string;          // current image URL or data URL
-  onChange: (url: string) => void;
+  imageUrl: string;          // current image URL or data URL
+  onImageChange: (url: string) => void;
   label?: string;
   size?: 'sm' | 'md' | 'lg';
   shape?: 'square' | 'circle';
@@ -68,7 +70,7 @@ export function applyAspectRatio(
 // RATIO_OPTIONS is imported from ./ImageRatioControl
 
 export default function ImageUpload({
-  value, onChange, label = 'Upload Image', size = 'md', shape = 'square',
+  imageUrl, onImageChange, label = 'Upload Image', size = 'md', shape = 'square',
   accept = 'image/*', className = '', uploadEndpoint = '/api/upload',
   showRatioControls = true,
 }: Props) {
@@ -112,13 +114,13 @@ export default function ImageUpload({
           const result = await uploadFileToServer(fileToUpload, {
             endpoint: uploadEndpoint.startsWith('/') ? uploadEndpoint : `/api/${uploadEndpoint}`,
           });
-          onChange(result.url);
+          onImageChange(result.url);
         } catch (serverErr) {
           console.warn('Server upload failed, falling back to croppedDataUrl:', serverErr);
-          onChange(croppedDataUrl);
+          onImageChange(croppedDataUrl);
         }
       } else {
-        onChange(croppedDataUrl);
+        onImageChange(croppedDataUrl);
       }
     } catch (err: any) {
       setError(err?.message || 'Upload failed. Try again.');
@@ -154,9 +156,9 @@ export default function ImageUpload({
         className={`${sizeMap[size]} ${shapeClass} border-2 border-dashed border-white/20 flex items-center justify-center overflow-hidden cursor-pointer hover:border-yellow-500/50 transition-colors relative group bg-white/3`}
         title="Click to upload image"
       >
-        {value ? (
+        {imageUrl ? (
           <>
-            <img src={value} alt="Preview" className="w-full h-full object-cover" />
+            <Image src={imageUrl} alt="Preview" objectFit="cover" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <span className="text-white text-xs font-bold">CHANGE</span>
             </div>
@@ -187,14 +189,14 @@ export default function ImageUpload({
         onClick={() => inputRef.current?.click()}
         className="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border border-white/10 hover:border-yellow-500/40 text-gray-400 hover:text-white transition-all disabled:opacity-50"
       >
-        {uploading ? 'Uploading…' : value ? 'Change Image' : 'Upload Image'}
+        {uploading ? 'Uploading…' : imageUrl ? 'Change Image' : 'Upload Image'}
       </button>
 
       {/* Clear button */}
-      {value && !uploading && (
+      {imageUrl && !uploading && (
         <button
           type="button"
-          onClick={() => { setRawFile(null); onChange(''); }}
+          onClick={() => { setRawFile(null); onImageChange(''); }}
           className="text-[10px] text-red-400/60 hover:text-red-400 transition-colors"
         >
           Remove
